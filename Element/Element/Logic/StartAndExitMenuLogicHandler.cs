@@ -276,7 +276,7 @@ namespace Element.Logic
             if (args == null)
                 return;
 
-
+            // this should only come from the exit menu?
         }
 
         private void StartOrLoadGame(MenuPageEventArgs e)
