@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{8B3FD398-6448-4CA8-9176-04EB2CD2C9E0}</ProjectGuid>
+    <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Element.Common</RootNamespace>
+    <AssemblyName>Element.Common</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
+    <XnaPlatform>Windows</XnaPlatform>
+    <XnaProfile>Reach</XnaProfile>
+    <XnaCrossPlatformGroupID>ebd6e2cc-7ad0-4fa4-b6c6-5de61bf19475</XnaCrossPlatformGroupID>
+    <XnaOutputType>Library</XnaOutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>false</XnaCompressContent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>true</XnaCompressContent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.GamerServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Net" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Animations\Animator.cs" />
+    <Compile Include="Enumerations\GameBasics\PreferenceTypes.cs" />
+    <Compile Include="Enumerations\Menu\ButtonStates.cs" />
+    <Compile Include="Enumerations\Menu\ButtonStyles.cs" />
+    <Compile Include="Enumerations\Menu\ButtonType.cs" />
+    <Compile Include="Enumerations\NPCs\CharacterStates.cs" />
+    <Compile Include="Enumerations\GameBasics\ControlFunctions.cs" />
+    <Compile Include="Enumerations\GameBasics\Directions.cs" />
+    <Compile Include="Enumerations\GameBasics\GameStates.cs" />
+    <Compile Include="Enumerations\Menu\MenuPageNames.cs" />
+    <Compile Include="Enumerations\Environment\RegionNames.cs" />
+    <Compile Include="Enumerations\Environment\RegionTheme.cs" />
+    <Compile Include="Enumerations\GameBasics\Resolutions.cs" />
+    <Compile Include="Enumerations\Sound\SoundEffects.cs" />
+    <Compile Include="Environment\Region.cs" />
+    <Compile Include="Environment\RegionInfo.cs" />
+    <Compile Include="GameObjects\Tile\Tile.cs" />
+    <Compile Include="Environment\Transition.cs" />
+    <Compile Include="Environment\Zone.cs" />
+    <Compile Include="GameObjects\GameObject.cs" />
+    <Compile Include="GameObjects\Npcs\Npc.cs" />
+    <Compile Include="GameObjects\Scenery\SceneryObject.cs" />
+    <Compile Include="GameObjects\TileObjects\TileObject.cs" />
+    <Compile Include="HelperClasses\ButtonAnimator.cs" />
+    <Compile Include="HelperClasses\DataHelper.cs" />
+    <Compile Include="HelperClasses\GameConstants.cs" />
+    <Compile Include="HelperClasses\GameStateHelper.cs" />
+    <Compile Include="HelperClasses\ListComparer.cs" />
+    <Compile Include="HelperClasses\MessageCrafter.cs" />
+    <Compile Include="HelperClasses\PreferenceValidator.cs" />
+    <Compile Include="HelperClasses\SoundEventArgs.cs" />
+    <Compile Include="HelperClasses\SoundTransmitter.cs" />
+    <Compile Include="HelperClasses\TransitionEventArgs.cs" />
+    <Compile Include="Instructions\AddObjectInstruction.cs" />
+    <Compile Include="Instructions\ModifyObjectInstruction.cs" />
+    <Compile Include="Instructions\ObjectInstruction.cs" />
+    <Compile Include="Instructions\RemoveObjectInstruction.cs" />
+    <Compile Include="Menus\MenuButton.cs" />
+    <Compile Include="Menus\MenuDialog.cs" />
+    <Compile Include="Menus\MenuPage.cs" />
+    <Compile Include="Menus\MenuPageEvent.cs" />
+    <Compile Include="Menus\MenuPages\ExitMenuPage.cs" />
+    <Compile Include="Menus\MenuPages\FileSelectMenuPage.cs" />
+    <Compile Include="Menus\MenuPages\OptionsMenuPage.cs" />
+    <Compile Include="Menus\MenuPages\StartMenuPage.cs" />
+    <Compile Include="Menus\MenuPages\TitleMenuPage.cs" />
+    <Compile Include="Messages\RegionLoadMessage.cs" />
+    <Compile Include="Messages\SaveLoadMessage.cs" />
+    <Compile Include="Misc\Control.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Data\PreferenceData.cs" />
+    <Compile Include="Data\SaveData.cs" />
+    <Compile Include="Data\SaveFileInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
+  <!--
+      To modify your build process, add your task inside one of the targets below and uncomment it. 
+      Other similar extension points exist, see Microsoft.Common.targets.
+      <Target Name="BeforeBuild">
+      </Target>
+      <Target Name="AfterBuild">
+      </Target>
+    -->
+</Project>
