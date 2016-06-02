@@ -5,6 +5,10 @@ using System.Text;
 
 namespace Element.ResourceManagement
 {
-    public delegate void SaveRequestedEvent();
-    public delegate void SaveCompletedEvent();
+    public class SaveEventArgs
+    {
+    }
+
+    public delegate void SaveRequestedEvent(SaveEventArgs e);
+    public delegate void SaveCompletedEvent(SaveEventArgs e);
 }

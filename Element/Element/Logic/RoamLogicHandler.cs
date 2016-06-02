@@ -21,8 +21,6 @@ namespace Element.Logic
             _regions = new Dictionary<RegionNames, Region>();
 
             _resourceManager = resourceManager;
-            _resourceManager.BgThread.AssetsLoaded += AddLoadedRegions;
-            _resourceManager.BgThread.AssetsUnloaded += RemoveRegions;
         }
 
         private void AddLoadedRegions(AssetsLoadedEventArgs e)

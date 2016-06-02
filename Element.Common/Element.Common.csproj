@@ -87,12 +87,13 @@
     <Compile Include="HelperClasses\DataHelper.cs" />
     <Compile Include="HelperClasses\GameConstants.cs" />
     <Compile Include="HelperClasses\GameStateHelper.cs" />
+    <Compile Include="HelperClasses\InputHelper.cs" />
     <Compile Include="HelperClasses\ListComparer.cs" />
     <Compile Include="HelperClasses\MessageCrafter.cs" />
     <Compile Include="HelperClasses\PreferenceValidator.cs" />
     <Compile Include="HelperClasses\SoundEventArgs.cs" />
     <Compile Include="HelperClasses\SoundTransmitter.cs" />
-    <Compile Include="HelperClasses\TransitionEventArgs.cs" />
+    <Compile Include="HelperClasses\TransitionEvent.cs" />
     <Compile Include="Instructions\AddObjectInstruction.cs" />
     <Compile Include="Instructions\ModifyObjectInstruction.cs" />
     <Compile Include="Instructions\ObjectInstruction.cs" />

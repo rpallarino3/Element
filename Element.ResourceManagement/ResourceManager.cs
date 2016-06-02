@@ -94,6 +94,8 @@ namespace Element.ResourceManagement
 
         public void RequestSave(SaveLoadMessage msg)
         {
+            // might raise a save requested event here
+            _backgroundThread.AddSaveRequest(msg);
         }
 
         public void EraseFile(int fileNumber)
@@ -236,6 +238,7 @@ namespace Element.ResourceManagement
         #region Events
 
         // put all the events that would be in the bgthread in here
+        public event SaveCompletedEvent SaveCompleted; // i guess this mean the the save itself is done? do we need one for all things to be completed? probably
 
         #endregion
     }

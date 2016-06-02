@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Element.Common.Enumerations;
+using Element.Common.Enumerations.Environment;
 using Element.Common.GameObjects.Npcs;
 
 namespace Element.Logic

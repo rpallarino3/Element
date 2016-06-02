@@ -10,11 +10,11 @@ namespace Element.Common.Menus.MenuPages
 {
     public class ExitMenuPage : MenuPage
     {
-        private readonly Vector2 RESUME_GAME_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 SAVE_GAME_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 LOAD_GAME_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 OPTIONS_LOCAITON = new Vector2(0, 0);
-        private readonly Vector2 EXIT_GAME_LOCATION = new Vector2(0, 0);
+        private readonly Vector2 RESUME_GAME_LOCATION = new Vector2(515, 205);
+        private readonly Vector2 SAVE_GAME_LOCATION = new Vector2(515, 270);
+        private readonly Vector2 LOAD_GAME_LOCATION = new Vector2(515, 335);
+        private readonly Vector2 OPTIONS_LOCAITON = new Vector2(515, 400);
+        private readonly Vector2 EXIT_GAME_LOCATION = new Vector2(515, 465);
 
         private readonly string RESUME_TEXT = "Resume";
         private readonly string SAVE_TEXT = "Save Game";
@@ -48,7 +48,7 @@ namespace Element.Common.Menus.MenuPages
             _exitButton.UpButton = _optionsButton;
             _exitButton.DownButton = _resumeButton;
 
-            _resumeButton.OnSelected += RaiseStateTransitionEvent;
+            _resumeButton.OnSelected += RaiseResumeGameEvent;
             _saveButton.OnSelected += RaiseSwitchPageEvent;
             _loadButton.OnSelected += RaiseSwitchPageEvent;
             _optionsButton.OnSelected += RaiseSwitchPageEvent;
@@ -76,7 +76,7 @@ namespace Element.Common.Menus.MenuPages
 
         public override void ReturnToPreviousMenu()
         {
-            RaiseStateTransitionEvent(new ResumeGameEventArgs());
+            RaiseResumeGameEvent(new ResumeGameEventArgs());
         }
     }
 }

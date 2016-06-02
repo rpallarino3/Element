@@ -10,7 +10,7 @@ namespace Element.Common.Menus.MenuPages
 {
     public class TitleMenuPage : MenuPage
     {
-        private readonly Vector2 TITLE_BUTTON_LOCATION = new Vector2(0, 0);
+        private readonly Vector2 TITLE_BUTTON_LOCATION = new Vector2(340, 450);
 
         private MenuButton _titleButton;
 
@@ -35,6 +35,7 @@ namespace Element.Common.Menus.MenuPages
             UnhideAllButtons();
 
             _currentButton = _titleButton;
+            _currentButton.Highlight();
         }
 
         public override void ReturnToPreviousMenu()

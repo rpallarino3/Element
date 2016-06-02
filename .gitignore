@@ -3,3 +3,5 @@ bin/
 obj
 bin
 /Element/Element/*.user
+/Element/ElementContent/*.user
+/Element/Element/*.cachefile

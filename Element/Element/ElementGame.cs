@@ -13,6 +13,7 @@ using Element.Input;
 using Element.Logic;
 using Element.ResourceManagement;
 using Element.Common.Enumerations.GameBasics;
+using Element.Common.HelperClasses;
 using Element.Common.Menus;
 
 namespace Element
@@ -50,7 +51,7 @@ namespace Element
         {
             _resourceManager = new ResourceManager(Content.ServiceProvider, Content.RootDirectory);
             _resourceManager.LoadFilesAndUpdatePreferenceData();
-            ChangeResolution(new ResolutionChangeEventArgs(_resourceManager.PreferenceData.Resolution));
+            ChangeResolution(new ResolutionChangeEventArgs(DataHelper.PreferenceData.Resolution));
 
             _inputHandler = new InputHandler(_resourceManager);
 

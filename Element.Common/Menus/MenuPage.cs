@@ -29,6 +29,9 @@ namespace Element.Common.Menus
 
         public virtual void SelectButton()
         {
+            if (_dialogOpen && _currentDialog.Buttons.Count == 0)
+                return;
+
             _currentButton.SelectButton();
         }
 
@@ -150,20 +153,20 @@ namespace Element.Common.Menus
             ExitGame(e);
         }
 
-        protected void RaiseStateTransitionEvent(MenuPageEventArgs e)
-        {
-            if (e == null)
-                return;
-
-            StateTransition(e);
-        }
-
         protected void RaisePreferenceResetEvent(MenuPageEventArgs e)
         {
             if (e == null)
                 return;
 
             ResetPreferences(e);
+        }
+
+        protected void RaiseResumeGameEvent(MenuPageEventArgs e)
+        {
+            if (e == null)
+                return;
+
+            ResumeGame(e);
         }
 
         #endregion
@@ -206,7 +209,7 @@ namespace Element.Common.Menus
         public event MenuPageEvent VolumeChange;
         public event MenuPageEvent ResolutionChange;
         public event MenuPageEvent ExitGame;
-        public event MenuPageEvent StateTransition;
+        public event MenuPageEvent ResumeGame;
 
         #endregion
     }

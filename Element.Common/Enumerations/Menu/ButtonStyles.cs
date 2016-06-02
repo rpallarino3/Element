@@ -16,7 +16,6 @@ namespace Element.Common.Enumerations.Menu
         Volume,
         MoveKeybind,
         Keybind,
-        DialogOne,
-        DialogTwo,
+        Dialog,
     }
 }

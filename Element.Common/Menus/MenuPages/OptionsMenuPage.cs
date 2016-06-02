@@ -7,44 +7,41 @@ using Microsoft.Xna.Framework.Input;
 using Element.Common.Enumerations.GameBasics;
 using Element.Common.Enumerations.Menu;
 using Element.Common.Data;
+using Element.Common.HelperClasses;
 
 namespace Element.Common.Menus.MenuPages
 {
     public class OptionsMenuPage : MenuPage
     {
-        private readonly Vector2 RESOLUTION_960x540_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 RESOLUTION_1280x720_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 RESOLUTION_1600x900_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 RESOLUTION_1920x1080_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 RESOLUTION_DEFAULT_LOCATION = new Vector2(0, 0);
+        private readonly Vector2 RESOLUTION_960x540_LOCATION = new Vector2(775, 150);
+        private readonly Vector2 RESOLUTION_1280x720_LOCATION = new Vector2(775, 195);
+        private readonly Vector2 RESOLUTION_1600x900_LOCATION = new Vector2(775, 240);
+        private readonly Vector2 RESOLUTION_1920x1080_LOCATION = new Vector2(775, 285);
+        private readonly Vector2 RESOLUTION_DEFAULT_LOCATION = new Vector2(1000, 345);
 
-        private readonly Vector2 VOLUME_UP_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 VOLUME_DOWN_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 VOLUME_DEFAULT_LOCATION = new Vector2(0, 0);
+        private readonly Vector2 VOLUME_UP_LOCATION = new Vector2(1100, 450);
+        private readonly Vector2 VOLUME_DOWN_LOCATION = new Vector2(775, 450);
+        private readonly Vector2 VOLUME_DEFAULT_LOCATION = new Vector2(1000, 500);
 
-        private readonly Vector2 MOVE_UP_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 MOVE_DOWN_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 MOVE_LEFT_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 MOVE_RIGHT_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 CONFIRM_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 BACK_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 CAST_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 CYCLE_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 START_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 KEYBIND_DEFAULT_LOCATION = new Vector2(0, 0);
+        private readonly Vector2 MOVE_UP_LOCATION = new Vector2(220, 150);
+        private readonly Vector2 MOVE_DOWN_LOCATION = new Vector2(220, 220);
+        private readonly Vector2 MOVE_LEFT_LOCATION = new Vector2(220, 290);
+        private readonly Vector2 MOVE_RIGHT_LOCATION = new Vector2(220, 360);
+        private readonly Vector2 CONFIRM_LOCATION = new Vector2(500, 150);
+        private readonly Vector2 BACK_LOCATION = new Vector2(500, 220);
+        private readonly Vector2 CAST_LOCATION = new Vector2(500, 290);
+        private readonly Vector2 CYCLE_LOCATION = new Vector2(500, 360);
+        private readonly Vector2 START_LOCATION = new Vector2(500, 430);
+        private readonly Vector2 KEYBIND_DEFAULT_LOCATION = new Vector2(500, 500);
 
-        private readonly Vector2 DEFAULTS_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 OK_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 APPLY_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 MENU_BACK_LOCATION = new Vector2(0, 0);
+        private readonly Vector2 DEFAULTS_LOCATION = new Vector2(850, 575);
+        private readonly Vector2 MENU_BACK_LOCATION = new Vector2(1030, 575);
 
         private readonly string DEFAULT_TEXT = "Default";
         private readonly string VOLUME_UP_TEXT = "+";
         private readonly string VOLUME_DOWN_TEXT = "-";
 
         private readonly string DEFAULTS_TEXT = "Defaults";
-        private readonly string OK_TEXT = "Ok";
-        private readonly string APPLY_TEXT = "Apply";
         private readonly string BACK_TEXT = "Back";
 
         private MenuButton _resolution960Button;
@@ -69,8 +66,6 @@ namespace Element.Common.Menus.MenuPages
         private MenuButton _keysDefaultButton;
 
         private MenuButton _defaultsButton;
-        private MenuButton _okButton; // might not use this one either
-        private MenuButton _applyButton; // might not use this button
         private MenuButton _menuBackButton;
 
         private MenuDialog _inputKeyDialog;
@@ -113,86 +108,86 @@ namespace Element.Common.Menus.MenuPages
 
             #region Tie Together Buttons
 
-            _resolution960Button.UpButton = _volumeDefaultButton;
-            _resolution960Button.DownButton = _resolution1280Button;
-            _resolution1280Button.UpButton = _resolution960Button;
-            _resolution1280Button.DownButton = _resolution1600Button;
-            _resolution1600Button.UpButton = _resolution1280Button;
-            _resolution1600Button.DownButton = _resolution1920Button;
-            _resolution1920Button.UpButton = _resolution1600Button;
-            _resolution1920Button.DownButton = _resolutionDefaultButton;
-            _resolutionDefaultButton.UpButton = _resolution1920Button;
-            _resolutionDefaultButton.DownButton = _volumeDownButton;
-
-            _volumeDownButton.RightButton = _volumeUpButton;
-            _volumeUpButton.LeftButton = _volumeDownButton;
-
-            _moveUpButton.UpButton = _menuBackButton;
+            _moveUpButton.UpButton = _moveRightButton;
             _moveUpButton.DownButton = _moveDownButton;
+            _moveUpButton.LeftButton = _resolution960Button;
+            _moveUpButton.RightButton = _confirmButton;
             _moveDownButton.UpButton = _moveUpButton;
             _moveDownButton.DownButton = _moveLeftButton;
+            _moveDownButton.LeftButton = _resolution1600Button;
+            _moveDownButton.RightButton = _backButton;
             _moveLeftButton.UpButton = _moveDownButton;
             _moveLeftButton.DownButton = _moveRightButton;
+            _moveLeftButton.LeftButton = _resolution1920Button;
+            _moveLeftButton.RightButton = _castButton;
             _moveRightButton.UpButton = _moveLeftButton;
-            _moveRightButton.DownButton = _confirmButton;
-            _confirmButton.UpButton = _moveRightButton;
+            _moveRightButton.DownButton = _moveUpButton;
+            _moveRightButton.LeftButton = _resolutionDefaultButton;
+            _moveRightButton.RightButton = _cycleButton;
+
+            _confirmButton.UpButton = _keysDefaultButton;
             _confirmButton.DownButton = _backButton;
+            _confirmButton.LeftButton = _moveUpButton;
+            _confirmButton.RightButton = _resolution960Button;
             _backButton.UpButton = _confirmButton;
             _backButton.DownButton = _castButton;
+            _backButton.LeftButton = _moveDownButton;
+            _backButton.RightButton = _resolution1600Button;
             _castButton.UpButton = _backButton;
             _castButton.DownButton = _cycleButton;
+            _castButton.LeftButton = _moveLeftButton;
+            _castButton.RightButton = _resolution1920Button;
             _cycleButton.UpButton = _castButton;
             _cycleButton.DownButton = _startButton;
+            _cycleButton.LeftButton = _moveRightButton;
+            _cycleButton.RightButton = _resolutionDefaultButton;
             _startButton.UpButton = _cycleButton;
             _startButton.DownButton = _keysDefaultButton;
-            _keysDefaultButton.UpButton = _startButton;
-            _keysDefaultButton.DownButton = _defaultsButton;
-            _defaultsButton.UpButton = _keysDefaultButton;
-            _defaultsButton.DownButton = _menuBackButton;
-            _menuBackButton.UpButton = _defaultsButton;
-            _menuBackButton.DownButton = _moveUpButton;
-
-            _resolution960Button.RightButton = _moveUpButton;
-            _resolution960Button.LeftButton = _moveUpButton;
-            _resolution1280Button.RightButton = _moveDownButton;
-            _resolution1280Button.LeftButton = _moveDownButton;
-            _resolution1600Button.RightButton = _moveLeftButton;
-            _resolution1600Button.LeftButton = _moveLeftButton;
-            _resolution1920Button.RightButton = _moveRightButton;
-            _resolution1920Button.LeftButton = _moveRightButton;
-            _moveUpButton.LeftButton = _resolution960Button;
-            _moveUpButton.RightButton = _resolution960Button;
-            _moveDownButton.LeftButton = _resolution1280Button;
-            _moveDownButton.RightButton = _resolution1280Button;
-            _moveLeftButton.LeftButton = _resolution1600Button;
-            _moveLeftButton.RightButton = _resolution1600Button;
-            _moveRightButton.LeftButton = _resolution1920Button;
-            _moveRightButton.RightButton = _resolution1920Button;
-
-            _resolutionDefaultButton.RightButton = _confirmButton;
-            _resolutionDefaultButton.LeftButton = _confirmButton;
-            _confirmButton.LeftButton = _resolutionDefaultButton;
-            _confirmButton.RightButton = _resolutionDefaultButton;
-            _backButton.LeftButton = _resolutionDefaultButton;
-            _backButton.RightButton = _resolutionDefaultButton;
-            _castButton.LeftButton = _resolutionDefaultButton;
-            _castButton.RightButton = _resolutionDefaultButton;
-
-            _volumeDownButton.LeftButton = _startButton;
-            _volumeUpButton.RightButton = _startButton;
-            _cycleButton.LeftButton = _volumeUpButton;
-            _cycleButton.RightButton = _volumeDownButton;
             _startButton.LeftButton = _volumeUpButton;
             _startButton.RightButton = _volumeDownButton;
-            _volumeDefaultButton.RightButton = _keysDefaultButton;
-            _volumeDefaultButton.LeftButton = _keysDefaultButton;
+            _keysDefaultButton.UpButton = _startButton;
+            _keysDefaultButton.DownButton = _confirmButton;
             _keysDefaultButton.LeftButton = _volumeDefaultButton;
             _keysDefaultButton.RightButton = _volumeDefaultButton;
 
-            _defaultsButton.LeftButton = _volumeDefaultButton;
-            _defaultsButton.RightButton = _volumeDefaultButton;
-            _menuBackButton.LeftButton = _volumeDefaultButton;
-            _menuBackButton.RightButton = _volumeDefaultButton;
+            _resolution960Button.UpButton = _defaultsButton;
+            _resolution960Button.DownButton = _resolution1280Button;
+            _resolution960Button.LeftButton = _confirmButton;
+            _resolution960Button.RightButton = _moveUpButton;
+            _resolution1280Button.UpButton = _resolution960Button;
+            _resolution1280Button.DownButton = _resolution1600Button;
+            _resolution1280Button.LeftButton = _confirmButton;
+            _resolution1280Button.RightButton = _moveUpButton;
+            _resolution1600Button.UpButton = _resolution1280Button;
+            _resolution1600Button.DownButton = _resolution1920Button;
+            _resolution1600Button.LeftButton = _backButton;
+            _resolution1600Button.RightButton = _moveDownButton;
+            _resolution1920Button.UpButton = _resolution1600Button;
+            _resolution1920Button.DownButton = _resolutionDefaultButton;
+            _resolution1920Button.LeftButton = _castButton;
+            _resolution1920Button.RightButton = _moveLeftButton;
+            _resolutionDefaultButton.UpButton = _resolution1920Button;
+            _resolutionDefaultButton.DownButton = _volumeDownButton;
+            _resolutionDefaultButton.LeftButton = _cycleButton;
+            _resolutionDefaultButton.RightButton = _moveRightButton;
+
+            _volumeUpButton.UpButton = _resolutionDefaultButton;
+            _volumeUpButton.DownButton = _volumeDefaultButton;
+            _volumeUpButton.LeftButton = _volumeDownButton;
+            _volumeUpButton.RightButton = _startButton;
+            _volumeDownButton.UpButton = _resolutionDefaultButton;
+            _volumeDownButton.DownButton = _volumeDefaultButton;
+            _volumeDownButton.LeftButton = _startButton;
+            _volumeDownButton.RightButton = _volumeUpButton;
+
+            _defaultsButton.LeftButton = _menuBackButton;
+            _defaultsButton.RightButton = _menuBackButton;
+            _defaultsButton.UpButton = _volumeDefaultButton;
+            _defaultsButton.DownButton = _resolution960Button;
+            _menuBackButton.LeftButton = _defaultsButton;
+            _menuBackButton.RightButton = _defaultsButton;
+            _menuBackButton.UpButton = _volumeDefaultButton;
+            _menuBackButton.DownButton = _resolution960Button;
 
             #endregion
 
@@ -272,7 +267,16 @@ namespace Element.Common.Menus.MenuPages
 
         public override void UpdateWithPreferenceData(PreferenceData data)
         {
-            throw new NotImplementedException();
+            _moveUpButton.Text = InputHelper.GetStringForFunction(ControlFunctions.MoveUp);
+            _moveDownButton.Text = InputHelper.GetStringForFunction(ControlFunctions.MoveDown);
+            _moveLeftButton.Text = InputHelper.GetStringForFunction(ControlFunctions.MoveLeft);
+            _moveRightButton.Text = InputHelper.GetStringForFunction(ControlFunctions.MoveRight);
+
+            _confirmButton.Text = InputHelper.GetStringForFunction(ControlFunctions.Confirm);
+            _backButton.Text = InputHelper.GetStringForFunction(ControlFunctions.Back);
+            _castButton.Text = InputHelper.GetStringForFunction(ControlFunctions.Cast);
+            _cycleButton.Text = InputHelper.GetStringForFunction(ControlFunctions.Cycle);
+            _menuBackButton.Text = InputHelper.GetStringForFunction(ControlFunctions.Menu);
         }
 
         public override void EnterMenu(MenuPageNames name, PreferenceData data)

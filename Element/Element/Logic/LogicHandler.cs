@@ -18,9 +18,6 @@ namespace Element.Logic
         private RoamLogicHandler _roamLogicHandler;
         private StartAndExitMenuLogicHandler _startAndExitMenuLogicHandler;
         
-        private GameStates _queuedUpState;
-        private bool _paused;
-
         public LogicHandler(ResourceManager resourceManager, InputHandler inputHandler)
         {
             _resourceManager = resourceManager;
@@ -30,15 +27,22 @@ namespace Element.Logic
             _startAndExitMenuLogicHandler = new StartAndExitMenuLogicHandler(resourceManager, inputHandler);
             _transitionHandler = new TransitionHandler(resourceManager, _playerLogicHandler, _roamLogicHandler, _startAndExitMenuLogicHandler);
 
-            GameStateHelper.ChangeState(GameStates.StartMenu);
+            GameStateHelper.ChangeState(GameStates.Start);
         }
 
         public void UpdateGameLogic()
         {
             if (_transitionHandler.Transitioning)
             {
-                if (!_transitionHandler.ContinueTransition()) // maybe change how this game state stuff works
-                    return;
+                _transitionHandler.ContinueTransition();
+            }
+            else if (GameStateHelper.CurrentState == GameStates.Start)
+            {
+                GameStateHelper.ChangeState(GameStates.StartMenu);
+            }
+            else if (GameStateHelper.CurrentState == GameStates.StartMenu)
+            {
+                _startAndExitMenuLogicHandler.UpdateGameLogic();
             }
             
         }

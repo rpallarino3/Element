@@ -7,10 +7,10 @@ namespace Element.Common.Enumerations.GameBasics
 {
     public enum GameStates
     {
+        Start, // go from start through whatever we need to do then to start menu
         StartMenu,
         Roam,
         ExitMenu,
-        Menu,
         Chat,
     }
 }

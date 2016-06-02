@@ -11,12 +11,12 @@ namespace Element.Common.Menus.MenuPages
 {
     public class FileSelectMenuPage : MenuPage
     {
-        private readonly Vector2 FILE_0_BUTTON_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 FILE_1_BUTTON_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 FILE_2_BUTTON_LOCATION = new Vector2(0, 0);
+        private readonly Vector2 FILE_0_BUTTON_LOCATION = new Vector2(110, 470);
+        private readonly Vector2 FILE_1_BUTTON_LOCATION = new Vector2(490, 470);
+        private readonly Vector2 FILE_2_BUTTON_LOCATION = new Vector2(870, 470);
 
-        private readonly Vector2 BACK_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 ERASE_LOCATION = new Vector2(0, 0);
+        private readonly Vector2 BACK_LOCATION = new Vector2(1040, 600);
+        private readonly Vector2 ERASE_LOCATION = new Vector2(850, 600);
 
         private readonly string BACK_TEXT = "Back";
         private readonly string ERASE_TEXT = "Erase";
@@ -28,6 +28,7 @@ namespace Element.Common.Menus.MenuPages
         private MenuButton _eraseButton;
 
         private MenuDialog _confirmEraseDialog;
+        private MenuDialog _loadConfirmDialog;
 
         private int _fileHighlightIndex;
         private int _utilityButtonHighlightIndex;
@@ -183,12 +184,12 @@ namespace Element.Common.Menus.MenuPages
             var dialog = new MenuDialog();
             dialog.AddTextLine("Are you sure?");
 
-            var yesButton = new MenuButton(new Vector2(0, 0), "Erase", ButtonStyles.DialogTwo, new EraseFileEventArgs(_fileHighlightIndex));
+            var yesButton = new MenuButton(new Vector2(0, 0), "Erase", ButtonStyles.Dialog, new EraseFileEventArgs(_fileHighlightIndex));
             yesButton.OnSelected += RaiseEraseFileEvent;
             yesButton.OnSelected += ResetFileButtons;
             yesButton.OnSelected += RaiseCloseDialogEvent;
 
-            var noButton = new MenuButton(new Vector2(0, 0), "Cancel", ButtonStyles.DialogTwo, new CloseDialogEventArgs());
+            var noButton = new MenuButton(new Vector2(0, 0), "Cancel", ButtonStyles.Dialog, new CloseDialogEventArgs());
             noButton.OnSelected += RaiseCloseDialogEvent;
             noButton.OnSelected += ResetFileButtons;
 
@@ -206,16 +207,35 @@ namespace Element.Common.Menus.MenuPages
         private void OnLoadFile(MenuPageEventArgs e)
         {
             _dialogOpen = true;
-            var dialog = new MenuDialog();
-            dialog.AddTextLine("Any unsaved progress will be lost.");
+            _loadConfirmDialog = new MenuDialog();
+            _loadConfirmDialog.AddTextLine("Any unsaved progress will be lost.");
 
-            var okButton = new MenuButton(new Vector2(0, 0), "Ok", ButtonStyles.DialogTwo, new StartOrLoadEventArgs(_fileHighlightIndex));
+            var okButton = new MenuButton(new Vector2(0, 0), "Ok", ButtonStyles.Dialog, new StartOrLoadEventArgs(_fileHighlightIndex));
             okButton.OnSelected += RaiseLoadGameEvent;
             okButton.OnSelected += RaiseCloseDialogEvent;
 
-            var cancelButton = new MenuButton(new Vector2(0, 0), "Cancel", ButtonStyles.DialogTwo, new CloseDialogEventArgs());
+            var cancelButton = new MenuButton(new Vector2(0, 0), "Cancel", ButtonStyles.Dialog, new CloseDialogEventArgs());
             cancelButton.OnSelected += RaiseCloseDialogEvent;
             cancelButton.OnSelected += ResetFileButtons;
+
+            _loadConfirmDialog.AddButton(okButton);
+            _loadConfirmDialog.AddButton(cancelButton);
+
+            _currentDialog = _loadConfirmDialog;
+        }
+
+        private void OnSaveFile(MenuPageEventArgs e)
+        {
+            _dialogOpen = true;
+            var dialog = new MenuDialog();
+            dialog.AddTextLine("Saving...");
+            _currentDialog = dialog;
+        }
+
+        public void CloseSaveDialog()
+        {
+            _dialogOpen = false;
+            HighlightFileBasedOnIndex();
         }
 
         public void EnterFromExit(bool save)
@@ -233,6 +253,9 @@ namespace Element.Common.Menus.MenuPages
                 _file0Button.OnSelected += RaiseSaveGameEvent;
                 _file1Button.OnSelected += RaiseSaveGameEvent;
                 _file2Button.OnSelected += RaiseSaveGameEvent;
+                _file0Button.OnSelected += OnSaveFile;
+                _file1Button.OnSelected += OnSaveFile;
+                _file2Button.OnSelected += OnSaveFile;
             }
             else
             {

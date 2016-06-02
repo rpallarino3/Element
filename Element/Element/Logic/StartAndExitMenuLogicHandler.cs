@@ -9,6 +9,7 @@ using Element.Common.Environment;
 using Element.Common.HelperClasses;
 using Element.Common.Menus;
 using Element.Common.Menus.MenuPages;
+using Element.Common.Messages;
 using Element.Input;
 using Element.ResourceManagement;
 
@@ -20,7 +21,6 @@ namespace Element.Logic
     public class StartAndExitMenuLogicHandler
     {
         private const int INPUT_DELAY = 5;
-        private const int SWAP_WAIT_FRAMES = 20;
 
         private ResourceManager _resourceManager;
         private InputHandler _inputHandler;
@@ -32,8 +32,7 @@ namespace Element.Logic
 
         private bool _requestKeybindChange;
         private ControlFunctions _functionToChange;
-
-        private bool _dialogOpen;
+        private bool _waitForSave;
 
         private bool _switchPages;
         private SwitchPageEventArgs _switchPageArgs;
@@ -43,6 +42,8 @@ namespace Element.Logic
             GameStateHelper.StateChange += StateChange;
 
             _resourceManager = resourceManager;
+            _resourceManager.SaveCompleted += SaveCompleted;
+
             _inputHandler = inputHandler;
 
             _inputCounter = 0;
@@ -130,11 +131,11 @@ namespace Element.Logic
             optionsPage.ExitGame += ExitGame;
             exitMenuPage.ExitGame += ExitGame;
 
-            titlePage.StateTransition += StateTransition;
-            startPage.StateTransition += StateTransition;
-            fileSelectPage.StateTransition += StateTransition;
-            optionsPage.StateTransition += StateTransition;
-            exitMenuPage.StateTransition += StateTransition;
+            titlePage.ResumeGame += ResumeGame;
+            startPage.ResumeGame += ResumeGame;
+            fileSelectPage.ResumeGame += ResumeGame;
+            optionsPage.ResumeGame += ResumeGame;
+            exitMenuPage.ResumeGame += ResumeGame;
 
             #endregion
 
@@ -159,11 +160,14 @@ namespace Element.Logic
             foreach (var button in _activeMenuPage.Buttons)
                 button.UpdateOwnLogic();
 
-            if (_dialogOpen)
+            if (_activeMenuPage.DialogOpen)
             {
                 foreach (var button in _activeMenuPage.CurrentDialog.Buttons)
                     button.UpdateOwnLogic();
             }
+
+            if (_waitForSave)
+                return;
 
             if (_switchPages)
             {
@@ -197,7 +201,7 @@ namespace Element.Logic
                 _inputCounter++; // only reset this when we actually do something
                 return;
             }
-
+            
             if (_requestKeybindChange)
             {
                 // this will update the preference data if a key is redbound
@@ -207,7 +211,6 @@ namespace Element.Logic
                 {
                     ((OptionsMenuPage)_menuPages[MenuPageNames.Options]).CloseKeybindDialog();
                     ((OptionsMenuPage)_menuPages[MenuPageNames.Options]).UpdateWithPreferenceData(DataHelper.PreferenceData);
-                    _dialogOpen = false;
                     _requestKeybindChange = false;
                 }
             }
@@ -221,7 +224,30 @@ namespace Element.Logic
             }
             else
             {
-                // take the input and manipulate the buttons and shit
+                if (_inputHandler.IsFunctionReady(ControlFunctions.Confirm))
+                {
+                    _activeMenuPage.SelectButton();
+                    return;
+                }
+
+                if (_inputHandler.IsFunctionReady(ControlFunctions.Back))
+                {
+                    _activeMenuPage.ReturnToPreviousMenu();
+                    return;
+                }
+
+                if (_inputHandler.IsFunctionReady(ControlFunctions.Menu))
+                {
+                    if (_activeMenuPage == _menuPages[MenuPageNames.ExitMenu])
+                        _activeMenuPage.ReturnToPreviousMenu();
+
+                    return;
+                }
+
+                var direction = _inputHandler.GetLongestDirection();
+
+                if (direction != null)
+                    _activeMenuPage.MoveCursor(direction.Value);
             }
         }
 
@@ -235,8 +261,7 @@ namespace Element.Logic
 
             if (args == null)
                 return;
-
-            _dialogOpen = true;
+            
         }
 
         private void CloseDialog(MenuPageEventArgs e)
@@ -245,8 +270,7 @@ namespace Element.Logic
 
             if (args == null)
                 return;
-
-            _dialogOpen = false;
+            
             // leave it to the menus to highlight the proper button
             // really doesn't matter if buttons behind highlight slightly before
         }
@@ -275,8 +299,14 @@ namespace Element.Logic
 
             if (args == null)
                 return;
+            
+            _waitForSave = true;
 
-            // this should only come from the exit menu?
+            var msg = new SaveLoadMessage();
+            msg.FileNumber = args.FileNumber;
+            msg.Data = DataHelper.GetDataCopyFromFileNumber(args.FileNumber);
+
+            _resourceManager.RequestSave(msg);
         }
 
         private void StartOrLoadGame(MenuPageEventArgs e)
@@ -288,8 +318,18 @@ namespace Element.Logic
                 return;
 
             var fileNumber = args.FileNumber;
-            
-            // i guess here is where we just initiate a state transition and start a new game?
+
+            var data = DataHelper.GetDataFromFileNumber(fileNumber);
+
+            // the save data will have the proper information even it is a new game
+            InitiateTransition(
+                new RoamTransition()
+                {
+                    DestinationCoords = new Vector2(data.PlayerLocation.X, data.PlayerLocation.Y),
+                    DestinationLevel = data.PlayerLevel,
+                    DestinationRegion = data.PlayerRegion,
+                    DestinationZone = data.PlayerZone,
+                });
         }
 
         private void EraseFile(MenuPageEventArgs e)
@@ -300,6 +340,13 @@ namespace Element.Logic
                 return;
 
             _resourceManager.EraseFile(args.FileNumber);
+        }
+
+        private void SaveCompleted(SaveEventArgs e)
+        {
+            _waitForSave = false;
+            ((FileSelectMenuPage)_menuPages[MenuPageNames.FileSelect]).CloseSaveDialog();
+            _menuPages[MenuPageNames.FileSelect].UpdateWithPreferenceData(DataHelper.PreferenceData);
         }
 
         #endregion
@@ -376,49 +423,34 @@ namespace Element.Logic
             if (args == null)
                 return;
 
-            ExitGame(args);
+            BeginExit(args);
         }
 
-        private void StateTransition(MenuPageEventArgs e)
+        private void ResumeGame(MenuPageEventArgs e)
         {
+            var args = e as ResumeGameEventArgs;
 
+            if (args == null)
+                return;
+
+            InitiateTransition(new StateTransition() { Fade = false, DestinationState = GameStates.Roam });
         }
 
         #endregion
 
         #endregion
-
-        private void StartNewGame()
-        {
-            var transition = new CombinationTransition();
-
-            var args = new TransitionEventArgs();
-            args.Transition = transition;
-
-            InitiateTransition(args);
-        }
-
-        private void LoadGame(int index)
-        {
-            // if this comes from the start menu we should just get teh save data from the saveloadhandler that has already been loaded
-            // put in a state transition and a load transition?
-            var transition = new CombinationTransition();
-
-            var args = new TransitionEventArgs();
-            args.Transition = transition;
-
-            InitiateTransition(args);
-        }
 
         public void StateChange(StateChangeEventArgs e)
         {
             if (e.NewState == GameStates.StartMenu)
             {
-                // i think we can start all the buttons fading and update the title with preference data
+                _activeMenuPage = _menuPages[MenuPageNames.Title];
+                _inputCounter = 0;
             }
             else if (e.NewState == GameStates.ExitMenu)
             {
-                // do something here about entering the menu
+                _activeMenuPage = _menuPages[MenuPageNames.ExitMenu];
+                _inputCounter = 0;
             }
         }
 

@@ -10,9 +10,9 @@ namespace Element.Common.Menus.MenuPages
 {
     public class StartMenuPage : MenuPage
     {
-        private readonly Vector2 START_FILE_SELECT_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 START_OPTIONS_LOCATION = new Vector2(0, 0);
-        private readonly Vector2 START_EXIT_LOCATION = new Vector2(0, 0);
+        private readonly Vector2 START_FILE_SELECT_LOCATION = new Vector2(390, 150);
+        private readonly Vector2 START_OPTIONS_LOCATION = new Vector2(390, 280);
+        private readonly Vector2 START_EXIT_LOCATION = new Vector2(390, 410);
 
         private readonly string FILE_SELECT = "File Select";
         private readonly string OPTIONS = "Options";

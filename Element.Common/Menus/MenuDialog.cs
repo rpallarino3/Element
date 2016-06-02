@@ -30,9 +30,6 @@ namespace Element.Common.Menus
         public void AddButton(MenuButton button)
         {
             _buttons.Add(button);
-            // recalc the locations of the buttons
-            // do we need to reset the animator as well and set the type of the buttons?
-            fasdfs
 
             if (_buttons.Count == 1)
                 button.Location = new Vector2(60, 70 + 50 * (_lines - 1));

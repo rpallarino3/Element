@@ -19,13 +19,23 @@ namespace Element.Input
         private GamePadState _padState;
         private KeyboardState _keyboardState;
 
+        private int _upCount;
+        private int _downCount;
+        private int _leftCount;
+        private int _rightCount;
+
         public InputHandler(ResourceManager resourceManager)
         {
             _resourceManager = resourceManager;
             _controls = new Dictionary<ControlFunctions, Control>();
 
-            var keybinds = resourceManager.PreferenceData.Keybindings;
-            var buttonBinds = resourceManager.PreferenceData.ButtonBindings;
+            _upCount = 0;
+            _downCount = 0;
+            _leftCount = 0;
+            _rightCount = 0;
+
+            var keybinds = DataHelper.PreferenceData.Keybindings;
+            var buttonBinds = DataHelper.PreferenceData.ButtonBindings;
 
             _controls.Add(ControlFunctions.MoveUp, new Control(new List<Keys>(keybinds[ControlFunctions.MoveUp]), new List<Buttons>(buttonBinds[ControlFunctions.MoveUp]), false, true));
             _controls.Add(ControlFunctions.MoveDown, new Control(new List<Keys>(keybinds[ControlFunctions.MoveDown]), new List<Buttons>(buttonBinds[ControlFunctions.MoveDown]), false, true));
@@ -43,10 +53,54 @@ namespace Element.Input
             _padState = gamePadState;
             _keyboardState = keyboardState;
 
+            InputHelper.UpdateGamePadConnected(gamePadState.IsConnected); // might want to switch to keys if no game input but key input?
+
             foreach (ControlFunctions cf in _controls.Keys)
             {
                 _controls[cf].UpdateReady(gamePadState, keyboardState);
             }
+
+            UpdateMovementCounts();
+        }
+
+        public void UpdateMovementCounts()
+        {
+            _upCount = _controls[ControlFunctions.MoveUp].FunctionReady ? _upCount + 1 : 0;
+            _downCount = _controls[ControlFunctions.MoveDown].FunctionReady ? _downCount + 1 : 0;
+            _leftCount = _controls[ControlFunctions.MoveLeft].FunctionReady ? _leftCount + 1 : 0;
+            _rightCount = _controls[ControlFunctions.MoveRight].FunctionReady ? _rightCount + 1 : 0;
+        }
+
+        public Directions? GetLongestDirection()
+        {
+            Directions? longest = null;
+            int longestTime = 0;
+
+            if (_upCount > longestTime)
+            {
+                longest = Directions.Up;
+                longestTime = _upCount;
+            }
+
+            if (_downCount > longestTime)
+            {
+                longest = Directions.Down;
+                longestTime = _downCount;
+            }
+
+            if (_leftCount > longestTime)
+            {
+                longest = Directions.Left;
+                longestTime = _leftCount;
+            }
+
+            if (_rightCount > longestTime)
+            {
+                longest = Directions.Right;
+                longestTime = _rightCount;
+            }
+
+            return longest;
         }
 
         public bool IsFunctionReady(ControlFunctions function)
@@ -61,7 +115,7 @@ namespace Element.Input
                 _controls[cf].ClearFunction();
             }
         }
-
+        
         public bool RequestSingleKeypress()
         {
             var keys = _keyboardState.GetPressedKeys();
@@ -163,6 +217,8 @@ namespace Element.Input
             return rebound;
         }
 
+        #region Rebind
+
         public void RebindInput(Keys key, ControlFunctions function)
         {
             var oldKey = _controls[function].Keys[0];
@@ -240,6 +296,8 @@ namespace Element.Input
                 }
             }
         }
+
+        #endregion
 
         public bool InputEmpty { get; private set; }
     }
