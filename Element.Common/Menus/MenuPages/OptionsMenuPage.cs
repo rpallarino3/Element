@@ -91,17 +91,27 @@ namespace Element.Common.Menus.MenuPages
             _volumeUpButton = new MenuButton(VOLUME_UP_LOCATION, VOLUME_UP_TEXT, ButtonStyles.Volume, new VolumeChangeEventArgs(true));
             _volumeDownButton = new MenuButton(VOLUME_DOWN_LOCATION, VOLUME_DOWN_TEXT, ButtonStyles.Volume, new VolumeChangeEventArgs(false));
             _volumeDefaultButton = new MenuButton(VOLUME_DEFAULT_LOCATION, DEFAULT_TEXT, ButtonStyles.SmallBack, new ResetPreferencesEventArgs(PreferenceTypes.Volume));
-
-            _moveUpButton = new MenuButton(MOVE_UP_LOCATION, string.Empty, ButtonStyles.Keybind, new KeybindChangeEventArgs(ControlFunctions.MoveUp, _moveUpButton));
-            _moveDownButton = new MenuButton(MOVE_DOWN_LOCATION, string.Empty, ButtonStyles.Keybind, new KeybindChangeEventArgs(ControlFunctions.MoveDown, _moveDownButton));
-            _moveLeftButton = new MenuButton(MOVE_LEFT_LOCATION, string.Empty, ButtonStyles.Keybind, new KeybindChangeEventArgs(ControlFunctions.MoveLeft, _moveLeftButton));
-            _moveRightButton = new MenuButton(MOVE_RIGHT_LOCATION, string.Empty, ButtonStyles.Keybind, new KeybindChangeEventArgs(ControlFunctions.MoveRight, _moveRightButton));
-            _confirmButton = new MenuButton(CONFIRM_LOCATION, string.Empty, ButtonStyles.Keybind, new KeybindChangeEventArgs(ControlFunctions.Confirm, _confirmButton));
-            _backButton = new MenuButton(BACK_LOCATION, string.Empty, ButtonStyles.Keybind, new KeybindChangeEventArgs(ControlFunctions.Back, _backButton));
-            _castButton = new MenuButton(CAST_LOCATION, string.Empty, ButtonStyles.Keybind, new KeybindChangeEventArgs(ControlFunctions.Cast, _castButton));
-            _cycleButton = new MenuButton(CYCLE_LOCATION, string.Empty, ButtonStyles.Keybind, new KeybindChangeEventArgs(ControlFunctions.Cycle, _cycleButton));
-            _startButton = new MenuButton(START_LOCATION, string.Empty, ButtonStyles.Keybind, new KeybindChangeEventArgs(ControlFunctions.Menu, _startButton));
+            
+            _moveUpButton = new MenuButton(MOVE_UP_LOCATION, string.Empty, ButtonStyles.Keybind, null);
+            _moveDownButton = new MenuButton(MOVE_DOWN_LOCATION, string.Empty, ButtonStyles.Keybind, null);
+            _moveLeftButton = new MenuButton(MOVE_LEFT_LOCATION, string.Empty, ButtonStyles.Keybind, null);
+            _moveRightButton = new MenuButton(MOVE_RIGHT_LOCATION, string.Empty, ButtonStyles.Keybind, null);
+            _confirmButton = new MenuButton(CONFIRM_LOCATION, string.Empty, ButtonStyles.Keybind, null);
+            _backButton = new MenuButton(BACK_LOCATION, string.Empty, ButtonStyles.Keybind, null);
+            _castButton = new MenuButton(CAST_LOCATION, string.Empty, ButtonStyles.Keybind, null);
+            _cycleButton = new MenuButton(CYCLE_LOCATION, string.Empty, ButtonStyles.Keybind, null);
+            _startButton = new MenuButton(START_LOCATION, string.Empty, ButtonStyles.Keybind, null);
             _keysDefaultButton = new MenuButton(KEYBIND_DEFAULT_LOCATION, DEFAULTS_TEXT, ButtonStyles.SmallBack, new ResetPreferencesEventArgs(PreferenceTypes.Keybinds));
+
+            _moveUpButton.Args = new KeybindChangeEventArgs(ControlFunctions.MoveUp, _moveUpButton);
+            _moveDownButton.Args = new KeybindChangeEventArgs(ControlFunctions.MoveDown, _moveDownButton);
+            _moveLeftButton.Args = new KeybindChangeEventArgs(ControlFunctions.MoveLeft, _moveLeftButton);
+            _moveRightButton.Args = new KeybindChangeEventArgs(ControlFunctions.MoveRight, _moveRightButton);
+            _confirmButton.Args = new KeybindChangeEventArgs(ControlFunctions.Confirm, _confirmButton);
+            _backButton.Args = new KeybindChangeEventArgs(ControlFunctions.Back, _backButton);
+            _castButton.Args = new KeybindChangeEventArgs(ControlFunctions.Cast, _castButton);
+            _cycleButton.Args = new KeybindChangeEventArgs(ControlFunctions.Cycle, _cycleButton);
+            _startButton.Args = new KeybindChangeEventArgs(ControlFunctions.Menu, _startButton);
 
             _defaultsButton = new MenuButton(DEFAULTS_LOCATION, DEFAULTS_TEXT, ButtonStyles.SmallBack, new ResetPreferencesEventArgs(PreferenceTypes.All));
             _menuBackButton = new MenuButton(MENU_BACK_LOCATION, BACK_TEXT, ButtonStyles.SmallBack, _previousMenuArgs); // need to change this if enter from exit
@@ -167,7 +177,7 @@ namespace Element.Common.Menus.MenuPages
             _resolution1920Button.LeftButton = _castButton;
             _resolution1920Button.RightButton = _moveLeftButton;
             _resolutionDefaultButton.UpButton = _resolution1920Button;
-            _resolutionDefaultButton.DownButton = _volumeDownButton;
+            _resolutionDefaultButton.DownButton = _volumeUpButton;
             _resolutionDefaultButton.LeftButton = _cycleButton;
             _resolutionDefaultButton.RightButton = _moveRightButton;
 
@@ -179,6 +189,10 @@ namespace Element.Common.Menus.MenuPages
             _volumeDownButton.DownButton = _volumeDefaultButton;
             _volumeDownButton.LeftButton = _startButton;
             _volumeDownButton.RightButton = _volumeUpButton;
+            _volumeDefaultButton.UpButton = _volumeUpButton;
+            _volumeDefaultButton.DownButton = _menuBackButton;
+            _volumeDefaultButton.LeftButton = _keysDefaultButton;
+            _volumeDefaultButton.RightButton = _keysDefaultButton;
 
             _defaultsButton.LeftButton = _menuBackButton;
             _defaultsButton.RightButton = _menuBackButton;
@@ -267,16 +281,26 @@ namespace Element.Common.Menus.MenuPages
 
         public override void UpdateWithPreferenceData(PreferenceData data)
         {
-            _moveUpButton.Text = InputHelper.GetStringForFunction(ControlFunctions.MoveUp);
-            _moveDownButton.Text = InputHelper.GetStringForFunction(ControlFunctions.MoveDown);
-            _moveLeftButton.Text = InputHelper.GetStringForFunction(ControlFunctions.MoveLeft);
-            _moveRightButton.Text = InputHelper.GetStringForFunction(ControlFunctions.MoveRight);
+            // might want to do some null check here?
+            _moveUpButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveUp).Value[0],
+                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveUp).Value[0]);
+            _moveDownButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveDown).Value[0],
+                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveDown).Value[0]);
+            _moveLeftButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveLeft).Value[0],
+                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveLeft).Value[0]);
+            _moveRightButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveRight).Value[0],
+                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveRight).Value[0]);
 
-            _confirmButton.Text = InputHelper.GetStringForFunction(ControlFunctions.Confirm);
-            _backButton.Text = InputHelper.GetStringForFunction(ControlFunctions.Back);
-            _castButton.Text = InputHelper.GetStringForFunction(ControlFunctions.Cast);
-            _cycleButton.Text = InputHelper.GetStringForFunction(ControlFunctions.Cycle);
-            _menuBackButton.Text = InputHelper.GetStringForFunction(ControlFunctions.Menu);
+            _confirmButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.Confirm).Value[0],
+                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.Confirm).Value[0]);
+            _backButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.Back).Value[0],
+                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.Back).Value[0]);
+            _castButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.Cast).Value[0],
+                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.Cast).Value[0]);
+            _cycleButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.Cycle).Value[0],
+                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.Cycle).Value[0]);
+            _startButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.Menu).Value[0],
+                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.Menu).Value[0]);
         }
 
         public override void EnterMenu(MenuPageNames name, PreferenceData data)

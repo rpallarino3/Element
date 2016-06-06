@@ -103,6 +103,8 @@ namespace Element
                 if (graphics.PreferredBackBufferHeight != 1080)
                     graphics.PreferredBackBufferHeight = 1080;
             }
+
+            graphics.ApplyChanges();
         }
 
         private void ExitGame(MenuPageEventArgs e)
@@ -161,9 +163,9 @@ namespace Element
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+            _graphicsHandler.Draw(spriteBatch, _logicHandler, _resourceManager);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }

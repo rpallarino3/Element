@@ -47,7 +47,7 @@ namespace Element.Logic
             _inputHandler = inputHandler;
 
             _inputCounter = 0;
-
+            _menuPages = new Dictionary<MenuPageNames, MenuPage>();
             CreateMenuPages();
 
             _activeMenuPage = _menuPages[MenuPageNames.Title];
@@ -227,19 +227,24 @@ namespace Element.Logic
                 if (_inputHandler.IsFunctionReady(ControlFunctions.Confirm))
                 {
                     _activeMenuPage.SelectButton();
+                    _inputCounter = 0;
                     return;
                 }
 
                 if (_inputHandler.IsFunctionReady(ControlFunctions.Back))
                 {
                     _activeMenuPage.ReturnToPreviousMenu();
+                    _inputCounter = 0;
                     return;
                 }
 
                 if (_inputHandler.IsFunctionReady(ControlFunctions.Menu))
                 {
                     if (_activeMenuPage == _menuPages[MenuPageNames.ExitMenu])
+                    {
                         _activeMenuPage.ReturnToPreviousMenu();
+                        _inputCounter = 0;
+                    }
 
                     return;
                 }
@@ -247,7 +252,10 @@ namespace Element.Logic
                 var direction = _inputHandler.GetLongestDirection();
 
                 if (direction != null)
+                {
                     _activeMenuPage.MoveCursor(direction.Value);
+                    _inputCounter = 0;
+                }
             }
         }
 
@@ -453,6 +461,8 @@ namespace Element.Logic
                 _inputCounter = 0;
             }
         }
+
+        public MenuPage ActiveMenuPage { get { return _activeMenuPage; } }
 
         public event TransitionEvent InitiateTransition;
         public event MenuPageEvent ResolutionChanged;

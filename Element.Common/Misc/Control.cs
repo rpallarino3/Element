@@ -61,7 +61,7 @@ namespace Element.Common.Misc
                 if (!gamePadState.IsButtonDown(b))
                 {
                     allButtonsDown = false;
-                    break;
+                    continue;
                 }
 
                 atLeastOneButtonDown = true;
@@ -72,7 +72,7 @@ namespace Element.Common.Misc
                 if (!keyboardState.IsKeyDown(k))
                 {
                     allKeysDown = false;
-                    break;
+                    continue;
                 }
 
                 atLeastOneKeyDown = true;
@@ -80,7 +80,7 @@ namespace Element.Common.Misc
 
             if (_allowOr)
             {
-                if (!atLeastOneButtonDown && !atLeastOneButtonDown)
+                if (!atLeastOneKeyDown && !atLeastOneButtonDown)
                 {
                     _functionReady = false;
                     _released = true;

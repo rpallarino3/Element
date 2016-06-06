@@ -37,15 +37,24 @@ namespace Element.Input
             var keybinds = DataHelper.PreferenceData.Keybindings;
             var buttonBinds = DataHelper.PreferenceData.ButtonBindings;
 
-            _controls.Add(ControlFunctions.MoveUp, new Control(new List<Keys>(keybinds[ControlFunctions.MoveUp]), new List<Buttons>(buttonBinds[ControlFunctions.MoveUp]), false, true));
-            _controls.Add(ControlFunctions.MoveDown, new Control(new List<Keys>(keybinds[ControlFunctions.MoveDown]), new List<Buttons>(buttonBinds[ControlFunctions.MoveDown]), false, true));
-            _controls.Add(ControlFunctions.MoveLeft, new Control(new List<Keys>(keybinds[ControlFunctions.MoveLeft]), new List<Buttons>(buttonBinds[ControlFunctions.MoveLeft]), false, true));
-            _controls.Add(ControlFunctions.MoveRight, new Control(new List<Keys>(keybinds[ControlFunctions.MoveRight]), new List<Buttons>(buttonBinds[ControlFunctions.MoveRight]), false, true));
-            _controls.Add(ControlFunctions.Confirm, new Control(new List<Keys>(keybinds[ControlFunctions.Confirm]), new List<Buttons>(buttonBinds[ControlFunctions.Confirm]), true, true));
-            _controls.Add(ControlFunctions.Back, new Control(new List<Keys>(keybinds[ControlFunctions.Back]), new List<Buttons>(buttonBinds[ControlFunctions.Back]), true, true));
-            _controls.Add(ControlFunctions.Cast, new Control(new List<Keys>(keybinds[ControlFunctions.Cast]), new List<Buttons>(buttonBinds[ControlFunctions.Cast]), true, true));
-            _controls.Add(ControlFunctions.Cycle, new Control(new List<Keys>(keybinds[ControlFunctions.Cycle]), new List<Buttons>(buttonBinds[ControlFunctions.Cycle]), true, true));
-            _controls.Add(ControlFunctions.Menu, new Control(new List<Keys>(keybinds[ControlFunctions.Menu]), new List<Buttons>(buttonBinds[ControlFunctions.Menu]), true, true));
+            _controls.Add(ControlFunctions.MoveUp, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.MoveUp).Value),
+                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.MoveUp).Value), false, true));
+            _controls.Add(ControlFunctions.MoveDown, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.MoveDown).Value),
+                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.MoveDown).Value), false, true));
+            _controls.Add(ControlFunctions.MoveLeft, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.MoveLeft).Value),
+                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.MoveLeft).Value), false, true));
+            _controls.Add(ControlFunctions.MoveRight, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.MoveRight).Value),
+                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.MoveRight).Value), false, true));
+            _controls.Add(ControlFunctions.Confirm, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.Confirm).Value),
+                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.Confirm).Value), true, true));
+            _controls.Add(ControlFunctions.Back, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.Back).Value),
+                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.Back).Value), true, true));
+            _controls.Add(ControlFunctions.Cast, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.Cast).Value),
+                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.Cast).Value), true, true));
+            _controls.Add(ControlFunctions.Cycle, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.Cycle).Value),
+                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.Cycle).Value), true, true));
+            _controls.Add(ControlFunctions.Menu, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.Menu).Value),
+                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.Menu).Value), true, true));
         }
 
         public void UpdateInputs(GamePadState gamePadState, KeyboardState keyboardState)

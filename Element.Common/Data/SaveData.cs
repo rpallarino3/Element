@@ -12,6 +12,11 @@ namespace Element.Common.Data
     public class SaveData
     {
 
+        public SaveData()
+        {
+            FileInfo = new SaveFileInfo();
+        }
+
         public SaveData Copy()
         {
             return new SaveData();

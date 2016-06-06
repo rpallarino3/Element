@@ -62,19 +62,19 @@ namespace Element.Common.Menus
                     if (_type == ButtonType.Standard)
                     {
                         _state = ButtonStates.Enabled;
-                        _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.Enabled, _style));
+                        _animator.SetNewAnimation((int)ButtonStates.Enabled);
                     }
                     else
                     {
                         _state = ButtonStates.Selected;
-                        _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.Selected, _style));
+                        _animator.SetNewAnimation((int)ButtonStates.Selected);
                     }
                 }
 
                 if (_state == ButtonStates.Deselect || _state == ButtonStates.FadeIn)
                 {
                     _state = ButtonStates.Enabled;
-                    _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.Enabled, _style));
+                    _animator.SetNewAnimation((int)ButtonStates.Enabled);
                 }
 
                 if (_state == ButtonStates.FadeOut)
@@ -89,29 +89,29 @@ namespace Element.Common.Menus
         public void Enable()
         {
             _state = ButtonStates.Enabled;
-            _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.Enabled, _style));
+            _animator.SetNewAnimation((int)ButtonStates.Enabled);
         }
 
         // i guess disabling the button automatically deselects it?
         public void Disable()
         {
             _state = ButtonStates.Disabled;
-            _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.Disabled, _style));
+            _animator.SetNewAnimation((int)ButtonStates.Disabled);
         }
 
         public void SelectButton()
         {
-            if (_state != ButtonStates.Selected && _state != ButtonStates.Enabled)
+            if (_state == ButtonStates.Disabled || _state == ButtonStates.FadeIn || _state == ButtonStates.FadeOut)
                 return;
 
             if (_state == ButtonStates.Selected)
             {
-                _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.Deselect, _style));
+                _animator.SetNewAnimation((int)ButtonStates.Deselect);
                 _state = ButtonStates.Deselect;
             }
             else
             {
-                _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.Select, _style));
+                _animator.SetNewAnimation((int)ButtonStates.Select);
                 _state = ButtonStates.Select;
             }
             
@@ -125,12 +125,12 @@ namespace Element.Common.Menus
 
             if (_state == ButtonStates.Selected)
             {
-                _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.Deselect, _style));
+                _animator.SetNewAnimation((int)ButtonStates.Deselect);
                 _state = ButtonStates.Deselect;
             }
             else
             {
-                _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.Select, _style));
+                _animator.SetNewAnimation((int)ButtonStates.Select);
                 _state = ButtonStates.Select;
             }
         }
@@ -140,49 +140,49 @@ namespace Element.Common.Menus
             if (_state == ButtonStates.Enabled)
             {
                 _state = ButtonStates.HighlightEnabled;
-                _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.HighlightEnabled, _style));
+                _animator.SetNewAnimation((int)ButtonStates.HighlightEnabled);
             }
             else if (_state == ButtonStates.Disabled)
             {
                 _state = ButtonStates.HighlightDisabled;
-                _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.HighlightDisabled, _style));
+                _animator.SetNewAnimation((int)ButtonStates.HighlightDisabled);
             }
             else if (_state == ButtonStates.Selected)
             {
                 _state = ButtonStates.HighlightSelected;
-                _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.HighlightSelected, _style));
+                _animator.SetNewAnimation((int)ButtonStates.HighlightSelected);
             }
         }
 
         public void DeHighlight()
         {
-            if (_state == ButtonStates.Enabled)
+            if (_state == ButtonStates.Enabled || _state == ButtonStates.HighlightEnabled)
             {
                 _state = ButtonStates.Enabled;
-                _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.HighlightEnabled, _style));
+                _animator.SetNewAnimation((int)ButtonStates.Enabled);
             }
-            else if (_state == ButtonStates.Disabled)
+            else if (_state == ButtonStates.Disabled || _state == ButtonStates.HighlightDisabled)
             {
                 _state = ButtonStates.Disabled;
-                _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.HighlightDisabled, _style));
+                _animator.SetNewAnimation((int)ButtonStates.Disabled);
             }
-            else if (_state == ButtonStates.Selected)
+            else if (_state == ButtonStates.Selected || _state == ButtonStates.HighlightSelected)
             {
                 _state = ButtonStates.Selected;
-                _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.HighlightSelected, _style));
+                _animator.SetNewAnimation((int)ButtonStates.Selected);
             }
         }
 
         public void FadeIn()
         {
             _state = ButtonStates.FadeIn;
-            _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.FadeIn, _style));
+            _animator.SetNewAnimation((int)ButtonStates.FadeIn);
         }
 
         public void FadeOut()
         {
             _state = ButtonStates.FadeOut;
-            _animator.SetNewAnimation(ButtonAnimator.ConvertEnumToIndex(ButtonStates.FadeOut, _style));
+            _animator.SetNewAnimation((int)ButtonStates.FadeOut);
         }                
 
         public MenuButton GetNextButtonFromDirection(Directions direction)

@@ -95,6 +95,8 @@ namespace Element.Logic
                 ExecuteRoamTransition();
             else if (_transition is ChatTransition)
                 ExecuteChatTransition();
+            else if (_transition is CameraTransition)
+                ExecuteCameraTransition();
         }
 
         private void ExecuteStateTransition()
@@ -125,6 +127,14 @@ namespace Element.Logic
         private void ExecuteChatTransition()
         {
             var transition = _transition as ChatTransition;
+
+            if (transition == null)
+                return;
+        }
+
+        private void ExecuteCameraTransition()
+        {
+            var transition = _transition as CameraTransition;
 
             if (transition == null)
                 return;

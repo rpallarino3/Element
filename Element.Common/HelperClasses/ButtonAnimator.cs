@@ -25,7 +25,7 @@ namespace Element.Common.HelperClasses
         private static readonly Vector2 EXITBASIC_SIZE = new Vector2(250, 50);
         private static readonly Vector2 TITLE_SIZE = new Vector2(600, 150);
         private static readonly Vector2 SMALLBACK_SIZE = new Vector2(150, 60);
-        private static readonly Vector2 FILESELECT_SIZE = new Vector2(400, 100);
+        private static readonly Vector2 FILESELECT_SIZE = new Vector2(300, 100);
         private static readonly Vector2 RESOLUTION_SIZE = new Vector2(30, 30);
         private static readonly Vector2 VOLUME_SIZE = new Vector2(30, 30);
         private static readonly Vector2 KEYBIND_SIZE = new Vector2(150, 50);
@@ -57,8 +57,8 @@ namespace Element.Common.HelperClasses
             basicDictionary.Add(HIGHLIGHT_ENABLED,    new Animation(2, 4, 3, BASIC_SIZE));
             basicDictionary.Add(HIGHLIGHT_DISABLED,   new Animation(2, 4, 3, BASIC_SIZE));
             basicDictionary.Add(HIGHLIGHT_SELECTED,   new Animation(2, 4, 3, BASIC_SIZE));
-            basicDictionary.Add(FADE_OUT,             new Animation(4, 4, 3, BASIC_SIZE));
-            basicDictionary.Add(FADE_IN,              new Animation(3, 4, 3, BASIC_SIZE));
+            basicDictionary.Add(FADE_OUT,             new Animation(4, 4, 10, BASIC_SIZE));
+            basicDictionary.Add(FADE_IN,              new Animation(3, 4, 10, BASIC_SIZE));
             #endregion
 
             #region ExitBasic            
@@ -83,8 +83,8 @@ namespace Element.Common.HelperClasses
             titleDictionary.Add(HIGHLIGHT_ENABLED,    new Animation(0, 3, 3, TITLE_SIZE));
             titleDictionary.Add(HIGHLIGHT_DISABLED,   new Animation(0, 3, 3, TITLE_SIZE));
             titleDictionary.Add(HIGHLIGHT_SELECTED,   new Animation(0, 3, 3, TITLE_SIZE));
-            titleDictionary.Add(FADE_OUT,             new Animation(1, 3, 3, TITLE_SIZE));
-            titleDictionary.Add(FADE_IN,              new Animation(2, 3, 3, TITLE_SIZE));
+            titleDictionary.Add(FADE_OUT,             new Animation(1, 3, 10, TITLE_SIZE));
+            titleDictionary.Add(FADE_IN,              new Animation(2, 3, 10, TITLE_SIZE));
             #endregion
 
             #region SmallBack
@@ -96,8 +96,8 @@ namespace Element.Common.HelperClasses
             smallBackDictionary.Add(HIGHLIGHT_ENABLED,    new Animation(2, 2, 4, SMALLBACK_SIZE));
             smallBackDictionary.Add(HIGHLIGHT_DISABLED,   new Animation(2, 2, 4, SMALLBACK_SIZE));
             smallBackDictionary.Add(HIGHLIGHT_SELECTED,   new Animation(2, 2, 4, SMALLBACK_SIZE));
-            smallBackDictionary.Add(FADE_OUT,             new Animation(3, 4, 3, SMALLBACK_SIZE));
-            smallBackDictionary.Add(FADE_IN,              new Animation(4, 4, 3, SMALLBACK_SIZE));
+            smallBackDictionary.Add(FADE_OUT,             new Animation(3, 4, 10, SMALLBACK_SIZE));
+            smallBackDictionary.Add(FADE_IN,              new Animation(4, 4, 10, SMALLBACK_SIZE));
             #endregion
 
             #region FileSelect
@@ -109,8 +109,8 @@ namespace Element.Common.HelperClasses
             fileSelectDictionary.Add(HIGHLIGHT_ENABLED,    new Animation(2, 2, 4, FILESELECT_SIZE));
             fileSelectDictionary.Add(HIGHLIGHT_DISABLED,   new Animation(2, 2, 4, FILESELECT_SIZE));
             fileSelectDictionary.Add(HIGHLIGHT_SELECTED,   new Animation(2, 2, 4, FILESELECT_SIZE));
-            fileSelectDictionary.Add(FADE_OUT,             new Animation(3, 4, 3, FILESELECT_SIZE));
-            fileSelectDictionary.Add(FADE_IN,              new Animation(4, 4, 3, FILESELECT_SIZE));
+            fileSelectDictionary.Add(FADE_OUT,             new Animation(3, 4, 10, FILESELECT_SIZE));
+            fileSelectDictionary.Add(FADE_IN,              new Animation(4, 4, 10, FILESELECT_SIZE));
             #endregion
 
             #region Resolution
@@ -122,8 +122,8 @@ namespace Element.Common.HelperClasses
             resolutionDictionary.Add(HIGHLIGHT_ENABLED,    new Animation(HIGHLIGHT_ENABLED,    1, 1, RESOLUTION_SIZE));
             resolutionDictionary.Add(HIGHLIGHT_DISABLED,   new Animation(HIGHLIGHT_DISABLED,   1, 1, RESOLUTION_SIZE));
             resolutionDictionary.Add(HIGHLIGHT_SELECTED,   new Animation(HIGHLIGHT_SELECTED,   1, 1, RESOLUTION_SIZE));
-            resolutionDictionary.Add(FADE_OUT,             new Animation(FADE_OUT,             4, 3, RESOLUTION_SIZE));
-            resolutionDictionary.Add(FADE_IN,              new Animation(FADE_IN,              4, 3, RESOLUTION_SIZE));
+            resolutionDictionary.Add(FADE_OUT,             new Animation(FADE_OUT,             4, 10, RESOLUTION_SIZE));
+            resolutionDictionary.Add(FADE_IN,              new Animation(FADE_IN,              4, 10, RESOLUTION_SIZE));
             #endregion
 
             #region Volume
@@ -135,21 +135,21 @@ namespace Element.Common.HelperClasses
             volumeDictionary.Add(HIGHLIGHT_ENABLED,    new Animation(2, 1, 1, VOLUME_SIZE));
             volumeDictionary.Add(HIGHLIGHT_DISABLED,   new Animation(2, 1, 1, VOLUME_SIZE));
             volumeDictionary.Add(HIGHLIGHT_SELECTED,   new Animation(2, 1, 1, VOLUME_SIZE));
-            volumeDictionary.Add(FADE_OUT,             new Animation(3, 4, 3, VOLUME_SIZE));
-            volumeDictionary.Add(FADE_IN,              new Animation(4, 4, 3, VOLUME_SIZE));
+            volumeDictionary.Add(FADE_OUT,             new Animation(3, 4, 10, VOLUME_SIZE));
+            volumeDictionary.Add(FADE_IN,              new Animation(4, 4, 10, VOLUME_SIZE));
             #endregion
 
             #region Keybind
-            keybindDictionary.Add(DISABLED,             new Animation(DISABLED,             0, 0, KEYBIND_SIZE));
-            keybindDictionary.Add(ENABLED,              new Animation(ENABLED,              0, 0, KEYBIND_SIZE));
-            keybindDictionary.Add(SELECTED,             new Animation(SELECTED,             0, 0, KEYBIND_SIZE));
-            keybindDictionary.Add(SELECT,               new Animation(SELECT,               0, 0, KEYBIND_SIZE));
-            keybindDictionary.Add(DESELECT,             new Animation(DESELECT,             0, 0, KEYBIND_SIZE));
-            keybindDictionary.Add(HIGHLIGHT_ENABLED,    new Animation(HIGHLIGHT_ENABLED,    0, 0, KEYBIND_SIZE));
-            keybindDictionary.Add(HIGHLIGHT_DISABLED,   new Animation(HIGHLIGHT_DISABLED,   0, 0, KEYBIND_SIZE));
-            keybindDictionary.Add(HIGHLIGHT_SELECTED,   new Animation(HIGHLIGHT_SELECTED,   0, 0, KEYBIND_SIZE));
-            keybindDictionary.Add(FADE_OUT,             new Animation(FADE_OUT,             0, 0, KEYBIND_SIZE));
-            keybindDictionary.Add(FADE_IN,              new Animation(FADE_IN,              0, 0, KEYBIND_SIZE));
+            keybindDictionary.Add(DISABLED,             new Animation(0, 1, 1, KEYBIND_SIZE));
+            keybindDictionary.Add(ENABLED,              new Animation(0, 1, 1, KEYBIND_SIZE));
+            keybindDictionary.Add(SELECTED,             new Animation(0, 1, 1, KEYBIND_SIZE));
+            keybindDictionary.Add(SELECT,               new Animation(1, 2, 3, KEYBIND_SIZE));
+            keybindDictionary.Add(DESELECT,             new Animation(1, 2, 3, KEYBIND_SIZE));
+            keybindDictionary.Add(HIGHLIGHT_ENABLED,    new Animation(2, 1, 1, KEYBIND_SIZE));
+            keybindDictionary.Add(HIGHLIGHT_DISABLED,   new Animation(2, 1, 1, KEYBIND_SIZE));
+            keybindDictionary.Add(HIGHLIGHT_SELECTED,   new Animation(2, 1, 1, KEYBIND_SIZE));
+            keybindDictionary.Add(FADE_OUT,             new Animation(3, 4, 10, KEYBIND_SIZE));
+            keybindDictionary.Add(FADE_IN,              new Animation(4, 4, 10, KEYBIND_SIZE));
             #endregion
 
             #region DialogOne
@@ -161,8 +161,8 @@ namespace Element.Common.HelperClasses
             dialogDictionary.Add(HIGHLIGHT_ENABLED,    new Animation(2, 2, 4, DIALOG_SIZE));
             dialogDictionary.Add(HIGHLIGHT_DISABLED,   new Animation(2, 2, 4, DIALOG_SIZE));
             dialogDictionary.Add(HIGHLIGHT_SELECTED,   new Animation(2, 2, 4, DIALOG_SIZE));
-            dialogDictionary.Add(FADE_OUT,             new Animation(3, 4, 3, DIALOG_SIZE));
-            dialogDictionary.Add(FADE_IN,              new Animation(4, 4, 3, DIALOG_SIZE));
+            dialogDictionary.Add(FADE_OUT,             new Animation(3, 4, 10, DIALOG_SIZE));
+            dialogDictionary.Add(FADE_IN,              new Animation(4, 4, 10, DIALOG_SIZE));
             #endregion
 
             _animations.Add(ButtonStyles.Basic, basicDictionary);
@@ -179,16 +179,6 @@ namespace Element.Common.HelperClasses
         public static Dictionary<int, Animation> GetAnimationsFromStyle(ButtonStyles style)
         {
             return _animations[style];
-        }
-
-        public static int ConvertEnumToIndex(ButtonStates state, ButtonStyles style)
-        {
-            if (style == ButtonStyles.MoveKeybind || style == ButtonStyles.Resolution) // this means that there are extra animations, selected, deselect, highlight_selected, dehighlight_selected
-            {
-
-            }
-
-            return 0;
         }
     }
 }

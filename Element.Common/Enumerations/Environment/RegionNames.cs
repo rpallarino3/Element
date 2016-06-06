@@ -7,6 +7,9 @@ namespace Element.Common.Enumerations.Environment
 {
     public enum RegionNames
     {
-        None,
+        None, // don't know if we need none
+        Test0,
+        Test1,
+        Test2,
     }
 }

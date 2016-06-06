@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Element.Common.Enumerations.GameBasics;
 using Element.Common.Enumerations.Menu;
 using Element.Common.Data;
+using Element.Common.HelperClasses;
 
 namespace Element.Common.Menus.MenuPages
 {
@@ -114,6 +115,7 @@ namespace Element.Common.Menus.MenuPages
 
         private void ResetFileButtons()
         {
+            _dialogOpen = false;
             _eraseButton.Enable();
 
             _file0Button.ResetEventHandlers();
@@ -132,6 +134,8 @@ namespace Element.Common.Menus.MenuPages
 
         private void HighlightFileBasedOnIndex()
         {
+            _currentButton.DeHighlight();
+
             if (_fileHighlightIndex == 0)
                 _currentButton = _file0Button;
             else if (_fileHighlightIndex == 1)
@@ -151,6 +155,8 @@ namespace Element.Common.Menus.MenuPages
 
         private void HighlightUtilityBasedOnIndex()
         {
+            _currentButton.DeHighlight();
+
             if (_utilityButtonHighlightIndex == 0)
                 _currentButton = _eraseButton;
             else if (_utilityButtonHighlightIndex == 1)
@@ -202,6 +208,9 @@ namespace Element.Common.Menus.MenuPages
             dialog.AddButton(noButton);
 
             _currentDialog = dialog;
+            _currentButton.DeHighlight();
+            _currentButton = yesButton;
+            _currentButton.Highlight();
         }
 
         private void OnLoadFile(MenuPageEventArgs e)
@@ -222,8 +231,11 @@ namespace Element.Common.Menus.MenuPages
             _loadConfirmDialog.AddButton(cancelButton);
 
             _currentDialog = _loadConfirmDialog;
+            _currentButton.DeHighlight();
+            _currentButton = okButton;
+            _currentButton.Highlight();
         }
-
+        
         private void OnSaveFile(MenuPageEventArgs e)
         {
             _dialogOpen = true;
@@ -276,7 +288,9 @@ namespace Element.Common.Menus.MenuPages
 
         public override void UpdateWithPreferenceData(PreferenceData data)
         {
-            throw new NotImplementedException();
+            _file0Button.Text = DataHelper.GetStringFromFileInfo(0);
+            _file1Button.Text = DataHelper.GetStringFromFileInfo(1);
+            _file2Button.Text = DataHelper.GetStringFromFileInfo(2);
         }
 
         public override void EnterMenu(MenuPageNames name, PreferenceData data)
@@ -386,6 +400,18 @@ namespace Element.Common.Menus.MenuPages
                 _currentButton = _currentButton.RightButton;
                 _currentButton.Highlight();
             }
+        }
+
+        public int GetFileSelectedIndex()
+        {
+            if (_currentButton == _file0Button)
+                return 0;
+            else if (_currentButton == _file1Button)
+                return 1;
+            else if (_currentButton == _file2Button)
+                return 2;
+            else
+                return -1;
         }
     }
 }

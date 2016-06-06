@@ -12,7 +12,9 @@ namespace Element.Common.Environment
     {
         public bool Fade { get; set; }
     }
-    
+
+    public class CameraTransition : Transition { }
+
     public class ChatTransition : Transition { }
 
     public class RoamTransition : Transition

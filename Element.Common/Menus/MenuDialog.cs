@@ -29,14 +29,14 @@ namespace Element.Common.Menus
 
         public void AddButton(MenuButton button)
         {
-            _buttons.Add(button);
+            _buttons.Add(button); // i know this all is somewhat silly at this point but just leave it for now
 
             if (_buttons.Count == 1)
-                button.Location = new Vector2(60, 70 + 50 * (_lines - 1));
+                button.Location = new Vector2(65, 70);
             else if (_buttons.Count == 2)
             {
-                _buttons[0].Location = new Vector2(40, 70 + 50 * (_lines - 1));
-                _buttons[1].Location = new Vector2(160, 70 + 50 * (_lines - 1));
+                _buttons[0].Location = new Vector2(10, 70);
+                _buttons[1].Location = new Vector2(120, 70);
             }
             else
             {
@@ -52,6 +52,11 @@ namespace Element.Common.Menus
         public List<MenuButton> Buttons
         {
             get { return _buttons; }
+        }
+
+        public int Lines
+        {
+            get { return _lines; }
         }
     }
 }

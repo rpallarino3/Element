@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 using Element.ResourceManagement;
 using Element.Input;
 using Element.Common.Enumerations.GameBasics;
@@ -48,6 +49,8 @@ namespace Element.Logic
         }
 
         public bool Saving { get { return _transitionHandler.Saving; } }
+
+        public Color DrawColor { get { return _transitionHandler.DrawColor; } }
 
         public StartAndExitMenuLogicHandler StartAndExitMenuLogicHandler { get { return _startAndExitMenuLogicHandler; } }
     }

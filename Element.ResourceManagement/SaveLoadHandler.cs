@@ -253,7 +253,7 @@ namespace Element.ResourceManagement
                             container.DeleteFile(FILE_0_DATA_NAME_OLD);
 
                         if (container.FileExists(FILE_0_DATA_NAME_NEW))
-                            container.DeleteFile(FILE_0_DATA_NAME_NEW);
+                            container.DeleteFile(FILE_0_DATA_NAME_NEW);                        
                     }
                     else if (index == 1)
                     {
@@ -264,7 +264,7 @@ namespace Element.ResourceManagement
                             container.DeleteFile(FILE_1_DATA_NAME_OLD);
 
                         if (container.FileExists(FILE_1_DATA_NAME_NEW))
-                            container.DeleteFile(FILE_1_DATA_NAME_NEW);
+                            container.DeleteFile(FILE_1_DATA_NAME_NEW);                        
                     }
                     else if (index == 2)
                     {
@@ -307,7 +307,7 @@ namespace Element.ResourceManagement
                     StorageContainer container = storageDevice.EndOpenContainer(result);
                     result.AsyncWaitHandle.Close();
 
-                    if (container.FileExists(PREF_DATA_FILE))
+                    if (container.FileExists(PREF_DATA_FILE)) // maybe try to rename file
                     {
                         container.DeleteFile(PREF_DATA_FILE);
                     }
@@ -320,13 +320,14 @@ namespace Element.ResourceManagement
                 }
                 Console.WriteLine("Preference data save complete!");
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e.StackTrace);
                 Console.WriteLine("ERROR! PREFERENCE SAVE FAILED!!!");
             }
         }
 
-        public PreferenceData LoadPreferenceData()
+        public PreferenceData LoadPreferenceData() // something here is holding onto file resources for some reason
         {
             try
             {

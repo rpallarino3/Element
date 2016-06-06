@@ -40,6 +40,7 @@ namespace Element.ResourceManagement
             _serviceProvider = serviceProvider;
             _rootDirectory = rootDirectory;
 
+            _menuResourceManager = new MenuResourceManager(_serviceProvider, rootDirectory);
             _saveLoadHandler = new SaveLoadHandler();
 
             _transRegionNpcContentManager = new ContentManager(_serviceProvider, rootDirectory);
@@ -89,7 +90,7 @@ namespace Element.ResourceManagement
 
         public void LoadStaticContent()
         {
-
+            _menuResourceManager.LoadContent();
         }
 
         public void RequestSave(SaveLoadMessage msg)
@@ -106,11 +107,15 @@ namespace Element.ResourceManagement
             msg.FileNumber = fileNumber;
             msg.Erase = true;
 
+            DataHelper.EraseDataForFile(fileNumber);
+
             _backgroundThread.AddSaveRequest(msg);
+            _backgroundThread.AddPreferenceRequest(DataHelper.PreferenceData.Copy());
         }
 
         public void Shutdown()
         {
+            _menuResourceManager.UnloadContent();
             _backgroundThread.Shutdown();
         }
 
@@ -125,13 +130,13 @@ namespace Element.ResourceManagement
             if (DataHelper.PreferenceData == null)
             {
                 DataHelper.PreferenceData = new PreferenceData();
-                PreferenceValidator.AddDefaultKeybindsToDictionaries(DataHelper.PreferenceData.Keybindings, DataHelper.PreferenceData.ButtonBindings);
+                PreferenceValidator.AddDefaultKeybindsToDictionaries();
                 DataHelper.PreferenceData.Volume = PreferenceValidator.DefaultVolume;
                 DataHelper.PreferenceData.Resolution = PreferenceValidator.DefaultResolution;
             }
             else
             {
-                PreferenceValidator.ValidatePreferenceData(DataHelper.PreferenceData);
+                PreferenceValidator.ValidatePreferenceData();
             }
 
             _saveLoadHandler.LoadFiles();
@@ -150,7 +155,7 @@ namespace Element.ResourceManagement
         public void ResetPreferenceData()
         {
             var prefData = new PreferenceData();
-            PreferenceValidator.AddDefaultKeybindsToDictionaries(prefData.Keybindings, prefData.ButtonBindings);
+            PreferenceValidator.AddDefaultKeybindsToDictionaries();
             prefData.Volume = PreferenceValidator.DefaultVolume;
             prefData.Resolution = PreferenceValidator.DefaultResolution;
 
@@ -164,7 +169,7 @@ namespace Element.ResourceManagement
 
         public void ResetPreferenceKeybinds()
         {
-            PreferenceValidator.AddDefaultKeybindsToDictionaries(DataHelper.PreferenceData.Keybindings, DataHelper.PreferenceData.ButtonBindings);
+            PreferenceValidator.AddDefaultKeybindsToDictionaries();
             _backgroundThread.AddPreferenceRequest(DataHelper.PreferenceData.Copy());
         }
 
@@ -175,16 +180,16 @@ namespace Element.ResourceManagement
             if (controls == null)
                 return;
 
-            var keys = new Dictionary<ControlFunctions, List<Keys>>();
-            var buttons = new Dictionary<ControlFunctions, List<Buttons>>();
+            var keys = new List<KeyValuePair<ControlFunctions, List<Keys>>>();
+            var buttons = new List<KeyValuePair<ControlFunctions, List<Buttons>>>();
 
             foreach (var function in controls.Keys)
             {
-                var functionKeys = controls[function].Keys;
-                var functionButtons = controls[function].Buttons;
+                var functionKeys = new List<Keys>(controls[function].Keys);
+                var functionButtons = new List<Buttons>(controls[function].Buttons);
 
-                keys.Add(function, functionKeys);
-                buttons.Add(function, functionButtons);
+                keys.Add(new KeyValuePair<ControlFunctions, List<Keys>>(function, functionKeys));
+                buttons.Add(new KeyValuePair<ControlFunctions, List<Buttons>>(function, functionButtons));
             }
 
             DataHelper.PreferenceData.Keybindings = keys;
@@ -234,6 +239,8 @@ namespace Element.ResourceManagement
         }
 
         #endregion
+
+        public MenuResourceManager MenuResourceManager { get { return _menuResourceManager; } }
 
         #region Events
 

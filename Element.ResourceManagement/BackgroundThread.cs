@@ -200,7 +200,7 @@ namespace Element.ResourceManagement
 
         private void ExecutePreferenceRequest(PreferenceData data)
         {
-
+            _saveLoadHandler.SavePreferenceData(data);
         }
 
         private void ExecuteFileLoadRequest(int fileNumber)
