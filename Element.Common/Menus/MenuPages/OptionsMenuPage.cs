@@ -82,11 +82,11 @@ namespace Element.Common.Menus.MenuPages
             // the movement keybind buttons need to be disabled when a controller is connected?
 
             // might want to change these resolutions to only change on apply?
-            _resolution960Button = new MenuButton(RESOLUTION_960x540_LOCATION, string.Empty, ButtonStyles.Resolution, new ResolutionChangeEventArgs(Resolutions.r960x540));
-            _resolution1280Button = new MenuButton(RESOLUTION_1280x720_LOCATION, string.Empty, ButtonStyles.Resolution, new ResolutionChangeEventArgs(Resolutions.r1280x720));
-            _resolution1600Button = new MenuButton(RESOLUTION_1600x900_LOCATION, string.Empty, ButtonStyles.Resolution, new ResolutionChangeEventArgs(Resolutions.r1600x900));
-            _resolution1920Button = new MenuButton(RESOLUTION_1920x1080_LOCATION, string.Empty, ButtonStyles.Resolution, new ResolutionChangeEventArgs(Resolutions.r1920x1080));
-            _resolutionDefaultButton = new MenuButton(RESOLUTION_DEFAULT_LOCATION, string.Empty, ButtonStyles.SmallBack, new ResetPreferencesEventArgs(PreferenceTypes.Resolution));
+            _resolution960Button = new MenuButton(RESOLUTION_960x540_LOCATION, string.Empty, ButtonStyles.Resolution, new ResolutionChangeEventArgs(Resolutions.r960x540), ButtonType.Radio);
+            _resolution1280Button = new MenuButton(RESOLUTION_1280x720_LOCATION, string.Empty, ButtonStyles.Resolution, new ResolutionChangeEventArgs(Resolutions.r1280x720), ButtonType.Radio);
+            _resolution1600Button = new MenuButton(RESOLUTION_1600x900_LOCATION, string.Empty, ButtonStyles.Resolution, new ResolutionChangeEventArgs(Resolutions.r1600x900), ButtonType.Radio);
+            _resolution1920Button = new MenuButton(RESOLUTION_1920x1080_LOCATION, string.Empty, ButtonStyles.Resolution, new ResolutionChangeEventArgs(Resolutions.r1920x1080), ButtonType.Radio);
+            _resolutionDefaultButton = new MenuButton(RESOLUTION_DEFAULT_LOCATION, string.Empty, ButtonStyles.SmallBack, new ResetPreferencesEventArgs(PreferenceTypes.Resolution), ButtonType.Radio);
 
             _volumeUpButton = new MenuButton(VOLUME_UP_LOCATION, VOLUME_UP_TEXT, ButtonStyles.Volume, new VolumeChangeEventArgs(true));
             _volumeDownButton = new MenuButton(VOLUME_DOWN_LOCATION, VOLUME_DOWN_TEXT, ButtonStyles.Volume, new VolumeChangeEventArgs(false));
@@ -301,11 +301,22 @@ namespace Element.Common.Menus.MenuPages
                 data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.Cycle).Value[0]);
             _startButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.Menu).Value[0],
                 data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.Menu).Value[0]);
+
+            if (data.Resolution == Resolutions.r960x540)
+                _resolution960Button.SelectNoEvent();
+            else if (data.Resolution == Resolutions.r1280x720)
+                _resolution1280Button.SelectNoEvent();
+            else if (data.Resolution == Resolutions.r1600x900)
+                _resolution1600Button.SelectNoEvent();
+            else if (data.Resolution == Resolutions.r1920x1080)
+                _resolution1920Button.SelectNoEvent();
+
         }
 
         public override void EnterMenu(MenuPageNames name, PreferenceData data)
         {
             UnhideAllButtons();
+            UpdateWithPreferenceData(data);
 
             if (name == MenuPageNames.ExitMenu)
                 _previousMenuArgs = new SwitchPageEventArgs(MenuPageNames.ExitMenu, _name);
@@ -348,15 +359,19 @@ namespace Element.Common.Menus.MenuPages
 
         private void SelectResolution(MenuPageEventArgs e)
         {
-            if (_resolution960Button != _currentButton && _resolution960Button.Selected)
+            if (_resolution960Button != _currentButton && _resolution960Button.State == ButtonStates.Selected)
                 _resolution960Button.SelectNoEvent();
-            else if (_resolution1280Button != _currentButton && _resolutionDefaultButton != _currentButton && _resolution1280Button.Selected) 
+
+            if (_resolution1280Button != _currentButton && _resolutionDefaultButton != _currentButton && _resolution1280Button.State == ButtonStates.Selected) 
                 _resolution1280Button.SelectNoEvent();
-            else if (_resolution1600Button != _currentButton && _resolution1280Button.Selected)
+
+            if (_resolution1600Button != _currentButton && _resolution1600Button.State == ButtonStates.Selected)
                 _resolution1600Button.SelectNoEvent();
-            else if (_resolution1920Button != _currentButton && _resolution1920Button.Selected)
+
+            if (_resolution1920Button != _currentButton && _resolution1920Button.State == ButtonStates.Selected)
                 _resolution1920Button.SelectNoEvent();
-            else if ((_resolutionDefaultButton == _currentButton || _defaultsButton == _currentButton) && !_resolution1280Button.Selected)
+
+            if ((_resolutionDefaultButton == _currentButton || _defaultsButton == _currentButton) && !(_resolution1280Button.State == ButtonStates.Selected))
                 _resolution1280Button.SelectNoEvent();
         }
     }

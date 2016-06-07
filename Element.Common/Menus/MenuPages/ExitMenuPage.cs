@@ -69,6 +69,7 @@ namespace Element.Common.Menus.MenuPages
         public override void EnterMenu(MenuPageNames name, PreferenceData data)
         {
             UnhideAllButtons();
+            UpdateWithPreferenceData(data);
 
             _currentButton = _resumeButton;
             _resumeButton.Highlight();

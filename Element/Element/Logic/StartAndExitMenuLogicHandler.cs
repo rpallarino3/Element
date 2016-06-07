@@ -327,6 +327,7 @@ namespace Element.Logic
 
             var fileNumber = args.FileNumber;
 
+            DataHelper.CurrentFileNumber = fileNumber;
             var data = DataHelper.GetDataFromFileNumber(fileNumber);
 
             // the save data will have the proper information even it is a new game

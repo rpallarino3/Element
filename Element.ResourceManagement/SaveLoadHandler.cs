@@ -135,11 +135,19 @@ namespace Element.ResourceManagement
                 if (!container.FileExists(fileName))
                     return null;
 
-                Stream stream = container.OpenFile(fileName, FileMode.Open);
-                XmlSerializer serializer = new XmlSerializer(typeof(SaveData));
-                SaveData saveData = (SaveData)serializer.Deserialize(stream);
-                stream.Close();
-                return saveData;
+                try
+                {
+                    Stream stream = container.OpenFile(fileName, FileMode.Open);
+                    var data = LoadFile<SaveData>(fileName, stream);
+                    stream.Close();
+                    return data;
+                }
+                catch
+                {
+                    Console.WriteLine("Error creating filestream for " + fileName);
+                }
+
+                return null;
             }
             catch
             {
@@ -200,11 +208,20 @@ namespace Element.ResourceManagement
 
         private void SaveFile(StorageContainer container, string fileName, SaveData data)
         {
-            Stream stream = container.CreateFile(fileName);
-            XmlSerializer serializer = new XmlSerializer(typeof(SaveData));
-            serializer.Serialize(stream, data);
-            stream.Close();
-            container.Dispose();
+            try
+            {
+                Stream stream = container.CreateFile(fileName);
+                SaveFile(data, stream);
+                stream.Close();
+            }
+            catch
+            {
+                Console.WriteLine("Error creating filestream for " + fileName);
+            }
+            finally
+            {
+                container.Dispose();
+            }
         }
 
         private void CopyFile(StorageContainer container, string fileName, string newFileName)
@@ -312,22 +329,28 @@ namespace Element.ResourceManagement
                         container.DeleteFile(PREF_DATA_FILE);
                     }
 
-                    Stream stream = container.CreateFile(PREF_DATA_FILE);
-                    XmlSerializer serializer = new XmlSerializer(typeof(PreferenceData));
-                    serializer.Serialize(stream, preferenceData);
-                    stream.Close();
+                    try
+                    {
+                        Stream stream = container.CreateFile(PREF_DATA_FILE);
+                        SaveFile(preferenceData, stream);
+                        stream.Close();
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Error creating file stream for " + PREF_DATA_FILE);
+                    }
+                    
                     container.Dispose();
                 }
                 Console.WriteLine("Preference data save complete!");
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e.StackTrace);
                 Console.WriteLine("ERROR! PREFERENCE SAVE FAILED!!!");
             }
         }
 
-        public PreferenceData LoadPreferenceData() // something here is holding onto file resources for some reason
+        public PreferenceData LoadPreferenceData() // fix this to close the stream if file doesn't deserialize properly
         {
             try
             {
@@ -349,10 +372,19 @@ namespace Element.ResourceManagement
                         return null;
                     }
 
-                    Stream stream = container.OpenFile(PREF_DATA_FILE, FileMode.Open);
-                    XmlSerializer serializer = new XmlSerializer(typeof(PreferenceData));
-                    PreferenceData prefData = (PreferenceData)serializer.Deserialize(stream);
-                    stream.Close();
+                    PreferenceData prefData = null;
+
+                    try
+                    {
+                        Stream stream = container.OpenFile(PREF_DATA_FILE, FileMode.Open);
+                        prefData = LoadFile<PreferenceData>(PREF_DATA_FILE, stream);
+                        stream.Close();
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Error creating file stream for " + PREF_DATA_FILE);
+                    }
+                    
                     container.Dispose();
                     Console.WriteLine("Preference load complete!");
                     return prefData;
@@ -367,6 +399,34 @@ namespace Element.ResourceManagement
         }
 
         #endregion
+
+        private T LoadFile<T>(string fileName, Stream stream)
+        {
+            try
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(T));
+                var data = (T)serializer.Deserialize(stream);
+                return data;
+            }
+            catch
+            {
+                Console.WriteLine("Error deserializing data of type " + typeof(T).ToString());
+                return default(T);
+            }
+        }
+
+        private void SaveFile<T>(T data, Stream stream)
+        {
+            try
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(T));
+                serializer.Serialize(stream, data);
+            }
+            catch
+            {
+                Console.WriteLine("Error serializing data of type " + typeof(T).ToString());
+            }
+        }
 
         public SaveData File0Data { get { return _file0Data; } }
         public SaveData File1Data { get { return _file1Data; } }

@@ -55,6 +55,7 @@ namespace Element.Common.Menus.MenuPages
         public override void EnterMenu(MenuPageNames name, PreferenceData data)
         {
             UnhideAllButtons();
+            UpdateWithPreferenceData(data);
 
             if (name == MenuPageNames.FileSelect)
                 _currentButton = _fileSelect;

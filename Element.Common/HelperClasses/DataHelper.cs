@@ -103,6 +103,7 @@ namespace Element.Common.HelperClasses
                 return NEW_GAME;
         }
 
+        public static int CurrentFileNumber { get; set; }
         public static PreferenceData PreferenceData { get; set; }
         public static SaveData File0SaveData { get; set; }
         public static SaveData File1SaveData { get; set; }
