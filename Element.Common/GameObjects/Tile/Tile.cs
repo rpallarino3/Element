@@ -8,7 +8,7 @@ using Element.Common.GameObjects;
 
 namespace Element.Common.GameObjects.Tile
 {
-    public abstract class Tile : GameObject
+    public abstract class Tile
     {
         public virtual bool CanMoveOnTile(Directions dir)
         {
