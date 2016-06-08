@@ -16,6 +16,7 @@ namespace Element.ResourceManagement.RegionGeneration
             _regionFactories = new Dictionary<RegionNames, IRegionFactory>();
         }
 
+        // make sure to apply a copy of the save data when creating the regions
         public Dictionary<RegionNames, Region> CreateRegions(List<RegionNames> regionsToCreate)
         {
             var regions = new Dictionary<RegionNames, Region>();

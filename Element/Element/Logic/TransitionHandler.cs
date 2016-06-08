@@ -68,8 +68,6 @@ namespace Element.Logic
             _fadeColors.Add(new Color(25, 25, 25));
             _fadeColors.Add(Color.Black);
             
-            _resourceManager.SaveCompleted += SaveCompleted; // this isn't what we want i don't think
-
             _roamLogicHandler.InitiateTransition += TransitionRequested;
             _startAndExitMenuLogicHandler.InitiateTransition += TransitionRequested;
         }
@@ -107,7 +105,7 @@ namespace Element.Logic
                 return;
 
             // state transition only has the state we are going to.
-            // this state is pretty much guaranteed to not be roam unless coming from exit menu resume?
+            // this state is pretty much guaranteed to not be roam unless coming from exit menu resume or maybe from chat?
             // don't have to set transitioning to false since it will be handled elsewhere
             GameStateHelper.ChangeState(transition.DestinationState);
         }
@@ -118,12 +116,45 @@ namespace Element.Logic
 
             if (transition == null)
                 return;
+            
+            if (transition.DestinationRegion == _roamLogicHandler.CurrentPlayerRegion)
+            {
+                _roamLogicHandler.UpdatePlayerPositionWithTransition(transition);
+                return;
+            }
 
-            // this is where this gets somewhat complicated
-            // where are we keeping the current region/etc?
-            // i guess it's fine to leave this at this point for now
+            var adjacentRegions = RegionMapper.GetAdjacentRegions(transition.DestinationRegion); // this is going to become regions to load
+            var currentlyLoadedRegions = new List<RegionNames>(_roamLogicHandler.Regions.Keys.ToList()); // this is going to become regions to unload?
+
+            List<RegionNames> regionsToLoad = new List<RegionNames>();
+            List<RegionNames> regionsToUnload = new List<RegionNames>();
+
+            // load everything this is adjacent to the region we are going to but isn't currently loaded
+            foreach (var region in adjacentRegions)
+            {
+                if (!currentlyLoadedRegions.Contains(region))
+                    regionsToLoad.Add(region);
+            }
+
+            // unload everything that is current loaded but no adjacent to the region we are currently going to
+            foreach (var region in currentlyLoadedRegions)
+            {
+                if (!adjacentRegions.Contains(region))
+                    regionsToUnload.Add(region);
+            }
+
+            _resourceManager.RequestRegionLoadUnload(regionsToLoad, regionsToUnload);
+
+            // we can wait on load if we are loading new regions and fading
+            if (transition.Fade)
+                _waitOnLoad = true;
+
+            _roamLogicHandler.UpdatePlayerPositionWithTransition(transition);
+
+            if (GameStateHelper.CurrentState != GameStates.Roam)
+                GameStateHelper.ChangeState(GameStates.Roam);
         }
-
+        
         private void ExecuteChatTransition()
         {
             var transition = _transition as ChatTransition;
@@ -160,7 +191,7 @@ namespace Element.Logic
 
         private void CheckLoad()
         {
-            if (_loading)
+            if (!_resourceManager.IsBackgroundThreadClear())
                 return;
 
             _waitOnLoad = false;
@@ -207,31 +238,9 @@ namespace Element.Logic
             _fadeCounter = _fadeColors.Count - 1;
         }
 
-        private void LoadRequested()
-        {
-            _loading = true;
-        }
-
-        private void LoadCompleted()
-        {
-            _loading = false;
-        }
-
-        private void SaveRequested()
-        {
-            _saving = true;
-        }
-
-        private void SaveCompleted(SaveEventArgs e)
-        {
-            _saving = false;
-        }
-
         public Color DrawColor { get { return _drawColor; } }
         public bool Transitioning { get { return _transitioning; } }
-        public bool Saving { get { return _saving; } }
-        public bool Loading { get { return _loading; } }
-        public bool WaitOnLoad { get { return _waitOnLoad; } }
+        public bool ShowRegionImage {  get { return (_waitOnLoad && !_fading); } } // this doesn't neccessarily mean we want to show image, need to think about this more
         public RegionNames RegionLoadToDisplay { get; private set; }
     }
 }

@@ -67,7 +67,7 @@
     <Compile Include="RegionGeneration\IRegionFactory.cs" />
     <Compile Include="RegionGeneration\RegionFactory.cs" />
     <Compile Include="ResourceManager.cs" />
-    <Compile Include="SaveEventArgs.cs" />
+    <Compile Include="SaveEvent.cs" />
     <Compile Include="SaveLoadHandler.cs" />
   </ItemGroup>
   <ItemGroup>

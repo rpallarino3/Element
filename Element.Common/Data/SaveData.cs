@@ -27,6 +27,7 @@ namespace Element.Common.Data
         public Directions PlayerFacingDirection { get; set; }
         public RegionNames PlayerRegion { get; set; }
         public int PlayerZone { get; set; }
+        // might need to save the player state here as well
 
         public SaveFileInfo FileInfo { get; set; }
         public Dictionary<RegionNames, List<ObjectInstruction>> RegionInstructions { get; set; }

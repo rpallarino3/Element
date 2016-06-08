@@ -76,6 +76,10 @@
     <Compile Include="Enumerations\Sound\SoundEffects.cs" />
     <Compile Include="Environment\Region.cs" />
     <Compile Include="Environment\RegionInfo.cs" />
+    <Compile Include="GameObjects\Tile\FreeTile.cs" />
+    <Compile Include="GameObjects\Tile\GapTile.cs" />
+    <Compile Include="GameObjects\Tile\ImpassTile.cs" />
+    <Compile Include="GameObjects\Tile\LiquidTile.cs" />
     <Compile Include="GameObjects\Tile\Tile.cs" />
     <Compile Include="Environment\Transition.cs" />
     <Compile Include="Environment\Zone.cs" />
@@ -91,6 +95,7 @@
     <Compile Include="HelperClasses\ListComparer.cs" />
     <Compile Include="HelperClasses\MessageCrafter.cs" />
     <Compile Include="HelperClasses\PreferenceValidator.cs" />
+    <Compile Include="HelperClasses\RegionMapper.cs" />
     <Compile Include="HelperClasses\SoundEventArgs.cs" />
     <Compile Include="HelperClasses\SoundTransmitter.cs" />
     <Compile Include="HelperClasses\TransitionEvent.cs" />

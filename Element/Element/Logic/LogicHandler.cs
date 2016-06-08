@@ -41,17 +41,23 @@ namespace Element.Logic
             {
                 GameStateHelper.ChangeState(GameStates.StartMenu);
             }
-            else if (GameStateHelper.CurrentState == GameStates.StartMenu)
+            else if (GameStateHelper.CurrentState == GameStates.StartMenu || GameStateHelper.CurrentState == GameStates.ExitMenu)
             {
                 _startAndExitMenuLogicHandler.UpdateGameLogic();
             }
-            
+            else if (GameStateHelper.CurrentState == GameStates.Roam)
+            {
+                _roamLogicHandler.UpdateLogic();
+            }
+            else if (GameStateHelper.CurrentState == GameStates.Chat)
+            {
+
+            }
         }
-
-        public bool Saving { get { return _transitionHandler.Saving; } }
-
+        
         public Color DrawColor { get { return _transitionHandler.DrawColor; } }
 
         public StartAndExitMenuLogicHandler StartAndExitMenuLogicHandler { get { return _startAndExitMenuLogicHandler; } }
+        public RoamLogicHandler RoamLogicHandler {  get { return _roamLogicHandler; } }
     }
 }

@@ -22,6 +22,7 @@ namespace Element.ResourceManagement
 
         private MenuResourceManager _menuResourceManager;
 
+        // move all this shit to another resource manager
         private Dictionary<RegionNames, ContentManager> _regionContentManagers;
         private Dictionary<RegionNames, Dictionary<int, Texture2D>> _regionSceneryTextures;
         private Dictionary<RegionNames, Dictionary<int, Texture2D>> _regionNpcTextures;
@@ -54,11 +55,90 @@ namespace Element.ResourceManagement
 
 
             _backgroundThread = new BackgroundThread(_saveLoadHandler);
-            _backgroundThread.AssetsLoaded += AddLoadedTextures;
-            _backgroundThread.AssetsUnloaded += RemoveLoadedTextures;
+            _backgroundThread.SaveInitiated += SaveStarted;
+            _backgroundThread.SaveCompleted += SaveDone;
+            _backgroundThread.AssetsLoaded += AssetsLoaded;
+            _backgroundThread.AssetsUnloaded += AssetsUnloaded;
 
             var t = new Thread(() => _backgroundThread.Loop());
             t.Start();
+        }
+
+        public void LoadStaticContent()
+        {
+            _menuResourceManager.LoadContent();
+        }
+
+        public void Shutdown()
+        {
+            _menuResourceManager.UnloadContent();
+            _backgroundThread.Shutdown();
+        }
+
+        public bool IsBackgroundThreadClear()
+        {
+            return _backgroundThread.AreNoRequests();
+        }
+
+        #region Save Data
+
+        public void RequestSave(SaveLoadMessage msg)
+        {
+            _backgroundThread.AddSaveRequest(msg);
+        }
+        
+        public void EraseFile(int fileNumber)
+        {
+            var msg = new SaveLoadMessage();
+
+            msg.Data = DataHelper.GetDataCopyFromFileNumber(fileNumber);
+            msg.FileNumber = fileNumber;
+            msg.Erase = true;
+
+            DataHelper.EraseDataForFile(fileNumber);
+
+            _backgroundThread.AddSaveRequest(msg);
+            _backgroundThread.AddPreferenceRequest(DataHelper.PreferenceData.Copy());
+        }
+
+        private void SaveStarted()
+        {
+            // this should resolve any timing issues from different threads raising the events
+            SaveInitiated();
+        }
+
+        private void SaveDone()
+        {
+            SaveCompleted();
+        }
+
+        #endregion
+
+        #region Region Load/Unload
+
+        public void RequestRegionLoad(List<RegionNames> regions)
+        {
+            _backgroundThread.AddLoadRequests(regions);
+        }
+
+        public void RequestRegionUnload(List<RegionNames> regions)
+        {
+            _backgroundThread.AddUnloadRequests(regions);
+        }
+
+        public void RequestRegionLoadUnload(List<RegionNames> regionsToLoad, List<RegionNames> regionsToUnload)
+        {
+            _backgroundThread.AddLoadAndUnloadRequests(regionsToLoad, regionsToUnload);
+        }
+        
+        private void AssetsLoaded(AssetsLoadedEventArgs e)
+        {
+            RegionsLoaded(e);
+        }
+
+        private void AssetsUnloaded(AssetsUnloadedEventArgs e)
+        {
+            RegionsUnloaded(e);
         }
 
         private void AddLoadedTextures(AssetsLoadedEventArgs e)
@@ -83,41 +163,13 @@ namespace Element.ResourceManagement
                 if (_regionContentManagers.ContainsKey(region))
                 {
                     _regionContentManagers[region].Unload();
+                    _regionContentManagers[region].Dispose();
                     _regionContentManagers.Remove(region);
                 }
             }
         }
 
-        public void LoadStaticContent()
-        {
-            _menuResourceManager.LoadContent();
-        }
-
-        public void RequestSave(SaveLoadMessage msg)
-        {
-            // might raise a save requested event here
-            _backgroundThread.AddSaveRequest(msg);
-        }
-
-        public void EraseFile(int fileNumber)
-        {
-            var msg = new SaveLoadMessage();
-
-            msg.Data = DataHelper.GetDataCopyFromFileNumber(fileNumber);
-            msg.FileNumber = fileNumber;
-            msg.Erase = true;
-
-            DataHelper.EraseDataForFile(fileNumber);
-
-            _backgroundThread.AddSaveRequest(msg);
-            _backgroundThread.AddPreferenceRequest(DataHelper.PreferenceData.Copy());
-        }
-
-        public void Shutdown()
-        {
-            _menuResourceManager.UnloadContent();
-            _backgroundThread.Shutdown();
-        }
+        #endregion
 
         #region Preference Methods
 
@@ -244,8 +296,11 @@ namespace Element.ResourceManagement
 
         #region Events
 
-        // put all the events that would be in the bgthread in here
-        public event SaveCompletedEvent SaveCompleted; // i guess this mean the the save itself is done? do we need one for all things to be completed? probably
+        public event AssetsLoadedEvent RegionsLoaded;
+        public event AssetsUnloadedEvent RegionsUnloaded;
+        
+        public event SaveInitiatedEvent SaveInitiated;
+        public event SaveCompletedEvent SaveCompleted;
 
         #endregion
     }

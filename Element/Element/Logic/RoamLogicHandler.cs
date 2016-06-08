@@ -12,24 +12,98 @@ namespace Element.Logic
 {
     public class RoamLogicHandler
     {
-        private Dictionary<RegionNames, Region> _regions;
-
         private ResourceManager _resourceManager;
+
+        private Dictionary<RegionNames, Region> _regions;
+        private RegionNames _currentPlayerRegion;
+
+        private Dictionary<RegionNames, Region> _regionsToAdd;
+        private List<RegionNames> _regionsToUnload;
 
         public RoamLogicHandler(ResourceManager resourceManager)
         {
             _regions = new Dictionary<RegionNames, Region>();
+            _regionsToUnload = new List<RegionNames>();
 
             _resourceManager = resourceManager;
+            _resourceManager.RegionsLoaded += AddLoadedRegions;
+            _resourceManager.RegionsUnloaded += RemoveUnloadRegions;
+        }
+
+        public void UpdateLogic()
+        {
+            CheckLoad();
+            CheckUnload();
+        }
+
+        #region Load/Unload Regions
+
+        private void CheckLoad()
+        {
+            var regionsToAdd = new Dictionary<RegionNames, Region>();
+
+            lock (_regionsToAdd)
+            {
+                foreach (var region in _regionsToAdd.Keys)
+                {
+                    regionsToAdd[region] = _regionsToAdd[region];
+                    _regionsToAdd.Remove(region);
+                }
+            }
+
+            foreach (var region in regionsToAdd.Keys)
+            {
+                _regions[region] = regionsToAdd[region];
+            }
+        }
+
+        private void CheckUnload()
+        {
+            var regionsToUnload = new List<RegionNames>();
+
+            lock (_regionsToUnload)
+            {
+                if (_regionsToUnload.Count != 0)
+                {
+                    regionsToUnload.AddRange(_regionsToUnload);
+                    _regionsToUnload.Clear();
+                }
+            }
+
+            foreach (var region in regionsToUnload)
+            {
+                _regions.Remove(region);
+            }
         }
 
         private void AddLoadedRegions(AssetsLoadedEventArgs e)
         {
-            _resourceManager.RequestSave(new SaveLoadMessage());
-            // add new regions to data structure, there should be no duplicates
-            foreach (var item in e.NewRegions.Keys)
-                _regions.Add(item, e.NewRegions[item]);
-            // remove the old ones and save them
+            lock (_regionsToAdd)
+            {
+                foreach (var region in e.NewRegions)
+                {
+                    _regionsToAdd[region.Key] = region.Value;
+                }
+            }
+        }
+
+        private void RemoveUnloadRegions(AssetsUnloadedEventArgs e)
+        {
+            lock (_regionsToUnload)
+            {
+                foreach (var region in e.RegionsUnloaded)
+                {
+                    if (!_regionsToUnload.Contains(region))
+                        _regionsToUnload.Add(region);
+                }
+            }
+        }
+
+        #endregion
+
+        public void UpdatePlayerPositionWithTransition(RoamTransition transition)
+        {
+
         }
 
         public bool IsRegionLoaded(RegionNames region)
@@ -37,17 +111,25 @@ namespace Element.Logic
             return _regions.Keys.Contains(region);
         }
 
-        private void RemoveRegions(AssetsUnloadedEventArgs e)
-        {
-            foreach (var item in e.RegionsUnloaded)
-                _regions.Remove(item);
-        }
+        #region Properties
 
         public Dictionary<RegionNames, Region> Regions
         {
             get { return _regions; }
         }
 
+        public RegionNames CurrentPlayerRegion
+        {
+            get { return _currentPlayerRegion; }
+        }
+
+        #endregion
+
+        #region Events
+
         public event TransitionEvent InitiateTransition;
+
+        #endregion
+
     }
 }

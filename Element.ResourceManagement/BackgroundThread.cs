@@ -16,7 +16,7 @@ namespace Element.ResourceManagement
 
         private List<SaveLoadMessage> _saveRequests; // save requests come from moving between zones, only use the latest save request, the list should be cleared
         private List<RegionNames> _loadRequests; // requests in game to load regions
-        private Dictionary<RegionNames, Region> _unloadRequests; // requests in game to unload regions
+        private List<RegionNames> _unloadRequests; // requests in game to unload regions
         private object _loadUnloadLock;
 
         private List<PreferenceData> _preferenceRequests;
@@ -32,7 +32,7 @@ namespace Element.ResourceManagement
             _saveLoadHandler = saveLoadHandler;
             _saveRequests = new List<SaveLoadMessage>();
             _loadRequests = new List<RegionNames>();
-            _unloadRequests = new Dictionary<RegionNames, Region>();
+            _unloadRequests = new List<RegionNames>();
             _preferenceRequests = new List<PreferenceData>();
             _fileLoadRequest = -1;
 
@@ -54,21 +54,7 @@ namespace Element.ResourceManagement
             {
                 // maybe we don't want to do the load/unload one at a time?
                 // this could be tricky
-                if (_unloadRequests.Keys.Count > 0)
-                {
-                    RegionNames name;
-                    Region region;
-
-                    lock (_loadUnloadLock)
-                    {
-                        name = _unloadRequests.Keys.FirstOrDefault();
-                        region = _unloadRequests[name];
-                        _unloadRequests.Remove(name);
-                    }
-
-                    ExecuteUnloadRequest(name, region);
-                }
-                else if (_loadRequests.Count > 0)
+                if (_loadRequests.Count > 0)
                 {
                     RegionNames region;
 
@@ -79,6 +65,18 @@ namespace Element.ResourceManagement
                     }
 
                     ExecuteLoadRequest(region);
+                }
+                else if (_unloadRequests.Count > 0)
+                {
+                    RegionNames region;
+
+                    lock (_loadUnloadLock)
+                    {
+                        region = _unloadRequests[0];
+                        _unloadRequests.RemoveAt(0);
+                    }
+
+                    ExecuteUnloadRequest(region);
                 }
                 else if (_saveRequests.Count > 0)
                 {
@@ -111,6 +109,18 @@ namespace Element.ResourceManagement
             }
         }
 
+        public bool AreNoRequests()
+        {
+            if (_loadRequests.Count == 0 &&
+                _unloadRequests.Count == 0 &&
+                _saveRequests.Count == 0 &&
+                _preferenceRequests.Count == 0 &&
+                _fileLoadRequest == -1)
+                return true;
+
+            return false;
+        }
+
         #region Requests
 
         public void AddSaveRequest(SaveLoadMessage msg)
@@ -122,14 +132,44 @@ namespace Element.ResourceManagement
             }
         }
 
-        public void AddLoadAndUnloadRequests(List<RegionNames> regionsToLoad, Dictionary<RegionNames, Region> regionsToUnload)
+        public void AddLoadRequests(List<RegionNames> regionsToLoad)
+        {
+            lock (_loadUnloadLock)
+            {
+                foreach (var region in regionsToLoad)
+                {
+                    if (_unloadRequests.Contains(region))
+                        _unloadRequests.Remove(region);
+
+                    if (!_loadRequests.Contains(region))
+                        _loadRequests.Add(region);
+                }
+            }
+        }
+
+        public void AddUnloadRequests(List<RegionNames> regionsToUnload)
+        {
+            lock (_loadUnloadLock)
+            {
+                foreach (var region in regionsToUnload)
+                {
+                    if (_loadRequests.Contains(region))
+                        _loadRequests.Remove(region);
+
+                    if (_unloadRequests.Contains(region))
+                        _unloadRequests.Add(region);
+                }
+            }
+        }
+
+        public void AddLoadAndUnloadRequests(List<RegionNames> regionsToLoad, List<RegionNames> regionsToUnload)
         {
             lock (_loadUnloadLock)
             {
                 foreach (var region in regionsToLoad)
                 {
                     // this will check for duplicates (there shouldn't be any)
-                    if (regionsToUnload.Keys.Contains(region))
+                    if (regionsToUnload.Contains(region))
                     {
                         Console.WriteLine("DUPLICATE REGION IN REQUEST: " + region);
                         regionsToLoad.Remove(region);
@@ -137,21 +177,20 @@ namespace Element.ResourceManagement
                         continue;
                     }
 
-                    if (_unloadRequests.Keys.Contains(region))
+                    if (_unloadRequests.Contains(region))
                         _unloadRequests.Remove(region);
 
                     if (!_loadRequests.Contains(region))
                         _loadRequests.Add(region);
                 }
 
-                foreach (var region in regionsToUnload.Keys)
+                foreach (var region in regionsToUnload)
                 {
                     if (_loadRequests.Contains(region))
-                    {
                         _loadRequests.Remove(region);
-                    }
 
-                    _unloadRequests[region] = regionsToUnload[region]; // i think this will work
+                    if (_unloadRequests.Contains(region))
+                        _unloadRequests.Add(region);
                 }
             }
         }
@@ -177,7 +216,7 @@ namespace Element.ResourceManagement
 
         #region Executions
 
-        private void ExecuteUnloadRequest(RegionNames name, Region region)
+        private void ExecuteUnloadRequest(RegionNames name)
         {
 
         }
@@ -189,12 +228,18 @@ namespace Element.ResourceManagement
 
         private void ExecuteSaveRequest(SaveLoadMessage msg)
         {
-            // should have something on message that says if we want to erase the file
+            SaveInitiated();
+
             if (msg.Erase)
                 _saveLoadHandler.EraseFile(msg.FileNumber);
             else
             {
                 _saveLoadHandler.RequestSave(msg.FileNumber, msg.Data);
+            }
+
+            if (_saveRequests.Count == 0)
+            {
+                SaveCompleted();
             }
         }
 
@@ -205,6 +250,9 @@ namespace Element.ResourceManagement
 
         private void ExecuteFileLoadRequest(int fileNumber)
         {
+            // what do we even do here?
+            // i guess we replace the current save data with the one that is saved
+
             int file = _fileLoadRequest;
 
             lock (_fileLoadLock)
@@ -219,10 +267,9 @@ namespace Element.ResourceManagement
 
         public event AssetsLoadedEvent AssetsLoaded;
         public event AssetsUnloadedEvent AssetsUnloaded;
-        public event AssetLoadRequestedEvent AssetLoadRequested;
-        public event AllAssetsLoadedEvent AllAssetsLoaded;
+
         public event SaveCompletedEvent SaveCompleted;
-        public event SaveRequestedEvent SaveRequested;
+        public event SaveInitiatedEvent SaveInitiated;
 
         #endregion
     }
