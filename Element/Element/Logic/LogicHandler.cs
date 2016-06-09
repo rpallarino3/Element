@@ -53,6 +53,8 @@ namespace Element.Logic
             {
 
             }
+
+            DataHelper.CopySaveData();
         }
         
         public Color DrawColor { get { return _transitionHandler.DrawColor; } }

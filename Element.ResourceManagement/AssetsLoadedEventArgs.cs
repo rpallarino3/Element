@@ -10,15 +10,15 @@ namespace Element.ResourceManagement
 {
     public class AssetsLoadedEventArgs : EventArgs
     {
-        public Dictionary<RegionNames, Region> NewRegions { get; set; }
-        public Dictionary<RegionNames, Dictionary<int, Texture2D>> NewSceneryTextures { get; set; }
-        public Dictionary<RegionNames, Dictionary<int, Texture2D>> NewObjectTextures { get; set; }
-        public Dictionary<RegionNames, Dictionary<int, Texture2D>> NewNpcTextures { get; set; }
+        public List<RegionContent> RegionContent { get; set; }
+        public List<CrossRegionContent> CrossRegionContent { get; set; }
     }
 
     public class AssetsUnloadedEventArgs : EventArgs
     {
         public List<RegionNames> RegionsUnloaded { get; set; }
+        public List<int> CrossRegionNpcsUnloaded { get; set; }
+        // add sounds here
     }
 
     public delegate void AssetsLoadedEvent(AssetsLoadedEventArgs e);

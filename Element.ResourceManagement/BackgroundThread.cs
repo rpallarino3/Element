@@ -48,78 +48,103 @@ namespace Element.ResourceManagement
             _continueLooping = false;
         }
 
+        #region Loop
+
         public void Loop()
         {
             while (_continueLooping)
             {
-                // maybe we don't want to do the load/unload one at a time?
-                // this could be tricky
-                if (_loadRequests.Count > 0)
-                {
-                    RegionNames region;
+                // region load/unload requests
+                var regionsToLoad = new List<RegionNames>();
+                var regionsToUnload = new List<RegionNames>();
 
-                    lock (_loadUnloadLock)
+                lock (_loadUnloadLock)
+                {
+                    if (_loadRequests.Count > 0 || _unloadRequests.Count > 0)
                     {
-                        region = _loadRequests[0];
-                        _loadRequests.RemoveAt(0);
+                        regionsToLoad.AddRange(_loadRequests);
+                        _loadRequests.Clear();
+
+                        regionsToUnload.AddRange(_unloadRequests);
+                        _unloadRequests.Clear();                        
                     }
-
-                    ExecuteLoadRequest(region);
                 }
-                else if (_unloadRequests.Count > 0)
+
+                ExecuteLoadUnloadRequest(regionsToLoad, regionsToUnload);
+
+                // save requests
+                SaveLoadMessage msg = null;
+
+                lock (_saveRequests)
                 {
-                    RegionNames region;
-
-                    lock (_loadUnloadLock)
-                    {
-                        region = _unloadRequests[0];
-                        _unloadRequests.RemoveAt(0);
-                    }
-
-                    ExecuteUnloadRequest(region);
-                }
-                else if (_saveRequests.Count > 0)
-                {
-                    SaveLoadMessage msg;
-
-                    lock (_saveRequests)
+                    if (_saveRequests.Count > 0)
                     {
                         msg = _saveRequests[0];
                         _saveRequests.Clear();
                     }
-
-                    ExecuteSaveRequest(msg);
                 }
-                else if (_preferenceRequests.Count > 0)
-                {
-                    PreferenceData data;
 
-                    lock (_preferenceRequests)
+                ExecuteSaveRequest(msg);
+
+                // pref data requests
+                PreferenceData data = null;
+
+                lock (_preferenceRequests)
+                {
+                    if (_preferenceRequests.Count > 0)
                     {
                         data = _preferenceRequests[0];
-                        _preferenceRequests.Clear();
+                        _preferenceRequests.Clear();                        
                     }
-
-                    ExecutePreferenceRequest(data);
                 }
-                else if (_fileLoadRequest != -1)
+
+                ExecutePreferenceRequest(data);
+
+                // file load requests
+                int fileLoadRequest;
+
+                lock (_fileLoadLock)
+                {
+                    fileLoadRequest = _fileLoadRequest;
+                }
+
+                if (fileLoadRequest != -1)
                 {
                     ExecuteFileLoadRequest(_fileLoadRequest);
                 }
             }
         }
-
+        
         public bool AreNoRequests()
         {
-            if (_loadRequests.Count == 0 &&
-                _unloadRequests.Count == 0 &&
-                _saveRequests.Count == 0 &&
-                _preferenceRequests.Count == 0 &&
-                _fileLoadRequest == -1)
-                return true;
+            lock (_loadUnloadLock)
+            {
+                if (_loadRequests.Count != 0 || _unloadRequests.Count != 0)
+                    return false;
+            }
 
-            return false;
+            lock (_saveRequests)
+            {
+                if (_saveRequests.Count != 0)
+                    return false;
+            }
+
+            lock (_preferenceRequests)
+            {
+                if (_preferenceRequests.Count != 0)
+                    return false;
+            }
+
+            lock (_fileLoadLock)
+            {
+                if (_fileLoadRequest != -1)
+                    return false;
+            }
+
+            return true;
         }
+
+        #endregion
 
         #region Requests
 
@@ -164,7 +189,7 @@ namespace Element.ResourceManagement
 
         public void AddLoadAndUnloadRequests(List<RegionNames> regionsToLoad, List<RegionNames> regionsToUnload)
         {
-            lock (_loadUnloadLock)
+            lock (_loadUnloadLock) // look at this again
             {
                 foreach (var region in regionsToLoad)
                 {
@@ -216,18 +241,38 @@ namespace Element.ResourceManagement
 
         #region Executions
 
-        private void ExecuteUnloadRequest(RegionNames name)
+        private void ExecuteLoadUnloadRequest(List<RegionNames> regionsToLoad, List<RegionNames> regionsToUnload)
         {
+            if (regionsToLoad.Count == 0 && regionsToUnload.Count == 0)
+                return;
 
+            var saveData = DataHelper.GetDataCopyForCurrentFile();
+
+            // load all the textures and then build the regions
+            // this is where we need to determine what we need to save in the save data
+            // need some place to list all the stuff we have to load
+            // the save data should let us know if the position of a cross region npc has changed
+
+            // to load content we need to know:
+            // the theme of the region
+            // which scenery to load and their indexes
+            // which objects are preset in the region
+            // which npcs are preset in the region and their types
+            // which region specific sounds we need to load
+            // which cross region npcs we need to load
+            // which cross region sounds we need to load
+
+            // to unload we need to know:
+            // which regions we are unloading
+            // which cross region npcs can be unloaded
+            // which cross region sounds can be unloaded
         }
-
-        private void ExecuteLoadRequest(RegionNames region)
-        {
-
-        }
-
+        
         private void ExecuteSaveRequest(SaveLoadMessage msg)
         {
+            if (msg == null)
+                return;
+
             SaveInitiated();
 
             if (msg.Erase)
@@ -245,6 +290,9 @@ namespace Element.ResourceManagement
 
         private void ExecutePreferenceRequest(PreferenceData data)
         {
+            if (data == null)
+                return;
+
             _saveLoadHandler.SavePreferenceData(data);
         }
 
@@ -252,6 +300,9 @@ namespace Element.ResourceManagement
         {
             // what do we even do here?
             // i guess we replace the current save data with the one that is saved
+            // so load the save data from file
+            // copy it and pass it up to the resource manager
+            // then switch files using it
 
             int file = _fileLoadRequest;
 

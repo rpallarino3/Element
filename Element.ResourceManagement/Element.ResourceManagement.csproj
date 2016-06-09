@@ -64,6 +64,7 @@
     <Compile Include="BackgroundThread.cs" />
     <Compile Include="MenuResourceManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegionContent.cs" />
     <Compile Include="RegionGeneration\IRegionFactory.cs" />
     <Compile Include="RegionGeneration\RegionFactory.cs" />
     <Compile Include="ResourceManager.cs" />

@@ -5,9 +5,7 @@ using System.Text;
 
 namespace Element.Common.Enumerations.Environment
 {
-    public enum RegionTheme
+    public enum ObjectNames
     {
-        TestTheme0,
-        TestTheme1,
     }
 }

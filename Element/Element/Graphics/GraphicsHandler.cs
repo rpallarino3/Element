@@ -22,6 +22,9 @@ namespace Element.Graphics
 
         public void Draw(SpriteBatch sb, LogicHandler logic, ResourceManager resourceManager)
         {
+            resourceManager.CheckLoad();
+            resourceManager.CheckUnload();
+
             var state = GameStateHelper.CurrentState;
 
             if (state == GameStates.Start)

@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="Animations\Animation.cs" />
     <Compile Include="Animations\Animator.cs" />
+    <Compile Include="Enumerations\Environment\ObjectNames.cs" />
     <Compile Include="Enumerations\GameBasics\PreferenceTypes.cs" />
     <Compile Include="Enumerations\Menu\ButtonStates.cs" />
     <Compile Include="Enumerations\Menu\ButtonStyles.cs" />

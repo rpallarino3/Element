@@ -22,14 +22,16 @@ namespace Element.ResourceManagement
 
         private MenuResourceManager _menuResourceManager;
 
-        // move all this shit to another resource manager
-        private Dictionary<RegionNames, ContentManager> _regionContentManagers;
-        private Dictionary<RegionNames, Dictionary<int, Texture2D>> _regionSceneryTextures;
-        private Dictionary<RegionNames, Dictionary<int, Texture2D>> _regionNpcTextures;
-        private Dictionary<RegionNames, Dictionary<int, Texture2D>> _regionObjectTextures;
+        private Dictionary<RegionNames, RegionContent> _regionContent;
+        private Dictionary<int, CrossRegionNpcContent> _crossRegionNpcContent;
+        // add sounds here
 
-        private ContentManager _transRegionNpcContentManager;
-        private Dictionary<int, Texture2D> _transRegionNpcTextures;
+        private List<RegionNames> _contentToRemove;
+        private List<RegionContent> _contentToAdd;
+
+        private List<int> _crossRegionNpcContentToRemove;
+       // add sounds here
+        private List<CrossRegionContent> _crossRegionContentToAdd;
 
         private ContentManager _playerContentManager;
 
@@ -43,16 +45,17 @@ namespace Element.ResourceManagement
 
             _menuResourceManager = new MenuResourceManager(_serviceProvider, rootDirectory);
             _saveLoadHandler = new SaveLoadHandler();
-
-            _transRegionNpcContentManager = new ContentManager(_serviceProvider, rootDirectory);
+            
             _playerContentManager = new ContentManager(_serviceProvider, rootDirectory);
 
-            _regionContentManagers = new Dictionary<RegionNames, ContentManager>();
-            _regionSceneryTextures = new Dictionary<RegionNames, Dictionary<int, Texture2D>>();
-            _regionNpcTextures = new Dictionary<RegionNames, Dictionary<int, Texture2D>>();
-            _regionObjectTextures = new Dictionary<RegionNames, Dictionary<int, Texture2D>>();
-            _transRegionNpcTextures = new Dictionary<int, Texture2D>();
+            _regionContent = new Dictionary<RegionNames, RegionContent>();
+            _crossRegionNpcContent = new Dictionary<int, CrossRegionNpcContent>();
 
+            _contentToRemove = new List<RegionNames>();
+            _contentToAdd = new List<RegionContent>();
+            _crossRegionNpcContentToRemove = new List<int>();
+            _crossRegionContentToAdd = new List<CrossRegionContent>();
+            // add sounds here
 
             _backgroundThread = new BackgroundThread(_saveLoadHandler);
             _backgroundThread.SaveInitiated += SaveStarted;
@@ -78,6 +81,88 @@ namespace Element.ResourceManagement
         public bool IsBackgroundThreadClear()
         {
             return _backgroundThread.AreNoRequests();
+        }
+
+        public void CheckLoad()
+        {
+            var contentToAdd = new List<RegionContent>();
+
+            lock (_contentToAdd)
+            {
+                contentToAdd.AddRange(_contentToAdd);
+                _contentToAdd.Clear();
+            }
+
+            foreach (var content in contentToAdd)
+            {
+                _regionContent.Add(content.Region, content);
+                contentToAdd.Remove(content);
+            }
+
+            var crossRegionContentToAdd = new List<CrossRegionContent>();
+
+            lock (_crossRegionContentToAdd)
+            {
+                crossRegionContentToAdd.AddRange(_crossRegionContentToAdd);
+                _crossRegionContentToAdd.Clear();
+            }
+
+            foreach (var content in crossRegionContentToAdd)
+            {
+                if (content is CrossRegionNpcContent)
+                {
+                    var npcContent = content as CrossRegionNpcContent;
+                    _crossRegionNpcContent.Add(npcContent.Id, npcContent);
+                    crossRegionContentToAdd.Remove(npcContent);
+                }
+                else if (content is CrossRegionSoundContent)
+                {
+                    // add shit here
+                }
+            }
+        }
+
+        public void CheckUnload()
+        {
+            var contentToRemove = new List<RegionNames>();
+
+            lock (_contentToRemove)
+            {
+                contentToRemove.AddRange(_contentToRemove);
+                _contentToRemove.Clear();
+            }
+
+            foreach (var region in contentToRemove)
+            {
+                if (_regionContent.ContainsKey(region))
+                {
+                    _regionContent[region].ContentManager.Unload();
+                    _regionContent[region].ContentManager.Dispose();
+                    _regionContent.Remove(region);
+                }
+
+                contentToRemove.Remove(region);
+            }
+
+            var crossRegionNpcContentToRemove = new List<int>();
+
+            lock (_crossRegionNpcContentToRemove)
+            {
+                crossRegionNpcContentToRemove.AddRange(_crossRegionNpcContentToRemove);
+                _crossRegionNpcContentToRemove.Clear();
+            }
+
+            foreach (var item in crossRegionNpcContentToRemove)
+            {
+                if (_crossRegionNpcContent.ContainsKey(item))
+                {
+                    _crossRegionNpcContent[item].ContentManager.Unload();
+                    _crossRegionNpcContent[item].ContentManager.Dispose();
+                    _crossRegionNpcContent.Remove(item);
+                }
+            }
+
+            // do sound here
         }
 
         #region Save Data
@@ -133,40 +218,44 @@ namespace Element.ResourceManagement
         
         private void AssetsLoaded(AssetsLoadedEventArgs e)
         {
+            AddLoadedContent(e);
             RegionsLoaded(e);
         }
 
         private void AssetsUnloaded(AssetsUnloadedEventArgs e)
         {
+            // need to make sure that the regions are removed BEFORE the textures are removed so that we don't try to draw on non existant texture
+            // maybe check to see if there is a content manager for that region before we try to draw anything for that region?
             RegionsUnloaded(e);
+            RemoveUnloadedContent(e);
         }
 
-        private void AddLoadedTextures(AssetsLoadedEventArgs e)
+        private void AddLoadedContent(AssetsLoadedEventArgs e)
         {
-            foreach (var region in e.NewSceneryTextures.Keys)
+            lock (_contentToAdd)
             {
-                _regionContentManagers[region] = new ContentManager(_serviceProvider, _rootDirectory);
-                _regionSceneryTextures[region] = e.NewSceneryTextures[region];
-                _regionNpcTextures[region] = e.NewNpcTextures[region];
-                _regionObjectTextures[region] = e.NewObjectTextures[region];
+                _contentToAdd.AddRange(e.RegionContent);
+            }
+
+            lock (_crossRegionContentToAdd)
+            {
+                _crossRegionContentToAdd.AddRange(e.CrossRegionContent);
             }
         }
 
-        private void RemoveLoadedTextures(AssetsUnloadedEventArgs e)
+        private void RemoveUnloadedContent(AssetsUnloadedEventArgs e)
         {
-            foreach (var region in e.RegionsUnloaded)
+            lock (_contentToRemove)
             {
-                _regionSceneryTextures.Remove(region);
-                _regionNpcTextures.Remove(region);
-                _regionObjectTextures.Remove(region);
-
-                if (_regionContentManagers.ContainsKey(region))
-                {
-                    _regionContentManagers[region].Unload();
-                    _regionContentManagers[region].Dispose();
-                    _regionContentManagers.Remove(region);
-                }
+                _contentToRemove.AddRange(e.RegionsUnloaded);
             }
+
+            lock (_crossRegionNpcContentToRemove)
+            {
+                _crossRegionNpcContentToRemove.AddRange(e.CrossRegionNpcsUnloaded);
+            }
+
+            // do sounds here
         }
 
         #endregion
@@ -175,6 +264,7 @@ namespace Element.ResourceManagement
 
         // should really look at all these methods and see if we want to move them to the helper
 
+        // i think this method is ok because it is called before any other thread should access the data
         public void LoadFilesAndUpdatePreferenceData()
         {
             DataHelper.PreferenceData = _saveLoadHandler.LoadPreferenceData(); // maybe move this all into one method
@@ -201,7 +291,7 @@ namespace Element.ResourceManagement
             DataHelper.PreferenceData.File1Info = DataHelper.File1SaveData.FileInfo;
             DataHelper.PreferenceData.File2Info = DataHelper.File2SaveData.FileInfo;
 
-            // shouldn't really have to save anything after this since we are going to do this every time anyways
+            DataHelper.CopySaveData();
         }
 
         public void ResetPreferenceData()

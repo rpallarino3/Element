@@ -13,5 +13,10 @@ namespace Element.Common.HelperClasses
         {
             return new List<RegionNames>();
         }
+
+        public static RegionTheme GetThemeForRegion(RegionNames region)
+        {
+            return RegionTheme.TestTheme0;
+        }
     }
 }
