@@ -63,10 +63,16 @@
     <Compile Include="AssetsLoadedEventArgs.cs" />
     <Compile Include="BackgroundThread.cs" />
     <Compile Include="MenuResourceManager.cs" />
+    <Compile Include="NpcGeneration\NpcMapper.cs" />
+    <Compile Include="ContentLoaders\NpcContentLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegionContent.cs" />
+    <Compile Include="ContentLoaders\RegionContentLoader.cs" />
     <Compile Include="RegionGeneration\IRegionFactory.cs" />
     <Compile Include="RegionGeneration\RegionFactory.cs" />
+    <Compile Include="RegionGeneration\RegionInfo.cs" />
+    <Compile Include="RegionGeneration\RegionLayout.cs" />
+    <Compile Include="RegionGeneration\RegionOffset.cs" />
     <Compile Include="ResourceManager.cs" />
     <Compile Include="SaveEvent.cs" />
     <Compile Include="SaveLoadHandler.cs" />

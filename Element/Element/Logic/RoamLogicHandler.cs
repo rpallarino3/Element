@@ -5,6 +5,7 @@ using System.Text;
 using Element.ResourceManagement;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Environment;
+using Element.Common.GameObjects.Npcs;
 using Element.Common.HelperClasses;
 using Element.Common.Messages;
 
@@ -19,11 +20,20 @@ namespace Element.Logic
 
         private Dictionary<RegionNames, Region> _regionsToAdd;
         private List<RegionNames> _regionsToUnload;
+        private List<Npc> _crossRegionNpcsToAdd;
+
+        private List<Npc> _crossRegionNpcs;
 
         public RoamLogicHandler(ResourceManager resourceManager)
         {
             _regions = new Dictionary<RegionNames, Region>();
             _regionsToUnload = new List<RegionNames>();
+
+            _regionsToAdd = new Dictionary<RegionNames, Region>();
+            _regionsToUnload = new List<RegionNames>();
+            _crossRegionNpcsToAdd = new List<Npc>();
+
+            _crossRegionNpcs = new List<Npc>();
 
             _resourceManager = resourceManager;
             _resourceManager.RegionsLoaded += AddLoadedRegions;
@@ -55,6 +65,12 @@ namespace Element.Logic
             {
                 _regions[region] = regionsToAdd[region];
             }
+            
+            lock (_crossRegionNpcsToAdd)
+            {
+                _crossRegionNpcs.AddRange(_crossRegionNpcsToAdd);
+                _crossRegionNpcsToAdd.Clear();
+            }
         }
 
         private void CheckUnload()
@@ -74,15 +90,43 @@ namespace Element.Logic
             {
                 _regions.Remove(region);
             }
-        }
 
+            foreach (var npc in _crossRegionNpcs) // not sure if this will work
+            {
+                bool cont = false;
+
+                foreach (var region in npc.PossibleRegions)
+                {
+                    if (_regions.ContainsKey(region))
+                    {
+                        cont = true;
+                        break;
+                    }
+                }
+
+                if (cont)
+                    continue;
+
+                DataHelper.SaveCrossRegionNpcState(npc);
+                _crossRegionNpcs.Remove(npc);
+            }
+        }
+        
         private void AddLoadedRegions(AssetsLoadedEventArgs e)
         {
             lock (_regionsToAdd)
             {
-                foreach (var region in e.NewRegions)
+                foreach (var region in e.Regions)
                 {
-                    _regionsToAdd[region.Key] = region.Value;
+                    _regionsToAdd[region.Name] = region;
+                }
+            }
+
+            lock (_crossRegionNpcsToAdd)
+            {
+                foreach (var npc in e.CrossRegionNpcs)
+                {
+                    _crossRegionNpcsToAdd.Add(npc);
                 }
             }
         }
@@ -100,7 +144,7 @@ namespace Element.Logic
         }
 
         #endregion
-
+        
         public void UpdatePlayerPositionWithTransition(RoamTransition transition)
         {
 

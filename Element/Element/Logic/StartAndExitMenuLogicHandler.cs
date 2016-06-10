@@ -350,8 +350,8 @@ namespace Element.Logic
 
             _resourceManager.EraseFile(args.FileNumber);
         }
-
-        private void SaveCompleted(SaveEventArgs e)
+        
+        private void SaveCompleted()
         {
             _waitForSave = false;
             ((FileSelectMenuPage)_menuPages[MenuPageNames.FileSelect]).CloseSaveDialog();

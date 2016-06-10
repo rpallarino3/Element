@@ -54,7 +54,7 @@ namespace Element.Logic
 
             }
 
-            DataHelper.CopySaveData();
+            DataHelper.CopySaveDataForCurrentFile();
         }
         
         public Color DrawColor { get { return _transitionHandler.DrawColor; } }

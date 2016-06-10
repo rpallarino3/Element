@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.GameBasics;
+using Element.Common.Enumerations.NPCs;
 using Element.Common.HelperClasses;
 using Element.Common.Messages;
 using Element.Common.Misc;
@@ -23,13 +24,13 @@ namespace Element.ResourceManagement
         private MenuResourceManager _menuResourceManager;
 
         private Dictionary<RegionNames, RegionContent> _regionContent;
-        private Dictionary<int, CrossRegionNpcContent> _crossRegionNpcContent;
+        private Dictionary<NpcNames, CrossRegionNpcContent> _crossRegionNpcContent;
         // add sounds here
 
         private List<RegionNames> _contentToRemove;
         private List<RegionContent> _contentToAdd;
 
-        private List<int> _crossRegionNpcContentToRemove;
+        private List<NpcNames> _crossRegionNpcContentToRemove;
        // add sounds here
         private List<CrossRegionContent> _crossRegionContentToAdd;
 
@@ -49,15 +50,15 @@ namespace Element.ResourceManagement
             _playerContentManager = new ContentManager(_serviceProvider, rootDirectory);
 
             _regionContent = new Dictionary<RegionNames, RegionContent>();
-            _crossRegionNpcContent = new Dictionary<int, CrossRegionNpcContent>();
+            _crossRegionNpcContent = new Dictionary<NpcNames, CrossRegionNpcContent>();
 
             _contentToRemove = new List<RegionNames>();
             _contentToAdd = new List<RegionContent>();
-            _crossRegionNpcContentToRemove = new List<int>();
+            _crossRegionNpcContentToRemove = new List<NpcNames>();
             _crossRegionContentToAdd = new List<CrossRegionContent>();
             // add sounds here
 
-            _backgroundThread = new BackgroundThread(_saveLoadHandler);
+            _backgroundThread = new BackgroundThread(_saveLoadHandler, _serviceProvider, _rootDirectory);
             _backgroundThread.SaveInitiated += SaveStarted;
             _backgroundThread.SaveCompleted += SaveDone;
             _backgroundThread.AssetsLoaded += AssetsLoaded;
@@ -144,7 +145,7 @@ namespace Element.ResourceManagement
                 contentToRemove.Remove(region);
             }
 
-            var crossRegionNpcContentToRemove = new List<int>();
+            var crossRegionNpcContentToRemove = new List<NpcNames>();
 
             lock (_crossRegionNpcContentToRemove)
             {

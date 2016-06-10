@@ -3,15 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Element.Common.Enumerations.Environment;
+using Element.Common.Enumerations.NPCs;
 using Element.Common.Environment;
 using Element.Common.HelperClasses;
 using Element.Common.Messages;
 using Element.Common.Data;
+using Element.ResourceManagement.ContentLoaders;
+using Element.ResourceManagement.NpcGeneration;
+using Element.ResourceManagement.RegionGeneration;
 
 namespace Element.ResourceManagement
 {
     public class BackgroundThread
     {
+        private IServiceProvider _serviceProvider;
+        private string _rootDirectory;
         private SaveLoadHandler _saveLoadHandler;
 
         private List<SaveLoadMessage> _saveRequests; // save requests come from moving between zones, only use the latest save request, the list should be cleared
@@ -25,16 +31,23 @@ namespace Element.ResourceManagement
 
         private bool _continueLooping;
 
+        private List<RegionNames> _currentLoadedRegions;
+
         // everything here needs to be redone
 
-        public BackgroundThread(SaveLoadHandler saveLoadHandler)
+        public BackgroundThread(SaveLoadHandler saveLoadHandler, IServiceProvider serviceProvider, string rootDirectory)
         {
+            _serviceProvider = serviceProvider;
+            _rootDirectory = rootDirectory;
+
             _saveLoadHandler = saveLoadHandler;
             _saveRequests = new List<SaveLoadMessage>();
             _loadRequests = new List<RegionNames>();
             _unloadRequests = new List<RegionNames>();
             _preferenceRequests = new List<PreferenceData>();
             _fileLoadRequest = -1;
+
+            _currentLoadedRegions = new List<RegionNames>();
 
             _loadUnloadLock = new object();
             _fileLoadLock = new object();
@@ -241,31 +254,74 @@ namespace Element.ResourceManagement
 
         #region Executions
 
-        private void ExecuteLoadUnloadRequest(List<RegionNames> regionsToLoad, List<RegionNames> regionsToUnload)
+        private void ExecuteLoadUnloadRequest(List<RegionNames> regionsToLoad, List<RegionNames> regionsToUnload) // maitain a list of loaded regions here
         {
             if (regionsToLoad.Count == 0 && regionsToUnload.Count == 0)
                 return;
+            
+            var loadedArgs = new AssetsLoadedEventArgs();
+            var unloadedArgs = new AssetsUnloadedEventArgs();
+            unloadedArgs.RegionsUnloaded = regionsToUnload;
+
+            var currentCrossRegionNpcsUnload = NpcMapper.GetCrossRegionNpcsForRegions(_currentLoadedRegions);
+            
+            foreach (var region in regionsToLoad)
+                _currentLoadedRegions.Add(region);
+
+            foreach (var region in regionsToUnload)
+                _currentLoadedRegions.Remove(region);
 
             var saveData = DataHelper.GetDataCopyForCurrentFile();
 
-            // load all the textures and then build the regions
-            // this is where we need to determine what we need to save in the save data
-            // need some place to list all the stuff we have to load
-            // the save data should let us know if the position of a cross region npc has changed
+            // load content for region
+            var regionContent = RegionContentLoader.LoadContentForRegions(_serviceProvider, _rootDirectory, regionsToLoad);
+            loadedArgs.RegionContent = regionContent;
 
-            // to load content we need to know:
-            // the theme of the region
-            // which scenery to load and their indexes
-            // which objects are preset in the region
-            // which npcs are preset in the region and their types
-            // which region specific sounds we need to load
-            // which cross region npcs we need to load
-            // which cross region sounds we need to load
+            // create region for region
 
-            // to unload we need to know:
-            // which regions we are unloading
-            // which cross region npcs can be unloaded
-            // which cross region sounds can be unloaded
+            var regions = RegionFactory.CreateRegions(regionsToLoad, saveData);
+            loadedArgs.Regions = regions;
+
+            // then load cross region content
+
+            var crossRegionNpcsToLoad = NpcMapper.GetCrossRegionNpcsForRegions(regionsToLoad);
+
+            foreach (var npc in crossRegionNpcsToLoad)
+            {
+                foreach (var region in _currentLoadedRegions)
+                {
+                    if (NpcMapper.GetRegionsForCrossRegionNpc(npc).Contains(region))
+                    {
+                        crossRegionNpcsToLoad.Remove(npc);
+                        break;
+                    }
+                }
+            }
+
+            foreach (var npc in currentCrossRegionNpcsUnload) // double check this
+            {
+                foreach (var region in NpcMapper.GetRegionsForCrossRegionNpc(npc))
+                {
+                    if (_currentLoadedRegions.Contains(region))
+                    {
+                        currentCrossRegionNpcsUnload.Remove(npc);
+                        break;
+                    }
+                }
+            }
+            
+            var crossRegionNpcs = NpcMapper.CreateCrossRegionNpcs(crossRegionNpcsToLoad);
+            loadedArgs.CrossRegionNpcs = crossRegionNpcs;
+            unloadedArgs.CrossRegionNpcsUnloaded = currentCrossRegionNpcsUnload;
+
+            var crossRegionContent = NpcContentLoader.LoadCrossRegionNpcContent(_serviceProvider, _rootDirectory, crossRegionNpcsToLoad);
+
+            // add the sound here
+
+            loadedArgs.CrossRegionContent = crossRegionContent;
+
+            AssetsLoaded(loadedArgs);
+            AssetsUnloaded(unloadedArgs);
         }
         
         private void ExecuteSaveRequest(SaveLoadMessage msg)

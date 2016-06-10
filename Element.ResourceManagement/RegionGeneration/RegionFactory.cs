@@ -4,32 +4,33 @@ using System.Linq;
 using System.Text;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Environment;
+using Element.Common.Data;
 
 namespace Element.ResourceManagement.RegionGeneration
 {
-    public class RegionFactory
+    public static class RegionFactory
     {
-        private Dictionary<RegionNames, IRegionFactory> _regionFactories;
+        private static Dictionary<RegionNames, IRegionFactory> _regionFactories;
 
-        public RegionFactory()
+        static RegionFactory()
         {
             _regionFactories = new Dictionary<RegionNames, IRegionFactory>();
         }
 
         // make sure to apply a copy of the save data when creating the regions
-        public Dictionary<RegionNames, Region> CreateRegions(List<RegionNames> regionsToCreate)
+        public static List<Region> CreateRegions(List<RegionNames> regionsToCreate, SaveData data)
         {
-            var regions = new Dictionary<RegionNames, Region>();
+            var regions = new List<Region>();
 
             foreach (var region in regionsToCreate)
             {
-                regions.Add(region, CreateRegion(region));
+                regions.Add(CreateRegion(region));
             }
 
             return regions;
         }
 
-        public Region CreateRegion(RegionNames region)
+        public static Region CreateRegion(RegionNames region)
         {
             return _regionFactories[region].CreateRegion();
         }

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Element.Common.Data;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.GameBasics;
+using Element.Common.GameObjects.Npcs;
 
 namespace Element.Common.HelperClasses
 {
@@ -110,6 +111,34 @@ namespace Element.Common.HelperClasses
             }
         }
 
+        public static void CopySaveDataForCurrentFile()
+        {
+            if (_currentFileNumber == 0)
+            {
+                lock (_file0SaveDataCopy)
+                {
+                    if (_file0SaveData != null)
+                        _file0SaveDataCopy = _file0SaveData.Copy();
+                }
+            }
+            else if (_currentFileNumber == 1)
+            {
+                lock (_file1SaveDataCopy)
+                {
+                    if (_file1SaveData != null)
+                        _file1SaveDataCopy = _file1SaveData.Copy();
+                }
+            }
+            else if (_currentFileNumber == 2)
+            {
+                lock (_file2SaveDataCopy)
+                {
+                    if (_file2SaveData != null)
+                        _file2SaveDataCopy = _file2SaveData.Copy();
+                }
+            }
+        }
+
         public static Vector2 GetVector2FromResolution()
         {
             if (_preferenceData.Resolution == Resolutions.r960x540)
@@ -156,6 +185,11 @@ namespace Element.Common.HelperClasses
             }
             else
                 return NEW_GAME;
+        }
+
+        public static void SaveCrossRegionNpcState(Npc npc)
+        {
+            // do shit here
         }
 
         public static int CurrentFileNumber
