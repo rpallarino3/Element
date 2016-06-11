@@ -170,6 +170,7 @@
     <Folder Include="Scenery\Test0\" />
     <Folder Include="Scenery\Test1\" />
     <Folder Include="Scenery\Test2\" />
+    <Folder Include="Sounds\" />
     <Folder Include="TileObjects\Pillar\TestTheme0\" />
     <Folder Include="TileObjects\Pillar\TestTheme1\" />
   </ItemGroup>

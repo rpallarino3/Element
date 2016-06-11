@@ -8,7 +8,7 @@ namespace Element.Common.HelperClasses
 {
     public static class SoundTransmitter
     {
-        public static void PlaySound(SoundEffects soundEffect)
+        public static void PlaySound(SoundName sound)
         {
 
         }

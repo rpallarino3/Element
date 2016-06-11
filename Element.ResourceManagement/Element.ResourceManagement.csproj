@@ -76,6 +76,7 @@
     <Compile Include="ResourceManager.cs" />
     <Compile Include="SaveEvent.cs" />
     <Compile Include="SaveLoadHandler.cs" />
+    <Compile Include="Sound\SoundMapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Element.Common\Element.Common.csproj">

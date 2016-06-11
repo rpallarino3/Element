@@ -76,7 +76,7 @@
     <Compile Include="Enumerations\GameBasics\Resolutions.cs" />
     <Compile Include="Enumerations\NPCs\NpcNames.cs" />
     <Compile Include="Enumerations\NPCs\NpcTypes.cs" />
-    <Compile Include="Enumerations\Sound\SoundEffects.cs" />
+    <Compile Include="Enumerations\Sound\SoundName.cs" />
     <Compile Include="Environment\Region.cs" />
     <Compile Include="Environment\RegionInfo.cs" />
     <Compile Include="GameObjects\Tile\FreeTile.cs" />

@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.NPCs;
+using Element.Common.Enumerations.Sound;
 using Element.Common.Environment;
 using Element.Common.GameObjects.Npcs;
 
@@ -22,7 +24,7 @@ namespace Element.ResourceManagement
     {
         public List<RegionNames> RegionsUnloaded { get; set; }
         public List<NpcNames> CrossRegionNpcsUnloaded { get; set; } // do we even need this?
-        // add sounds here
+        public List<SoundName> CrossRegionSoundUnloaded { get; set; }
     }
 
     public delegate void AssetsLoadedEvent(AssetsLoadedEventArgs e);

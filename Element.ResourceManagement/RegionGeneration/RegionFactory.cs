@@ -11,10 +11,12 @@ namespace Element.ResourceManagement.RegionGeneration
     public static class RegionFactory
     {
         private static Dictionary<RegionNames, IRegionFactory> _regionFactories;
+        private static Dictionary<RegionNames, RegionInfo> _regionInfo;
 
         static RegionFactory()
         {
             _regionFactories = new Dictionary<RegionNames, IRegionFactory>();
+            _regionInfo = new Dictionary<RegionNames, RegionInfo>();
         }
 
         // make sure to apply a copy of the save data when creating the regions
@@ -24,15 +26,20 @@ namespace Element.ResourceManagement.RegionGeneration
 
             foreach (var region in regionsToCreate)
             {
-                regions.Add(CreateRegion(region));
+                regions.Add(CreateRegion(region, data));
             }
 
             return regions;
         }
 
-        public static Region CreateRegion(RegionNames region)
+        public static Region CreateRegion(RegionNames region, SaveData data)
         {
-            return _regionFactories[region].CreateRegion();
+            return _regionFactories[region].CreateRegion(_regionInfo[region], data);
+        }
+
+        public static RegionInfo GetInfoForRegion(RegionNames region)
+        {
+            return _regionInfo[region];
         }
     }
 }

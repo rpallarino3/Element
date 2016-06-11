@@ -5,10 +5,7 @@ using System.Text;
 
 namespace Element.Common.Enumerations.Sound
 {
-    public enum SoundEffects
+    public enum SoundName
     {
-        ButtonHighlight,
-        ButtonPressed,
-        MenuPageSwap,
     }
 }

@@ -10,6 +10,7 @@ using Element.Common.Messages;
 using Element.Common.Data;
 using Element.ResourceManagement.ContentLoaders;
 using Element.ResourceManagement.NpcGeneration;
+using Element.ResourceManagement.Sound;
 using Element.ResourceManagement.RegionGeneration;
 
 namespace Element.ResourceManagement
@@ -254,43 +255,22 @@ namespace Element.ResourceManagement
 
         #region Executions
 
-        private void ExecuteLoadUnloadRequest(List<RegionNames> regionsToLoad, List<RegionNames> regionsToUnload) // maitain a list of loaded regions here
+        private void ExecuteLoadUnloadRequest(List<RegionNames> regionsToLoad, List<RegionNames> regionsToUnload)
         {
             if (regionsToLoad.Count == 0 && regionsToUnload.Count == 0)
                 return;
             
-            var loadedArgs = new AssetsLoadedEventArgs();
-            var unloadedArgs = new AssetsUnloadedEventArgs();
-            unloadedArgs.RegionsUnloaded = regionsToUnload;
-
-            var currentCrossRegionNpcsUnload = NpcMapper.GetCrossRegionNpcsForRegions(_currentLoadedRegions);
-            
-            foreach (var region in regionsToLoad)
-                _currentLoadedRegions.Add(region);
-
-            foreach (var region in regionsToUnload)
-                _currentLoadedRegions.Remove(region);
-
-            var saveData = DataHelper.GetDataCopyForCurrentFile();
-
-            // load content for region
-            var regionContent = RegionContentLoader.LoadContentForRegions(_serviceProvider, _rootDirectory, regionsToLoad);
-            loadedArgs.RegionContent = regionContent;
-
-            // create region for region
-
-            var regions = RegionFactory.CreateRegions(regionsToLoad, saveData);
-            loadedArgs.Regions = regions;
-
-            // then load cross region content
-
             var crossRegionNpcsToLoad = NpcMapper.GetCrossRegionNpcsForRegions(regionsToLoad);
+            var currentCrossRegionNpcsUnload = NpcMapper.GetCrossRegionNpcsForRegions(_currentLoadedRegions);
 
+            var crossRegionSoundsToLoad = SoundMapper.GetCrossRegionSoundEffects(regionsToLoad);
+            var currentCrossRegionSoundsUnload = SoundMapper.GetCrossRegionSoundEffects(_currentLoadedRegions);
+            
             foreach (var npc in crossRegionNpcsToLoad)
             {
-                foreach (var region in _currentLoadedRegions)
+                foreach (var region in NpcMapper.GetRegionsForCrossRegionNpc(npc))
                 {
-                    if (NpcMapper.GetRegionsForCrossRegionNpc(npc).Contains(region))
+                    if (_currentLoadedRegions.Contains(region))
                     {
                         crossRegionNpcsToLoad.Remove(npc);
                         break;
@@ -298,7 +278,25 @@ namespace Element.ResourceManagement
                 }
             }
 
-            foreach (var npc in currentCrossRegionNpcsUnload) // double check this
+            foreach (var sound in crossRegionSoundsToLoad)
+            {
+                foreach (var region in SoundMapper.GetRegionsForSound(sound))
+                {
+                    if (_currentLoadedRegions.Contains(region))
+                    {
+                        crossRegionSoundsToLoad.Remove(sound);
+                        break;
+                    }
+                }
+            }
+
+            foreach (var region in regionsToLoad)
+                _currentLoadedRegions.Add(region);
+            
+            foreach (var region in regionsToUnload)
+                _currentLoadedRegions.Remove(region);
+
+            foreach (var npc in currentCrossRegionNpcsUnload)
             {
                 foreach (var region in NpcMapper.GetRegionsForCrossRegionNpc(npc))
                 {
@@ -309,16 +307,36 @@ namespace Element.ResourceManagement
                     }
                 }
             }
-            
-            var crossRegionNpcs = NpcMapper.CreateCrossRegionNpcs(crossRegionNpcsToLoad);
-            loadedArgs.CrossRegionNpcs = crossRegionNpcs;
-            unloadedArgs.CrossRegionNpcsUnloaded = currentCrossRegionNpcsUnload;
 
+            foreach (var sound in currentCrossRegionSoundsUnload)
+            {
+                foreach (var region in SoundMapper.GetRegionsForSound(sound))
+                {
+                    if (_currentLoadedRegions.Contains(region))
+                    {
+                        currentCrossRegionSoundsUnload.Remove(sound);
+                        break;
+                    }
+                }
+            }
+
+            var saveData = DataHelper.GetDataCopyForCurrentFile();            
+            var regionContent = RegionContentLoader.LoadContentForRegions(_serviceProvider, _rootDirectory, regionsToLoad);            
+            var regions = RegionFactory.CreateRegions(regionsToLoad, saveData);                        
+            var crossRegionNpcs = NpcMapper.CreateCrossRegionNpcs(crossRegionNpcsToLoad, saveData);
             var crossRegionContent = NpcContentLoader.LoadCrossRegionNpcContent(_serviceProvider, _rootDirectory, crossRegionNpcsToLoad);
-
-            // add the sound here
-
+            crossRegionContent.AddRange(SoundMapper.CreateCrossRegionSoundContent(_serviceProvider, _rootDirectory, crossRegionSoundsToLoad));
+            
+            var loadedArgs = new AssetsLoadedEventArgs();
+            loadedArgs.RegionContent = regionContent;
+            loadedArgs.Regions = regions;
             loadedArgs.CrossRegionContent = crossRegionContent;
+            loadedArgs.CrossRegionNpcs = crossRegionNpcs;
+
+            var unloadedArgs = new AssetsUnloadedEventArgs();
+            unloadedArgs.RegionsUnloaded = regionsToUnload;
+            unloadedArgs.CrossRegionSoundUnloaded = currentCrossRegionSoundsUnload;
+            unloadedArgs.CrossRegionNpcsUnloaded = currentCrossRegionNpcsUnload;
 
             AssetsLoaded(loadedArgs);
             AssetsUnloaded(unloadedArgs);

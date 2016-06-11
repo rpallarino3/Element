@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.GameBasics;
 using Element.Common.Enumerations.NPCs;
+using Element.Common.Enumerations.Sound;
 using Element.Common.HelperClasses;
 using Element.Common.Messages;
 using Element.Common.Misc;
@@ -25,13 +27,13 @@ namespace Element.ResourceManagement
 
         private Dictionary<RegionNames, RegionContent> _regionContent;
         private Dictionary<NpcNames, CrossRegionNpcContent> _crossRegionNpcContent;
-        // add sounds here
+        private Dictionary<SoundName, CrossRegionSoundContent> _crossRegionSoundContent;
 
         private List<RegionNames> _contentToRemove;
         private List<RegionContent> _contentToAdd;
 
         private List<NpcNames> _crossRegionNpcContentToRemove;
-       // add sounds here
+        private List<SoundName> _crossRegionSoundContentToRemove;
         private List<CrossRegionContent> _crossRegionContentToAdd;
 
         private ContentManager _playerContentManager;
@@ -51,12 +53,13 @@ namespace Element.ResourceManagement
 
             _regionContent = new Dictionary<RegionNames, RegionContent>();
             _crossRegionNpcContent = new Dictionary<NpcNames, CrossRegionNpcContent>();
+            _crossRegionSoundContent = new Dictionary<SoundName, CrossRegionSoundContent>();
 
             _contentToRemove = new List<RegionNames>();
             _contentToAdd = new List<RegionContent>();
             _crossRegionNpcContentToRemove = new List<NpcNames>();
+            _crossRegionSoundContentToRemove = new List<SoundName>();
             _crossRegionContentToAdd = new List<CrossRegionContent>();
-            // add sounds here
 
             _backgroundThread = new BackgroundThread(_saveLoadHandler, _serviceProvider, _rootDirectory);
             _backgroundThread.SaveInitiated += SaveStarted;
@@ -118,7 +121,9 @@ namespace Element.ResourceManagement
                 }
                 else if (content is CrossRegionSoundContent)
                 {
-                    // add shit here
+                    var soundContent = content as CrossRegionSoundContent;
+                    _crossRegionSoundContent.Add(soundContent.Id, soundContent);
+                    crossRegionContentToAdd.Remove(soundContent);
                 }
             }
         }
@@ -157,13 +162,27 @@ namespace Element.ResourceManagement
             {
                 if (_crossRegionNpcContent.ContainsKey(item))
                 {
-                    _crossRegionNpcContent[item].ContentManager.Unload();
-                    _crossRegionNpcContent[item].ContentManager.Dispose();
+                    _crossRegionNpcContent[item].Dispose();
                     _crossRegionNpcContent.Remove(item);
                 }
             }
 
-            // do sound here
+            var crossRegionSoundContentToRemove = new List<SoundName>();
+
+            lock (_crossRegionSoundContentToRemove)
+            {
+                crossRegionSoundContentToRemove.AddRange(_crossRegionSoundContentToRemove);
+                _crossRegionSoundContentToRemove.Clear();
+            }
+
+            foreach (var item in crossRegionSoundContentToRemove)
+            {
+                if (_crossRegionSoundContent.ContainsKey(item))
+                {
+                    _crossRegionSoundContent[item].Dispose();
+                    _crossRegionSoundContent.Remove(item);
+                }
+            }
         }
 
         #region Save Data
@@ -255,8 +274,11 @@ namespace Element.ResourceManagement
             {
                 _crossRegionNpcContentToRemove.AddRange(e.CrossRegionNpcsUnloaded);
             }
-
-            // do sounds here
+            
+            lock (_crossRegionSoundContentToRemove)
+            {
+                _crossRegionSoundContentToRemove.AddRange(e.CrossRegionSoundUnloaded);
+            }
         }
 
         #endregion

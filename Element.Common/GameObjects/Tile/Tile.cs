@@ -10,6 +10,9 @@ namespace Element.Common.GameObjects.Tile
 {
     public abstract class Tile
     {
+        // should return a copy of the tile minus the shit that's inside of it
+        public abstract Tile Copy();
+
         public virtual bool CanMoveOnTile(Directions dir)
         {
             return true;
