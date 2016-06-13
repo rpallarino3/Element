@@ -22,6 +22,24 @@ namespace Element.ResourceManagement.ContentLoaders
             _regionNpcs = new Dictionary<RegionNames, List<NpcNames>>();
             _regionObjects = new Dictionary<RegionNames, List<ObjectNames>>();
             _regionScenery = new Dictionary<RegionNames, List<string>>();
+
+            #region Test0
+            _regionNpcs[RegionNames.Test0] = new List<NpcNames>();
+            _regionObjects[RegionNames.Test0] = new List<ObjectNames>();
+            _regionScenery[RegionNames.Test0] = new List<string>();
+            #endregion
+
+            #region Test1
+            _regionNpcs[RegionNames.Test1] = new List<NpcNames>();
+            _regionObjects[RegionNames.Test1] = new List<ObjectNames>();
+            _regionScenery[RegionNames.Test1] = new List<string>();
+            #endregion
+
+            #region Test2
+            _regionNpcs[RegionNames.Test2] = new List<NpcNames>();
+            _regionObjects[RegionNames.Test2] = new List<ObjectNames>();
+            _regionScenery[RegionNames.Test2] = new List<string>();
+            #endregion
         }
 
         // need to know the npcs to load, the scenery to load, the objects to load

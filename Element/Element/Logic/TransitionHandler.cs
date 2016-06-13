@@ -117,7 +117,7 @@ namespace Element.Logic
             if (transition == null)
                 return;
             
-            if (transition.DestinationRegion == _roamLogicHandler.CurrentPlayerRegion)
+            if (transition.DestinationRegion == _roamLogicHandler.CurrentPlayerRegion && GameStateHelper.CurrentState == GameStates.Roam)
             {
                 _roamLogicHandler.UpdatePlayerPositionWithTransition(transition);
                 return;
@@ -128,6 +128,10 @@ namespace Element.Logic
 
             List<RegionNames> regionsToLoad = new List<RegionNames>();
             List<RegionNames> regionsToUnload = new List<RegionNames>();
+
+            // load the destination region if it isn't already loaded (this will happen sometimes when loading files)
+            if (!currentlyLoadedRegions.Contains(transition.DestinationRegion))
+                regionsToLoad.Add(transition.DestinationRegion);
 
             // load everything this is adjacent to the region we are going to but isn't currently loaded
             foreach (var region in adjacentRegions)
@@ -185,7 +189,9 @@ namespace Element.Logic
             else
             {
                 ExecuteTransition();
-                FadeIn(); // we would always want to fade in here?
+
+                if (!_waitOnLoad)
+                    FadeIn(); // we would always want to fade in here?
             }
         }
 

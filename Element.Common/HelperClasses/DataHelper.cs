@@ -37,6 +37,19 @@ namespace Element.Common.HelperClasses
             return new SaveData();
         }
 
+        public static SaveData CreateStartingSaveData()
+        {
+            var saveData = new SaveData();
+
+            saveData.PlayerRegion = RegionNames.Test0;
+            saveData.PlayerZone = 0;
+            saveData.PlayerLocation = new Vector2(0, 0);
+            saveData.PlayerLevel = 0;
+            saveData.PlayerFacingDirection = Directions.Down;
+
+            return saveData;
+        }
+
         // i know this is really messy but what can you do
         public static SaveData GetDataCopyFromFileNumber(int fileNumber)
         {
@@ -87,6 +100,14 @@ namespace Element.Common.HelperClasses
                 _file2SaveData = new SaveData();
                 _preferenceData.File2Info = new SaveFileInfo();
             }
+        }
+
+        // this should only be called once when everything is loaded
+        public static void InitialCopy()
+        {
+            _file0SaveDataCopy = _file0SaveData.Copy();
+            _file1SaveDataCopy = _file1SaveData.Copy();
+            _file2SaveDataCopy = _file2SaveData.Copy();
         }
 
         // this should only ever be called from the main thread

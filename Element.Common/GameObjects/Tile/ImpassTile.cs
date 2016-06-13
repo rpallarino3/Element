@@ -7,5 +7,9 @@ namespace Element.Common.GameObjects.Tile
 {
     public class ImpassTile : Tile
     {
+        public override Tile Copy()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

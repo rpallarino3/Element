@@ -334,6 +334,7 @@ namespace Element.Logic
             InitiateTransition(
                 new RoamTransition()
                 {
+                    Fade = true,
                     DestinationCoords = new Vector2(data.PlayerLocation.X, data.PlayerLocation.Y),
                     DestinationLevel = data.PlayerLevel,
                     DestinationRegion = data.PlayerRegion,

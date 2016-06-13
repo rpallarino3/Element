@@ -19,7 +19,16 @@ namespace Element.Common.Data
 
         public SaveData Copy()
         {
-            return new SaveData();
+            var saveData = new SaveData();
+
+            saveData.PlayerLocation = new Vector2(PlayerLocation.X, PlayerLocation.Y);
+            saveData.PlayerLevel = PlayerLevel;
+            saveData.PlayerFacingDirection = PlayerFacingDirection;
+            saveData.PlayerRegion = PlayerRegion;
+            saveData.PlayerZone = PlayerZone;
+            saveData.FileInfo = FileInfo.Copy();
+
+            return saveData;
         }
 
         public Vector2 PlayerLocation { get; set; }

@@ -17,6 +17,16 @@ namespace Element.ResourceManagement.RegionGeneration
         {
             _regionFactories = new Dictionary<RegionNames, IRegionFactory>();
             _regionInfo = new Dictionary<RegionNames, RegionInfo>();
+
+            #region Test0
+            _regionInfo[RegionNames.Test0] = new RegionInfo();
+            #endregion
+            #region Test1
+            _regionInfo[RegionNames.Test1] = new RegionInfo();
+            #endregion
+            #region Test2
+            _regionInfo[RegionNames.Test2] = new RegionInfo();
+            #endregion
         }
 
         // make sure to apply a copy of the save data when creating the regions

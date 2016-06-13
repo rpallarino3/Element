@@ -12,11 +12,24 @@ namespace Element.Common.Environment
 {
     public class Zone
     {
+        private Vector2 _size;
+        private int _levels;
         private Tile[, ,] _tileMap;
         private List<Npc> _npcs;
         private List<TileObject> _tileObjects;
         private List<SceneryObject> _sceneryObjects;
         private List<Rectangle> _cameraCollisionBoxes;
+
+        public Zone(Vector2 size, int levels)
+        {
+            _size = size;
+            _levels = levels;
+            _tileMap = new Tile[(int)size.X, (int)size.Y, levels];
+            _npcs = new List<Npc>();
+            _tileObjects = new List<TileObject>();
+            _sceneryObjects = new List<SceneryObject>();
+            _cameraCollisionBoxes = new List<Rectangle>();
+        }
 
         public void AddTileSection(int x, int y, int width, int height, int level, Tile tile)
         {
@@ -52,6 +65,16 @@ namespace Element.Common.Environment
         public List<Rectangle> CameraCollisionBoxes
         {
             get { return _cameraCollisionBoxes; }
+        }
+
+        public Vector2 Size
+        {
+            get { return _size; }
+        }
+
+        public int Levels
+        {
+            get { return _levels; }
         }
     }
 }

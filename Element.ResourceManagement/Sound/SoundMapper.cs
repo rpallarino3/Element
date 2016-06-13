@@ -14,11 +14,25 @@ namespace Element.ResourceManagement.Sound
     {
         private static Dictionary<SoundName, List<RegionNames>> _soundRegions;
         private static Dictionary<RegionNames, List<SoundName>> _regionSounds;
+        private static Dictionary<SoundName, string> _soundFiles;
 
         static SoundMapper()
         {
             _soundRegions = new Dictionary<SoundName, List<RegionNames>>();
             _regionSounds = new Dictionary<RegionNames, List<SoundName>>();
+            _soundFiles = new Dictionary<SoundName, string>();
+
+            #region Test0
+            _regionSounds[RegionNames.Test0] = new List<SoundName>();
+            #endregion
+
+            #region Test1
+            _regionSounds[RegionNames.Test1] = new List<SoundName>();
+            #endregion
+
+            #region Test2
+            _regionSounds[RegionNames.Test2] = new List<SoundName>();
+            #endregion
         }
 
         public static List<SoundName> GetCrossRegionSoundEffects(List<RegionNames> regions)
@@ -52,7 +66,7 @@ namespace Element.ResourceManagement.Sound
             {
                 var content = new CrossRegionSoundContent();
                 var contentManager = new ContentManager(serviceProvider, rootDirectory);
-                var soundEffect = contentManager.Load<SoundEffect>(sound.ToString()); // need to get the correct string here, put it in enum description
+                var soundEffect = contentManager.Load<SoundEffect>(_soundFiles[sound]);
                 content.Id = sound;
                 content.ContentManager = contentManager;
                 content.Sound = soundEffect;
@@ -69,7 +83,7 @@ namespace Element.ResourceManagement.Sound
             var sounds = RegionFactory.GetInfoForRegion(region).RegionSounds;
 
             foreach (var sound in sounds)
-                soundDictionary.Add(sound, contentManager.Load<SoundEffect>(sound.ToString())); // again need to actually create the real file path
+                soundDictionary.Add(sound, contentManager.Load<SoundEffect>(_soundFiles[sound]));
 
             return soundDictionary;
         }

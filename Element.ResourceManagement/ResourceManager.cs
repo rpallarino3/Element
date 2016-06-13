@@ -306,15 +306,15 @@ namespace Element.ResourceManagement
 
             _saveLoadHandler.LoadFiles();
 
-            DataHelper.File0SaveData = _saveLoadHandler.File0Data != null ? _saveLoadHandler.File0Data.Copy() : new SaveData();
-            DataHelper.File1SaveData = _saveLoadHandler.File1Data != null ? _saveLoadHandler.File1Data.Copy() : new SaveData();
-            DataHelper.File2SaveData = _saveLoadHandler.File2Data != null ? _saveLoadHandler.File2Data.Copy() : new SaveData();
+            DataHelper.File0SaveData = _saveLoadHandler.File0Data != null ? _saveLoadHandler.File0Data.Copy() : DataHelper.CreateStartingSaveData();
+            DataHelper.File1SaveData = _saveLoadHandler.File1Data != null ? _saveLoadHandler.File1Data.Copy() : DataHelper.CreateStartingSaveData();
+            DataHelper.File2SaveData = _saveLoadHandler.File2Data != null ? _saveLoadHandler.File2Data.Copy() : DataHelper.CreateStartingSaveData();
 
             DataHelper.PreferenceData.File0Info = DataHelper.File0SaveData.FileInfo;
             DataHelper.PreferenceData.File1Info = DataHelper.File1SaveData.FileInfo;
             DataHelper.PreferenceData.File2Info = DataHelper.File2SaveData.FileInfo;
 
-            DataHelper.CopySaveData();
+            DataHelper.InitialCopy();
         }
 
         public void ResetPreferenceData()

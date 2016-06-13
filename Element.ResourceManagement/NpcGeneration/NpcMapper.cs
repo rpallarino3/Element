@@ -20,6 +20,24 @@ namespace Element.ResourceManagement.NpcGeneration
             _npcRegions = new Dictionary<NpcNames, List<RegionNames>>();
             _regionNpcs = new Dictionary<RegionNames, List<NpcNames>>();
             _npcTypes = new Dictionary<NpcNames, NpcTypes>();
+
+            #region TestRegion0
+
+            _regionNpcs[RegionNames.Test0] = new List<NpcNames>();
+
+            #endregion
+
+            #region TestRegion1
+
+            _regionNpcs[RegionNames.Test1] = new List<NpcNames>();
+
+            #endregion
+
+            #region TestRegion2
+
+            _regionNpcs[RegionNames.Test2] = new List<NpcNames>();
+
+            #endregion
         }
 
         public static List<NpcNames> GetCrossRegionNpcsForRegions(List<RegionNames> regions)
