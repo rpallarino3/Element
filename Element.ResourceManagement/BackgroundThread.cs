@@ -320,7 +320,7 @@ namespace Element.ResourceManagement
                 }
             }
 
-            var saveData = DataHelper.GetDataCopyForCurrentFile();            
+            var saveData = DataHelper.GetCopySaveDataForCurrentFile(); // we need to use this to create the regions
             var regionContent = RegionContentLoader.LoadContentForRegions(_serviceProvider, _rootDirectory, regionsToLoad);            
             var regions = RegionFactory.CreateRegions(regionsToLoad, saveData);                        
             var crossRegionNpcs = NpcMapper.CreateCrossRegionNpcs(crossRegionNpcsToLoad, saveData);

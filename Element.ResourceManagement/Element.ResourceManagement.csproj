@@ -69,6 +69,9 @@
     <Compile Include="RegionContent.cs" />
     <Compile Include="ContentLoaders\RegionContentLoader.cs" />
     <Compile Include="RegionGeneration\IRegionFactory.cs" />
+    <Compile Include="RegionGeneration\RegionFactories\Test0RegionFactory.cs" />
+    <Compile Include="RegionGeneration\RegionFactories\Test1RegionFactory.cs" />
+    <Compile Include="RegionGeneration\RegionFactories\Test2RegionFactory.cs" />
     <Compile Include="RegionGeneration\RegionFactory.cs" />
     <Compile Include="RegionGeneration\RegionInfo.cs" />
     <Compile Include="RegionGeneration\RegionLayout.cs" />
@@ -76,6 +79,7 @@
     <Compile Include="ResourceManager.cs" />
     <Compile Include="SaveEvent.cs" />
     <Compile Include="SaveLoadHandler.cs" />
+    <Compile Include="Scenery\SceneryFiles.cs" />
     <Compile Include="Sound\SoundMapper.cs" />
   </ItemGroup>
   <ItemGroup>

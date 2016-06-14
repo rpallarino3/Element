@@ -12,6 +12,12 @@ namespace Element.Common.Environment
         private RegionNames _name;
         private List<Zone> _zones;
         
+        public Region(RegionNames name)
+        {
+            _name = name;
+            _zones = new List<Zone>();
+        }
+
         public RegionNames Name
         {
             get { return _name; }

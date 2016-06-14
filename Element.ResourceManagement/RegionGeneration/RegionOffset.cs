@@ -15,6 +15,15 @@ namespace Element.ResourceManagement.RegionGeneration
         private int _otherZone;
         private Vector2 _offset;
 
+        public RegionOffset(RegionNames anchorRegion, RegionNames otherRegion, int anchorZone, int otherZone, Vector2 offset)
+        {
+            _anchorRegion = anchorRegion;
+            _otherRegion = otherRegion;
+            _anchorZone = anchorZone;
+            _otherZone = otherZone;
+            _offset = offset;
+        }
+
         public RegionNames AnchorRegion
         {
             get { return _anchorRegion; }

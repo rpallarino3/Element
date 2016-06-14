@@ -312,7 +312,7 @@ namespace Element.Logic
 
             var msg = new SaveLoadMessage();
             msg.FileNumber = args.FileNumber;
-            msg.Data = DataHelper.GetDataCopyFromFileNumber(args.FileNumber);
+            msg.Data = DataHelper.GetSaveDataCopyForFileNumber(args.FileNumber);
 
             _resourceManager.RequestSave(msg);
         }

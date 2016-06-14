@@ -5,3 +5,4 @@ bin
 /Element/Element/*.user
 /Element/ElementContent/*.user
 /Element/Element/*.cachefile
+/Element.ResourceManagement/*.user

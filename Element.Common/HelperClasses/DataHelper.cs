@@ -21,9 +21,7 @@ namespace Element.Common.HelperClasses
         private static int _currentFileNumber;
         private static PreferenceData _preferenceData;
 
-        private static SaveData _file0SaveDataCopy;
-        private static SaveData _file1SaveDataCopy;
-        private static SaveData _file2SaveDataCopy;
+        #region Save Data
 
         public static SaveData GetDataFromFileNumber(int fileNumber)
         {
@@ -49,116 +47,98 @@ namespace Element.Common.HelperClasses
 
             return saveData;
         }
-
-        // i know this is really messy but what can you do
-        public static SaveData GetDataCopyFromFileNumber(int fileNumber)
+                
+        public static void EraseDataForFile(int fileNumber)
         {
-            if (fileNumber == 0 && _file0SaveDataCopy != null)
+            if (fileNumber == 0)
             {
-                lock (_file0SaveDataCopy)
-                {
-                    return _file0SaveDataCopy.Copy();
-                }
+                if (_file0SaveData == null)
+                    return;
+
+                lock (_file0SaveData)
+                    _file0SaveData = new SaveData();
+
+                _preferenceData.File0Info = new SaveFileInfo();
             }
-            else if (fileNumber == 1 && _file1SaveDataCopy != null)
+            else if (fileNumber == 1)
             {
-                lock (_file1SaveDataCopy)
-                {
-                    return _file1SaveDataCopy.Copy();
-                }
+                lock (_file1SaveData)
+                    _file1SaveData = new SaveData();
+
+                _preferenceData.File1Info = new SaveFileInfo();
             }
-            else if (fileNumber == 2 && _file2SaveDataCopy != null)
+            else if (fileNumber == 2)
             {
-                lock (_file2SaveDataCopy)
-                {
-                    return _file2SaveDataCopy.Copy(); ;
-                }
+                lock (_file2SaveData)
+                    _file2SaveData = new SaveData();
+
+                _preferenceData.File2Info = new SaveFileInfo();
+            }
+        }
+        
+        public static SaveData GetSaveDataCopyForFileNumber(int fileNumber)
+        {
+            if (fileNumber == 0)
+            {
+                if (_file0SaveData == null)
+                    return new SaveData();
+
+                lock (_file0SaveData)
+                    return _file0SaveData.Copy();
+            }
+            else if (fileNumber == 1)
+            {
+                if (_file1SaveData == null)
+                    return new SaveData();
+
+                lock (_file1SaveData)
+                    return _file1SaveData.Copy();
+            }
+            else if (fileNumber == 2)
+            {
+                if (_file2SaveData == null)
+                    return new SaveData();
+
+                lock (_file2SaveData)
+                    return _file2SaveData.Copy();
             }
 
             return new SaveData();
         }
 
-        public static SaveData GetDataCopyForCurrentFile()
-        {
-            return GetDataCopyFromFileNumber(_currentFileNumber);
-        }
-        
-        public static void EraseDataForFile(int fileNumber)
-        {
-            if (fileNumber == 0)
-            {
-                _file0SaveData = new SaveData();
-                _preferenceData.File0Info = new SaveFileInfo();
-            }
-            else if (fileNumber == 1)
-            {
-                _file1SaveData = new SaveData();
-                _preferenceData.File1Info = new SaveFileInfo();
-            }
-            else if (fileNumber == 2)
-            {
-                _file2SaveData = new SaveData();
-                _preferenceData.File2Info = new SaveFileInfo();
-            }
-        }
-
-        // this should only be called once when everything is loaded
-        public static void InitialCopy()
-        {
-            _file0SaveDataCopy = _file0SaveData.Copy();
-            _file1SaveDataCopy = _file1SaveData.Copy();
-            _file2SaveDataCopy = _file2SaveData.Copy();
-        }
-
-        // this should only ever be called from the main thread
-        public static void CopySaveData()
-        {
-            lock (_file0SaveDataCopy)
-            {
-                if (_file0SaveData != null)
-                    _file0SaveDataCopy = _file0SaveData.Copy();
-            }
-
-            lock (_file1SaveDataCopy)
-            {
-                if (_file1SaveData != null)
-                    _file1SaveDataCopy = _file1SaveData.Copy();
-            }
-
-            lock (_file2SaveDataCopy)
-            {
-                if (_file2SaveData != null)
-                    _file2SaveDataCopy = _file2SaveData.Copy();
-            }
-        }
-
-        public static void CopySaveDataForCurrentFile()
+        public static SaveData GetCopySaveDataForCurrentFile()
         {
             if (_currentFileNumber == 0)
             {
-                lock (_file0SaveDataCopy)
-                {
-                    if (_file0SaveData != null)
-                        _file0SaveDataCopy = _file0SaveData.Copy();
-                }
+                if (_file0SaveData == null)
+                    return new SaveData();
+
+                lock (_file0SaveData)
+                    return _file0SaveData.Copy();
             }
             else if (_currentFileNumber == 1)
             {
-                lock (_file1SaveDataCopy)
-                {
-                    if (_file1SaveData != null)
-                        _file1SaveDataCopy = _file1SaveData.Copy();
-                }
+                if (_file1SaveData == null)
+                    return new SaveData();
+
+                lock (_file1SaveData)
+                    return _file1SaveData.Copy();
             }
             else if (_currentFileNumber == 2)
             {
-                lock (_file2SaveDataCopy)
-                {
-                    if (_file2SaveData != null)
-                        _file2SaveDataCopy = _file2SaveData.Copy();
-                }
+                if (_file2SaveData == null)
+                    return new SaveData();
+
+                lock (_file2SaveData)
+                    return _file2SaveData.Copy();
             }
+
+            return new SaveData();
         }
+
+        #endregion
+
+        #region Pref Data
 
         public static Vector2 GetVector2FromResolution()
         {
@@ -208,10 +188,15 @@ namespace Element.Common.HelperClasses
                 return NEW_GAME;
         }
 
+        #endregion
+
         public static void SaveCrossRegionNpcState(Npc npc)
         {
             // do shit here
+            // need to make sure to lock on save data whenever we want to add to it
         }
+
+        #region Properties
 
         public static int CurrentFileNumber
         {
@@ -244,5 +229,7 @@ namespace Element.Common.HelperClasses
             get { return _file2SaveData; }
             set { _file2SaveData = value; }
         }
+
+        #endregion
     }
 }

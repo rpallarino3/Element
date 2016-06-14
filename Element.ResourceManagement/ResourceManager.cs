@@ -196,7 +196,7 @@ namespace Element.ResourceManagement
         {
             var msg = new SaveLoadMessage();
 
-            msg.Data = DataHelper.GetDataCopyFromFileNumber(fileNumber);
+            msg.Data = DataHelper.GetSaveDataCopyForFileNumber(fileNumber);
             msg.FileNumber = fileNumber;
             msg.Erase = true;
 
@@ -312,9 +312,7 @@ namespace Element.ResourceManagement
 
             DataHelper.PreferenceData.File0Info = DataHelper.File0SaveData.FileInfo;
             DataHelper.PreferenceData.File1Info = DataHelper.File1SaveData.FileInfo;
-            DataHelper.PreferenceData.File2Info = DataHelper.File2SaveData.FileInfo;
-
-            DataHelper.InitialCopy();
+            DataHelper.PreferenceData.File2Info = DataHelper.File2SaveData.FileInfo;            
         }
 
         public void ResetPreferenceData()

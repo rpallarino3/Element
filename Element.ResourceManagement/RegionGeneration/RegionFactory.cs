@@ -5,28 +5,21 @@ using System.Text;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Environment;
 using Element.Common.Data;
+using Element.ResourceManagement.RegionGeneration.RegionFactories;
 
 namespace Element.ResourceManagement.RegionGeneration
 {
     public static class RegionFactory
     {
         private static Dictionary<RegionNames, IRegionFactory> _regionFactories;
-        private static Dictionary<RegionNames, RegionInfo> _regionInfo;
 
         static RegionFactory()
         {
             _regionFactories = new Dictionary<RegionNames, IRegionFactory>();
-            _regionInfo = new Dictionary<RegionNames, RegionInfo>();
 
-            #region Test0
-            _regionInfo[RegionNames.Test0] = new RegionInfo();
-            #endregion
-            #region Test1
-            _regionInfo[RegionNames.Test1] = new RegionInfo();
-            #endregion
-            #region Test2
-            _regionInfo[RegionNames.Test2] = new RegionInfo();
-            #endregion
+            _regionFactories[RegionNames.Test0] = new Test0RegionFactory();
+            _regionFactories[RegionNames.Test1] = new Test1RegionFactory();
+            _regionFactories[RegionNames.Test2] = new Test2RegionFactory();
         }
 
         // make sure to apply a copy of the save data when creating the regions
@@ -44,12 +37,12 @@ namespace Element.ResourceManagement.RegionGeneration
 
         public static Region CreateRegion(RegionNames region, SaveData data)
         {
-            return _regionFactories[region].CreateRegion(_regionInfo[region], data);
+            return _regionFactories[region].CreateRegion(GetInfoForRegion(region), data);
         }
 
         public static RegionInfo GetInfoForRegion(RegionNames region)
         {
-            return _regionInfo[region];
+            return RegionLayout.RegionInfo[region];
         }
     }
 }
