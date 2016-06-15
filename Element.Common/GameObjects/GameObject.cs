@@ -15,6 +15,12 @@ namespace Element.Common.GameObjects
         protected bool _locked;
         protected int _id;
 
+        public GameObject(Vector2 location, int level)
+        {
+            _location = location;
+            _level = level;
+        }
+
         public Vector2 Location
         {
             get { return _location; }

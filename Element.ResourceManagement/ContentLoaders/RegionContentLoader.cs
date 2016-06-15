@@ -15,6 +15,7 @@ namespace Element.ResourceManagement.ContentLoaders
     {
         private static Dictionary<RegionNames, List<NpcNames>> _regionNpcs;
         private static Dictionary<RegionNames, List<ObjectNames>> _regionObjects; // do the sounds come with the objects?
+        // the scenery should maybe come from one centralized spot?
         private static Dictionary<RegionNames, List<string>> _regionScenery; // idk exactly what we do here, maybe we just load all files in directory, need to index them somehow
         
         static RegionContentLoader()

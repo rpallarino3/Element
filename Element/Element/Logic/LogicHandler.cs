@@ -52,9 +52,7 @@ namespace Element.Logic
             else if (GameStateHelper.CurrentState == GameStates.Chat)
             {
 
-            }
-
-            DataHelper.CopySaveDataForCurrentFile();
+            }            
         }
         
         public Color DrawColor { get { return _transitionHandler.DrawColor; } }

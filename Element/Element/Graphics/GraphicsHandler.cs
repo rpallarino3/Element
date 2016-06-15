@@ -14,10 +14,12 @@ namespace Element.Graphics
     public class GraphicsHandler
     {
         private MenuGraphicsHandler _menuGraphicsHandler;
+        private RoamGraphicsHandler _roamGraphicsHandler;
 
         public GraphicsHandler()
         {
             _menuGraphicsHandler = new MenuGraphicsHandler();
+            _roamGraphicsHandler = new RoamGraphicsHandler();
         }
 
         public void Draw(SpriteBatch sb, LogicHandler logic, ResourceManager resourceManager)
@@ -31,9 +33,11 @@ namespace Element.Graphics
                 _menuGraphicsHandler.DrawStart(sb, logic, resourceManager);
             else if (state == GameStates.StartMenu)
                 _menuGraphicsHandler.DrawStartMenu(sb, logic, resourceManager);
+            else if (state == GameStates.Roam)
+                _roamGraphicsHandler.DrawRoam(sb, logic, resourceManager);
             else if (state == GameStates.ExitMenu)
             {
-                // draw roam here too
+                _roamGraphicsHandler.DrawRoam(sb, logic, resourceManager);
                 _menuGraphicsHandler.DrawExitMenu(sb, logic, resourceManager);
             }
         }

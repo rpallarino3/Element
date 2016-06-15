@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Element.ResourceManagement;
+using Element.ResourceManagement.RegionGeneration;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.GameBasics;
 using Element.Common.Environment;
@@ -123,7 +124,8 @@ namespace Element.Logic
                 return;
             }
 
-            var adjacentRegions = RegionMapper.GetAdjacentRegions(transition.DestinationRegion); // this is going to become regions to load
+            var adjacentRegions = RegionLayout.RegionInfo[transition.DestinationRegion].AdjacentRegions;
+            //var adjacentRegions = RegionMapper.GetAdjacentRegions(transition.DestinationRegion); // this is going to become regions to load
             var currentlyLoadedRegions = new List<RegionNames>(_roamLogicHandler.Regions.Keys.ToList()); // this is going to become regions to unload?
 
             List<RegionNames> regionsToLoad = new List<RegionNames>();

@@ -95,10 +95,7 @@
     <Compile Include="HelperClasses\GameConstants.cs" />
     <Compile Include="HelperClasses\GameStateHelper.cs" />
     <Compile Include="HelperClasses\InputHelper.cs" />
-    <Compile Include="HelperClasses\ListComparer.cs" />
-    <Compile Include="HelperClasses\MessageCrafter.cs" />
     <Compile Include="HelperClasses\PreferenceValidator.cs" />
-    <Compile Include="HelperClasses\RegionMapper.cs" />
     <Compile Include="HelperClasses\SoundEventArgs.cs" />
     <Compile Include="HelperClasses\SoundTransmitter.cs" />
     <Compile Include="HelperClasses\TransitionEvent.cs" />

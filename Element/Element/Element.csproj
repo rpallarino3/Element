@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="Graphics\GraphicsHandler.cs" />
     <Compile Include="Graphics\MenuGraphicsHandler.cs" />
+    <Compile Include="Graphics\RoamGraphicsHandler.cs" />
     <Compile Include="Input\InputHandler.cs" />
     <Compile Include="Logic\Camera.cs" />
     <Compile Include="Logic\LogicHandler.cs" />

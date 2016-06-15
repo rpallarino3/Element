@@ -179,15 +179,23 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Scenery\Regions\Test1\Level0.png">
-      <Name>Level0</Name>
+    <Compile Include="Scenery\Regions\Test1\Level0Bottom.png">
+      <Name>Level0Bottom</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Scenery\Regions\Test2\Level0.png">
-      <Name>Level0</Name>
+    <Compile Include="Scenery\Regions\Test1\Level0Top.png">
+      <Name>Level0Top</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Scenery\Regions\Test2\Level0Left.png">
+      <Name>Level0Left</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Scenery\Regions\Test2\Level0Right.png">
+      <Name>Level0Right</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

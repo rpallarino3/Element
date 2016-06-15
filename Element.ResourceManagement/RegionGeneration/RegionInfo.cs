@@ -17,8 +17,9 @@ namespace Element.ResourceManagement.RegionGeneration
         private List<RegionNames> _adjacentRegions;
         private List<RegionOffset> _regionOffsets;
         private List<SoundName> _regionSounds;
-        private List<Vector2> _zoneSizes;
+        private List<Vector2> _zoneTileSizes;
         private List<int> _zoneLevels;
+        private List<Rectangle> _cameraCollisionBoxes;
 
         public RegionInfo()
         {
@@ -27,8 +28,9 @@ namespace Element.ResourceManagement.RegionGeneration
             _adjacentRegions = new List<RegionNames>();
             _regionOffsets = new List<RegionOffset>();
             _regionSounds = new List<SoundName>();
-            _zoneSizes = new List<Vector2>();
+            _zoneTileSizes = new List<Vector2>();
             _zoneLevels = new List<int>();
+            _cameraCollisionBoxes = new List<Rectangle>();
         }
 
         public RegionTheme Theme
@@ -67,16 +69,22 @@ namespace Element.ResourceManagement.RegionGeneration
             set { _regionSounds = value; }
         }
 
-        public List<Vector2> ZoneSizes
+        public List<Vector2> ZoneTileSizes
         {
-            get { return _zoneSizes; }
-            set { _zoneSizes = value; }
+            get { return _zoneTileSizes; }
+            set { _zoneTileSizes = value; }
         }
 
         public List<int> ZoneLevels
         {
             get { return _zoneLevels; }
             set { _zoneLevels = value; }
+        }
+
+        public List<Rectangle> CameraCollisionBoxes
+        {
+            get { return _cameraCollisionBoxes; }
+            set { _cameraCollisionBoxes = value; }
         }
     }
 }
