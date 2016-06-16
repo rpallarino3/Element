@@ -6,38 +6,20 @@ using Element.Common.Data;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.NPCs;
 using Element.Common.GameObjects.Npcs;
+using Element.ResourceManagement.RegionGeneration;
 
 namespace Element.ResourceManagement.NpcGeneration
 {
     public static class NpcMapper
     {
         private static Dictionary<NpcNames, List<RegionNames>> _npcRegions;
-        private static Dictionary<RegionNames, List<NpcNames>> _regionNpcs;
         private static Dictionary<NpcNames, NpcTypes> _npcTypes;
 
         static NpcMapper()
         {
             _npcRegions = new Dictionary<NpcNames, List<RegionNames>>();
-            _regionNpcs = new Dictionary<RegionNames, List<NpcNames>>();
             _npcTypes = new Dictionary<NpcNames, NpcTypes>();
-
-            #region TestRegion0
-
-            _regionNpcs[RegionNames.Test0] = new List<NpcNames>();
-
-            #endregion
-
-            #region TestRegion1
-
-            _regionNpcs[RegionNames.Test1] = new List<NpcNames>();
-
-            #endregion
-
-            #region TestRegion2
-
-            _regionNpcs[RegionNames.Test2] = new List<NpcNames>();
-
-            #endregion
+            
         }
 
         public static List<NpcNames> GetCrossRegionNpcsForRegions(List<RegionNames> regions)
@@ -46,7 +28,7 @@ namespace Element.ResourceManagement.NpcGeneration
 
             foreach (var region in regions)
             {
-                var npcsToAdd = _regionNpcs[region];
+                var npcsToAdd = RegionFactory.GetInfoForRegion(region).CrossRegionNpcs;
 
                 foreach (var npc in npcsToAdd)
                 {

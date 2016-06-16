@@ -7,6 +7,7 @@ using Element.Common.Data;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Environment;
 using Element.Common.GameObjects.Scenery;
+using Element.ResourceManagement.Scenery;
 
 namespace Element.ResourceManagement.RegionGeneration.RegionFactories
 {
@@ -25,7 +26,7 @@ namespace Element.ResourceManagement.RegionGeneration.RegionFactories
             }
 
             // where should the scenery indexes come from?
-            region.Zones[0].SceneryObjects.Add(new SceneryObject(0, new Vector2(0, 0), 0, new Vector2(2000, 2000)));
+            region.Zones[0].SceneryObjects.Add(SceneryMapper.CreateSceneryObject(SceneryNames.Test0Level0, new Vector2(0, 0), 0));
 
             return region;
         }

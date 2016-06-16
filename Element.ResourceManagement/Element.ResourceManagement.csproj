@@ -79,7 +79,8 @@
     <Compile Include="ResourceManager.cs" />
     <Compile Include="SaveEvent.cs" />
     <Compile Include="SaveLoadHandler.cs" />
-    <Compile Include="Scenery\SceneryFiles.cs" />
+    <Compile Include="Scenery\SceneryMapper.cs" />
+    <Compile Include="Scenery\SceneryInfo.cs" />
     <Compile Include="Sound\SoundMapper.cs" />
   </ItemGroup>
   <ItemGroup>

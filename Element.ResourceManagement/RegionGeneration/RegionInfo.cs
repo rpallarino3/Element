@@ -12,24 +12,45 @@ namespace Element.ResourceManagement.RegionGeneration
     public class RegionInfo
     {
         private RegionTheme _theme;
+
         private List<ObjectNames> _tileObjects;
+
         private List<NpcNames> _npcs;
+        private List<NpcNames> _crossRegionNpcs;
+
+        private List<SceneryNames> _sceneryNames;
+
+        private List<SoundName> _regionSounds;
+        private List<SoundName> _crossRegionSounds;
+
         private List<RegionNames> _adjacentRegions;
         private List<RegionOffset> _regionOffsets;
-        private List<SoundName> _regionSounds;
+
         private List<Vector2> _zoneTileSizes;
         private List<int> _zoneLevels;
+
         private List<Rectangle> _cameraCollisionBoxes;
 
-        public RegionInfo()
+        public RegionInfo(RegionTheme theme)
         {
+            _theme = theme;
+
             _tileObjects = new List<ObjectNames>();
+
             _npcs = new List<NpcNames>();
+            _crossRegionNpcs = new List<NpcNames>();
+
+            _sceneryNames = new List<SceneryNames>();
+
+            _regionSounds = new List<SoundName>();
+            _crossRegionSounds = new List<SoundName>();
+
             _adjacentRegions = new List<RegionNames>();
             _regionOffsets = new List<RegionOffset>();
-            _regionSounds = new List<SoundName>();
+
             _zoneTileSizes = new List<Vector2>();
             _zoneLevels = new List<int>();
+
             _cameraCollisionBoxes = new List<Rectangle>();
         }
 
@@ -51,6 +72,18 @@ namespace Element.ResourceManagement.RegionGeneration
             set { _npcs = value; }
         }
 
+        public List<NpcNames> CrossRegionNpcs
+        {
+            get { return _crossRegionNpcs; }
+            set { _crossRegionNpcs = value; }
+        }
+
+        public List<SceneryNames> Scenery
+        {
+            get { return _sceneryNames; }
+            set { _sceneryNames = value; }
+        }
+
         public List<RegionNames> AdjacentRegions
         {
             get { return _adjacentRegions; }
@@ -67,6 +100,12 @@ namespace Element.ResourceManagement.RegionGeneration
         {
             get { return _regionSounds; }
             set { _regionSounds = value; }
+        }
+
+        public List<SoundName> CrossRegionSounds
+        {
+            get { return _crossRegionSounds; }
+            set { _crossRegionSounds = value; }
         }
 
         public List<Vector2> ZoneTileSizes

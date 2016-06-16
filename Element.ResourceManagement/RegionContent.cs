@@ -17,7 +17,7 @@ namespace Element.ResourceManagement
         public RegionNames Region { get; set; }
         public Dictionary<ObjectNames, List<Texture2D>> ObjectTextures { get; set; }
         public Dictionary<NpcNames, List<Texture2D>> NpcTextures { get; set; }
-        public Dictionary<int, List<Texture2D>> SceneryTextures { get; set; }
+        public Dictionary<SceneryNames, List<Texture2D>> SceneryTextures { get; set; }
         public Dictionary<SoundName, SoundEffect> SoundEffects { get; set; }
     }
 

@@ -147,7 +147,9 @@ namespace Element.Logic
         
         public void UpdatePlayerPositionWithTransition(RoamTransition transition)
         {
-
+            // update teh camera here too, this isn't going to be entirely correct
+            Camera.Zone = transition.DestinationZone;
+            Camera.Region = transition.DestinationRegion;
         }
 
         public bool IsRegionLoaded(RegionNames region)

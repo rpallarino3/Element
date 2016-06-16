@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.NPCs;
 using Element.ResourceManagement.NpcGeneration;
+using Element.ResourceManagement.RegionGeneration;
 
 namespace Element.ResourceManagement.ContentLoaders
 {
@@ -16,6 +18,7 @@ namespace Element.ResourceManagement.ContentLoaders
         static NpcContentLoader()
         {
             _fileNames = new Dictionary<NpcTypes, List<string>>();
+            
         }
 
         public static List<CrossRegionContent> LoadCrossRegionNpcContent(IServiceProvider serviceProvider, string rootDirectory, List<NpcNames> npcsToLoad)
@@ -42,10 +45,12 @@ namespace Element.ResourceManagement.ContentLoaders
             return loadedContent;
         }
 
-        public static Dictionary<NpcNames, List<Texture2D>> LoadNpcsForRegion(ContentManager contentManager, List<NpcNames> npcs)
+        // i think this is fine since the npc name is what defines the texture i suppose
+        public static Dictionary<NpcNames, List<Texture2D>> LoadNpcsForRegion(ContentManager contentManager, RegionNames region)
         {
             var npcTextures = new Dictionary<NpcNames, List<Texture2D>>();
-            
+            var npcs = RegionFactory.GetInfoForRegion(region).Npcs;
+
             foreach (var npc in npcs)
             {
                 var fileNames = GetFileNamesFromType(npc);

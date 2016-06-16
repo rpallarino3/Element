@@ -12,27 +12,13 @@ namespace Element.ResourceManagement.Sound
 {
     public static class SoundMapper
     {
-        private static Dictionary<SoundName, List<RegionNames>> _soundRegions;
-        private static Dictionary<RegionNames, List<SoundName>> _regionSounds;
+        private static Dictionary<SoundName, List<RegionNames>> _soundRegions; 
         private static Dictionary<SoundName, string> _soundFiles;
 
         static SoundMapper()
         {
             _soundRegions = new Dictionary<SoundName, List<RegionNames>>();
-            _regionSounds = new Dictionary<RegionNames, List<SoundName>>();
             _soundFiles = new Dictionary<SoundName, string>();
-
-            #region Test0
-            _regionSounds[RegionNames.Test0] = new List<SoundName>();
-            #endregion
-
-            #region Test1
-            _regionSounds[RegionNames.Test1] = new List<SoundName>();
-            #endregion
-
-            #region Test2
-            _regionSounds[RegionNames.Test2] = new List<SoundName>();
-            #endregion
         }
 
         public static List<SoundName> GetCrossRegionSoundEffects(List<RegionNames> regions)
@@ -41,7 +27,7 @@ namespace Element.ResourceManagement.Sound
 
             foreach (var region in regions)
             {
-                var soundsToAdd = _regionSounds[region];
+                var soundsToAdd = RegionFactory.GetInfoForRegion(region).CrossRegionSounds;
 
                 foreach (var sound in soundsToAdd)
                 {

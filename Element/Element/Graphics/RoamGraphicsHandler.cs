@@ -16,6 +16,7 @@ namespace Element.Graphics
         public void DrawRoam(SpriteBatch sb, LogicHandler logic, ResourceManager resourceManager)
         {
             var cameraTopLeft = Camera.Location - GameConstants.SCREEN_SIZE_IN_GAME_UNITS / 2 + new Vector2(1, 1);
+            // need to think about how to do this, once the scenery is displayed i would close the branch and make a new one for player movement
         }
 
         private bool IsOnScreen(Vector2 cameraTopLeft, Vector2 objLocation, Vector2 objSize)
