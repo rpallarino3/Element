@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace Element.Common.Enumerations.GameBasics
 {
@@ -17,5 +18,7 @@ namespace Element.Common.Enumerations.GameBasics
         Cast,
         Cycle,
         Menu,
+        Run,
+        Grab,
     }
 }

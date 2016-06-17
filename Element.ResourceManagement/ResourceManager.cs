@@ -290,7 +290,7 @@ namespace Element.ResourceManagement
         // i think this method is ok because it is called before any other thread should access the data
         public void LoadFilesAndUpdatePreferenceData()
         {
-            DataHelper.PreferenceData = _saveLoadHandler.LoadPreferenceData(); // maybe move this all into one method
+            DataHelper.PreferenceData = _saveLoadHandler.LoadPreferenceData(); // something is not right here
 
             if (DataHelper.PreferenceData == null)
             {
@@ -312,7 +312,9 @@ namespace Element.ResourceManagement
 
             DataHelper.PreferenceData.File0Info = DataHelper.File0SaveData.FileInfo;
             DataHelper.PreferenceData.File1Info = DataHelper.File1SaveData.FileInfo;
-            DataHelper.PreferenceData.File2Info = DataHelper.File2SaveData.FileInfo;            
+            DataHelper.PreferenceData.File2Info = DataHelper.File2SaveData.FileInfo;
+
+            _saveLoadHandler.SavePreferenceData(DataHelper.PreferenceData.Copy());
         }
 
         public void ResetPreferenceData()
@@ -343,18 +345,21 @@ namespace Element.ResourceManagement
             if (controls == null)
                 return;
 
-            var keys = new List<KeyValuePair<ControlFunctions, List<Keys>>>();
-            var buttons = new List<KeyValuePair<ControlFunctions, List<Buttons>>>();
+            var functions = new List<ControlFunctions>();
+            var keys = new List<List<Keys>>();
+            var buttons = new List<List<Buttons>>();
 
             foreach (var function in controls.Keys)
             {
                 var functionKeys = new List<Keys>(controls[function].Keys);
                 var functionButtons = new List<Buttons>(controls[function].Buttons);
 
-                keys.Add(new KeyValuePair<ControlFunctions, List<Keys>>(function, functionKeys));
-                buttons.Add(new KeyValuePair<ControlFunctions, List<Buttons>>(function, functionButtons));
+                functions.Add(function);
+                keys.Add(functionKeys);
+                buttons.Add(functionButtons);
             }
 
+            DataHelper.PreferenceData.Functions = functions;
             DataHelper.PreferenceData.Keybindings = keys;
             DataHelper.PreferenceData.ButtonBindings = buttons;
             

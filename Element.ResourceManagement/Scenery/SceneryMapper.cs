@@ -30,32 +30,32 @@ namespace Element.ResourceManagement.Scenery
             #region Test0
 
             _sceneryInfo[SceneryNames.Test0Level0] = new SceneryInfo(SceneryNames.Test0Level0, new List<string>() { "Scenery/Regions/Test0/Level0" },
-                new Dictionary<int, Animation>() { { 0, new Animation(0, 1, 1, new Vector2(1800, 1800)) } });
+                new Dictionary<int, Animation>() { { 0, new Animation(0, 1, 1, new Vector2(1800, 1800)) } }, true);
             
             #endregion
 
             #region Test1
 
             _sceneryInfo[SceneryNames.Test1Level0Top] = new SceneryInfo(SceneryNames.Test1Level0Top, new List<string>() { "Scenery/Regions/Test1/Level0Top" },
-                new Dictionary<int, Animation>() { { 0, new Animation(0, 1, 1, new Vector2(1800, 1800)) } });
+                new Dictionary<int, Animation>() { { 0, new Animation(0, 1, 1, new Vector2(1800, 1800)) } }, true);
             _sceneryInfo[SceneryNames.Test1Level0Bottom] = new SceneryInfo(SceneryNames.Test1Level0Bottom, new List<string>() { "Scenery/Regions/Test1/Level0Bottom" },
-                new Dictionary<int, Animation>() { { 0, new Animation(0, 1, 1, new Vector2(1800, 1800)) } });
+                new Dictionary<int, Animation>() { { 0, new Animation(0, 1, 1, new Vector2(1800, 1800)) } }, true);
             
             #endregion
 
             #region Test2
 
             _sceneryInfo[SceneryNames.Test2Level0Left] = new SceneryInfo(SceneryNames.Test2Level0Left, new List<string>() { "Scenery/Regions/Test2/Level0Left" },
-                new Dictionary<int, Animation>() { { 0, new Animation(0, 1, 1, new Vector2(1800, 1800)) } });
+                new Dictionary<int, Animation>() { { 0, new Animation(0, 1, 1, new Vector2(1800, 1800)) } }, true);
             _sceneryInfo[SceneryNames.Test2Level0Right] = new SceneryInfo(SceneryNames.Test2Level0Right, new List<string>() { "Scenery/Regions/Test2/Level0Right" },
-                new Dictionary<int, Animation>() { { 0, new Animation(0, 1, 1, new Vector2(1800, 1800)) } });
+                new Dictionary<int, Animation>() { { 0, new Animation(0, 1, 1, new Vector2(1800, 1800)) } }, true);
             
             #endregion
         }
 
         public static SceneryObject CreateSceneryObject(SceneryNames name, Vector2 location, int level)
         {
-            return new SceneryObject(name, location, level, new Animator(_sceneryInfo[name].Animations, 0));
+            return new SceneryObject(name, location, level, new Animator(_sceneryInfo[name].Animations, 0), _sceneryInfo[name].OnFloor);
         }
 
         public static Dictionary<SceneryNames, List<Texture2D>> LoadSceneryTextures(ContentManager contentManager, RegionNames region)

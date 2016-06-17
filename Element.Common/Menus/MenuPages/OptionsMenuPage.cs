@@ -282,25 +282,25 @@ namespace Element.Common.Menus.MenuPages
         public override void UpdateWithPreferenceData(PreferenceData data)
         {
             // might want to do some null check here?
-            _moveUpButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveUp).Value[0],
-                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveUp).Value[0]);
-            _moveDownButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveDown).Value[0],
-                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveDown).Value[0]);
-            _moveLeftButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveLeft).Value[0],
-                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveLeft).Value[0]);
-            _moveRightButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveRight).Value[0],
-                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.MoveRight).Value[0]);
+            _moveUpButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings[data.Functions.IndexOf(ControlFunctions.MoveUp)][0],
+                data.ButtonBindings[data.Functions.IndexOf(ControlFunctions.MoveUp)][0]);
+            _moveDownButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings[data.Functions.IndexOf(ControlFunctions.MoveDown)][0],
+                data.ButtonBindings[data.Functions.IndexOf(ControlFunctions.MoveDown)][0]);
+            _moveLeftButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings[data.Functions.IndexOf(ControlFunctions.MoveLeft)][0],
+                data.ButtonBindings[data.Functions.IndexOf(ControlFunctions.MoveLeft)][0]);
+            _moveRightButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings[data.Functions.IndexOf(ControlFunctions.MoveRight)][0],
+                data.ButtonBindings[data.Functions.IndexOf(ControlFunctions.MoveRight)][0]);
 
-            _confirmButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.Confirm).Value[0],
-                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.Confirm).Value[0]);
-            _backButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.Back).Value[0],
-                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.Back).Value[0]);
-            _castButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.Cast).Value[0],
-                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.Cast).Value[0]);
-            _cycleButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.Cycle).Value[0],
-                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.Cycle).Value[0]);
-            _startButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings.FirstOrDefault(k => k.Key == ControlFunctions.Menu).Value[0],
-                data.ButtonBindings.FirstOrDefault(k => k.Key == ControlFunctions.Menu).Value[0]);
+            _confirmButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings[data.Functions.IndexOf(ControlFunctions.Confirm)][0],
+                data.ButtonBindings[data.Functions.IndexOf(ControlFunctions.Confirm)][0]);
+            _backButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings[data.Functions.IndexOf(ControlFunctions.Back)][0],
+                data.ButtonBindings[data.Functions.IndexOf(ControlFunctions.Back)][0]);
+            _castButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings[data.Functions.IndexOf(ControlFunctions.Cast)][0],
+                data.ButtonBindings[data.Functions.IndexOf(ControlFunctions.Cast)][0]);
+            _cycleButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings[data.Functions.IndexOf(ControlFunctions.Cycle)][0],
+                data.ButtonBindings[data.Functions.IndexOf(ControlFunctions.Cycle)][0]);
+            _startButton.Text = InputHelper.GetStringBasedOnConnectedController(data.Keybindings[data.Functions.IndexOf(ControlFunctions.Menu)][0],
+                data.ButtonBindings[data.Functions.IndexOf(ControlFunctions.Menu)][0]);
 
             if (data.Resolution == Resolutions.r960x540)
                 _resolution960Button.SelectNoEvent();

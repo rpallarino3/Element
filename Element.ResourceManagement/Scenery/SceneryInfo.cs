@@ -9,15 +9,17 @@ namespace Element.ResourceManagement.Scenery
 {
     public class SceneryInfo
     {
-        public readonly SceneryNames _name;
-        public readonly List<string> _fileNames;
-        public readonly Dictionary<int, Animation> _animations;
+        private readonly SceneryNames _name;
+        private readonly List<string> _fileNames;
+        private readonly Dictionary<int, Animation> _animations;
+        private readonly bool _onFloor;
 
-        public SceneryInfo(SceneryNames name, List<string> fileNames, Dictionary<int, Animation> animations)
+        public SceneryInfo(SceneryNames name, List<string> fileNames, Dictionary<int, Animation> animations, bool onFloor)
         {
             _name = name;
             _fileNames = fileNames;
             _animations = animations;
+            _onFloor = onFloor;
         }
 
         public SceneryNames Name
@@ -33,6 +35,11 @@ namespace Element.ResourceManagement.Scenery
         public Dictionary<int, Animation> Animations
         {
             get { return _animations; }
+        }
+
+        public bool OnFloor
+        {
+            get { return _onFloor; }
         }
     }
 }

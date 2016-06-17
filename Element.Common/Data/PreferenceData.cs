@@ -12,15 +12,34 @@ namespace Element.Common.Data
     {
         public PreferenceData()
         {
-            Keybindings = new List<KeyValuePair<ControlFunctions, List<Keys>>>();
-            ButtonBindings = new List<KeyValuePair<ControlFunctions, List<Buttons>>>();
+            Functions = new List<ControlFunctions>();
+            Keybindings = new List<List<Keys>>();
+            ButtonBindings = new List<List<Buttons>>();
         }
 
         public PreferenceData Copy()
         {
             var data = new PreferenceData();
-            data.Keybindings = new List<KeyValuePair<ControlFunctions, List<Keys>>>(Keybindings); // this doesn't work exactly
-            data.ButtonBindings = new List<KeyValuePair<ControlFunctions, List<Buttons>>>(ButtonBindings);
+
+            var functions = new List<ControlFunctions>(Functions);
+            var keybindings = new List<List<Keys>>();
+            var buttonBindings = new List<List<Buttons>>();
+
+            foreach (var item in Keybindings)
+            {
+                var list = new List<Keys>(item);
+                keybindings.Add(list);
+            }
+
+            foreach (var item in ButtonBindings)
+            {
+                var list = new List<Buttons>(item);
+                buttonBindings.Add(list);
+            }
+
+            data.Functions = functions;
+            data.Keybindings = keybindings;
+            data.ButtonBindings = buttonBindings;
 
             data.File0Info = File0Info.Copy();
             data.File1Info = File1Info.Copy();
@@ -32,8 +51,9 @@ namespace Element.Common.Data
             return data;
         }
 
-        public List<KeyValuePair<ControlFunctions, List<Keys>>> Keybindings { get; set; }
-        public List<KeyValuePair<ControlFunctions, List<Buttons>>> ButtonBindings { get; set; }
+        public List<ControlFunctions> Functions { get; set; }
+        public List<List<Keys>> Keybindings { get; set; }
+        public List<List<Buttons>> ButtonBindings { get; set; }
 
         public SaveFileInfo File0Info { get; set; }
         public SaveFileInfo File1Info { get; set; }

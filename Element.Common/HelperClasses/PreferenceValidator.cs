@@ -11,8 +11,8 @@ namespace Element.Common.HelperClasses
     public static class PreferenceValidator
     {
         private static readonly int KEYBIND_COUNT = 9;
-        private static Dictionary<ControlFunctions, List<Keys>> _defaultKeybinds;
-        private static Dictionary<ControlFunctions, List<Buttons>> _defaultButtonBinds;
+        private static readonly Dictionary<ControlFunctions, List<Keys>> _defaultKeybinds;
+        private static readonly Dictionary<ControlFunctions, List<Buttons>> _defaultButtonBinds;
 
         static PreferenceValidator()
         {
@@ -24,7 +24,9 @@ namespace Element.Common.HelperClasses
             _defaultKeybinds.Add(ControlFunctions.MoveLeft, new List<Keys>() { Keys.A });
             _defaultKeybinds.Add(ControlFunctions.MoveRight, new List<Keys>() { Keys.D });
             _defaultKeybinds.Add(ControlFunctions.Confirm, new List<Keys>() { Keys.Q });
+            _defaultKeybinds.Add(ControlFunctions.Grab, new List<Keys>() { Keys.Q });
             _defaultKeybinds.Add(ControlFunctions.Back, new List<Keys>() { Keys.E });
+            _defaultKeybinds.Add(ControlFunctions.Run, new List<Keys>() { Keys.E });
             _defaultKeybinds.Add(ControlFunctions.Cast, new List<Keys>() { Keys.Z });
             _defaultKeybinds.Add(ControlFunctions.Cycle, new List<Keys>() { Keys.X });
             _defaultKeybinds.Add(ControlFunctions.Menu, new List<Keys>() { Keys.Escape });
@@ -34,7 +36,9 @@ namespace Element.Common.HelperClasses
             _defaultButtonBinds.Add(ControlFunctions.MoveLeft, new List<Buttons>() { Buttons.DPadLeft, Buttons.LeftThumbstickLeft });
             _defaultButtonBinds.Add(ControlFunctions.MoveRight, new List<Buttons>() { Buttons.DPadRight, Buttons.LeftThumbstickRight });
             _defaultButtonBinds.Add(ControlFunctions.Confirm, new List<Buttons>() { Buttons.A });
+            _defaultButtonBinds.Add(ControlFunctions.Grab, new List<Buttons>() { Buttons.A });
             _defaultButtonBinds.Add(ControlFunctions.Back, new List<Buttons>() { Buttons.B });
+            _defaultButtonBinds.Add(ControlFunctions.Run, new List<Buttons>() { Buttons.B });
             _defaultButtonBinds.Add(ControlFunctions.Cast, new List<Buttons>() { Buttons.X });
             _defaultButtonBinds.Add(ControlFunctions.Cycle, new List<Buttons>() { Buttons.Y });
             _defaultButtonBinds.Add(ControlFunctions.Menu, new List<Buttons>() { Buttons.Start });
@@ -55,39 +59,23 @@ namespace Element.Common.HelperClasses
                 data.Resolution != Resolutions.r1920x1080)
                 data.Resolution = Resolutions.r1280x720;
 
-            // validate keybinds here
-            
-            if (data.Keybindings == null)
-            {
-                var nKeybinds = new List<KeyValuePair<ControlFunctions, List<Keys>>>();
+            // All this horrible code needs to be redone, the inputs are really bad in general and need to be redone
 
-                foreach (var key in _defaultKeybinds.Keys)
-                {
-                    nKeybinds.Add(new KeyValuePair<ControlFunctions, List<Keys>>(key, new List<Keys>(_defaultKeybinds[key])));
-                }
+            CheckFunctions();
 
-                data.Keybindings = nKeybinds;
-            }
+            if (data.Keybindings == null || data.Keybindings.Count != data.Functions.Count)
+                ResetKeys();
 
-            if (data.ButtonBindings == null)
-            {
-                var nButtonBindings = new List<KeyValuePair<ControlFunctions, List<Buttons>>>();
-
-                foreach (var key in _defaultButtonBinds.Keys)
-                {
-                    nButtonBindings.Add(new KeyValuePair<ControlFunctions, List<Buttons>>(key, new List<Buttons>(_defaultButtonBinds[key])));
-                }
-
-                data.ButtonBindings = nButtonBindings;
-            }
+            if (data.ButtonBindings == null || data.ButtonBindings.Count != data.Functions.Count)
+                ResetButtons();
             
             foreach (ControlFunctions function in Enum.GetValues(typeof(ControlFunctions)))
             {
-                var kvp = data.Keybindings.FirstOrDefault(k => k.Key == function);
+                var keys = data.Keybindings[data.Functions.IndexOf(function)];
 
-                if (kvp.Equals(new KeyValuePair<ControlFunctions, List<Keys>>()) || kvp.Value == null || kvp.Value.Count == 0)
+                if (keys == null || keys.Count == 0 || keys.Count > 1)
                 {
-                    ResetKeys(); ;
+                    ResetKeys();
                     goto Buttons;
                 }
                 
@@ -96,24 +84,30 @@ namespace Element.Common.HelperClasses
                     if (function == otherFunction)
                         continue;
 
-                    var okvp = data.Keybindings.FirstOrDefault(k => k.Key == otherFunction);
+                    if (function == ControlFunctions.Confirm || function == ControlFunctions.Grab)
+                    {
+                        if (otherFunction == ControlFunctions.Grab || otherFunction == ControlFunctions.Confirm)
+                            continue;
+                    }
 
-                    if (okvp.Equals(new KeyValuePair<ControlFunctions, List<Keys>>()) || okvp.Value == null || okvp.Value.Count == 0)
+                    if (function == ControlFunctions.Back || function == ControlFunctions.Run)
+                    {
+                        if (otherFunction == ControlFunctions.Back || otherFunction == ControlFunctions.Run)
+                            continue;
+                    }
+
+                    var otherKeys = data.Keybindings[data.Functions.IndexOf(otherFunction)];
+
+                    if (otherKeys == null || otherKeys.Count == 0 || otherKeys.Count > 1)
                     {
                         ResetKeys();
                         goto Buttons;
                     }
 
-                    foreach (var key in kvp.Value)
+                    if (keys[0] == otherKeys[0])
                     {
-                        foreach (var otherKey in okvp.Value)
-                        {
-                            if (key == otherKey)
-                            {
-                                ResetKeys();
-                                goto Buttons;
-                            }
-                        }
+                        ResetKeys();
+                        goto Buttons;
                     }
                 }
             }
@@ -122,9 +116,9 @@ namespace Element.Common.HelperClasses
 
             foreach (ControlFunctions function in Enum.GetValues(typeof(ControlFunctions)))
             {
-                var kvp = data.ButtonBindings.FirstOrDefault(k => k.Key == function);
+                var buttons = data.ButtonBindings[data.Functions.IndexOf(function)];
 
-                if (kvp.Equals(new KeyValuePair<ControlFunctions, List<Buttons>>()) || kvp.Value == null || kvp.Value.Count == 0)
+                if (buttons == null || buttons.Count == 0)
                 {
                     ResetButtons();
                     return;
@@ -135,17 +129,29 @@ namespace Element.Common.HelperClasses
                     if (function == otherFunction)
                         continue;
 
-                    var okvp = data.ButtonBindings.FirstOrDefault(k => k.Key == otherFunction);
+                    if (function == ControlFunctions.Confirm || function == ControlFunctions.Grab)
+                    {
+                        if (otherFunction == ControlFunctions.Grab || otherFunction == ControlFunctions.Confirm)
+                            continue;
+                    }
 
-                    if (okvp.Equals(new KeyValuePair<ControlFunctions, List<Buttons>>()) || okvp.Value == null || okvp.Value.Count == 0)
+                    if (function == ControlFunctions.Back || function == ControlFunctions.Run)
+                    {
+                        if (otherFunction == ControlFunctions.Back || otherFunction == ControlFunctions.Run)
+                            continue;
+                    }
+
+                    var otherButtons = data.ButtonBindings[data.Functions.IndexOf(otherFunction)];
+
+                    if (otherButtons == null || otherButtons.Count == 0)
                     {
                         ResetButtons();
                         return;
                     }
 
-                    foreach (var key in kvp.Value)
+                    foreach (var key in buttons)
                     {
-                        foreach (var otherKey in okvp.Value)
+                        foreach (var otherKey in otherButtons)
                         {
                             if (key == otherKey)
                             {
@@ -164,13 +170,46 @@ namespace Element.Common.HelperClasses
             ResetButtons();
         }
 
+        private static void CheckFunctions()
+        {
+            if (DataHelper.PreferenceData.Functions == null)
+            {
+                ResetFunctions();
+                return;
+            }
+
+            foreach (ControlFunctions cf in Enum.GetValues(typeof(ControlFunctions)))
+            {
+                if (!DataHelper.PreferenceData.Functions.Contains(cf))
+                {
+                    ResetFunctions();
+                    return;
+                }
+            }
+        }
+
+        private static void ResetFunctions()
+        {
+            Console.WriteLine("Invalid pref data. Reseting.");
+            var functions = new List<ControlFunctions>();
+            
+            foreach (ControlFunctions cf in Enum.GetValues(typeof(ControlFunctions)))
+            {
+                functions.Add(cf);
+            }
+
+            DataHelper.PreferenceData.Functions = functions;
+        }
+
         private static void ResetKeys()
         {
-            var nKeybinds = new List<KeyValuePair<ControlFunctions, List<Keys>>>();
+            Console.WriteLine("Invalid pref data. Reseting.");
+            CheckFunctions();
+            var nKeybinds = new List<List<Keys>>();
 
-            foreach (var key in _defaultKeybinds.Keys)
+            foreach (var function in DataHelper.PreferenceData.Functions)
             {
-                nKeybinds.Add(new KeyValuePair<ControlFunctions, List<Keys>>(key, new List<Keys>(_defaultKeybinds[key])));
+                nKeybinds.Add(_defaultKeybinds[function]);
             }
 
             DataHelper.PreferenceData.Keybindings = nKeybinds;
@@ -178,11 +217,13 @@ namespace Element.Common.HelperClasses
 
         private static void ResetButtons()
         {
-            var nButtonBindings = new List<KeyValuePair<ControlFunctions, List<Buttons>>>();
+            Console.WriteLine("Invalid pref data. Reseting.");
+            CheckFunctions();
+            var nButtonBindings = new List<List<Buttons>>();
 
-            foreach (var key in _defaultButtonBinds.Keys)
+            foreach (var function in DataHelper.PreferenceData.Functions)
             {
-                nButtonBindings.Add(new KeyValuePair<ControlFunctions, List<Buttons>>(key, new List<Buttons>(_defaultButtonBinds[key])));
+                nButtonBindings.Add(_defaultButtonBinds[function]);
             }
 
             DataHelper.PreferenceData.ButtonBindings = nButtonBindings;

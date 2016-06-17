@@ -36,25 +36,30 @@ namespace Element.Input
 
             var keybinds = DataHelper.PreferenceData.Keybindings;
             var buttonBinds = DataHelper.PreferenceData.ButtonBindings;
+            var functions = DataHelper.PreferenceData.Functions;
 
-            _controls.Add(ControlFunctions.MoveUp, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.MoveUp).Value),
-                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.MoveUp).Value), false, true));
-            _controls.Add(ControlFunctions.MoveDown, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.MoveDown).Value),
-                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.MoveDown).Value), false, true));
-            _controls.Add(ControlFunctions.MoveLeft, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.MoveLeft).Value),
-                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.MoveLeft).Value), false, true));
-            _controls.Add(ControlFunctions.MoveRight, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.MoveRight).Value),
-                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.MoveRight).Value), false, true));
-            _controls.Add(ControlFunctions.Confirm, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.Confirm).Value),
-                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.Confirm).Value), true, true));
-            _controls.Add(ControlFunctions.Back, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.Back).Value),
-                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.Back).Value), true, true));
-            _controls.Add(ControlFunctions.Cast, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.Cast).Value),
-                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.Cast).Value), true, true));
-            _controls.Add(ControlFunctions.Cycle, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.Cycle).Value),
-                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.Cycle).Value), true, true));
-            _controls.Add(ControlFunctions.Menu, new Control(new List<Keys>(keybinds.First(entry => entry.Key == ControlFunctions.Menu).Value),
-                new List<Buttons>(buttonBinds.First(entry => entry.Key == ControlFunctions.Menu).Value), true, true));
+            _controls.Add(ControlFunctions.MoveUp, new Control(new List<Keys>(keybinds[functions.IndexOf(ControlFunctions.MoveUp)]),
+                new List<Buttons>(buttonBinds[functions.IndexOf(ControlFunctions.MoveUp)]), false, true));
+            _controls.Add(ControlFunctions.MoveDown, new Control(new List<Keys>(keybinds[functions.IndexOf(ControlFunctions.MoveDown)]),
+                new List<Buttons>(buttonBinds[functions.IndexOf(ControlFunctions.MoveDown)]), false, true));
+            _controls.Add(ControlFunctions.MoveLeft, new Control(new List<Keys>(keybinds[functions.IndexOf(ControlFunctions.MoveLeft)]),
+                new List<Buttons>(buttonBinds[functions.IndexOf(ControlFunctions.MoveLeft)]), false, true));
+            _controls.Add(ControlFunctions.MoveRight, new Control(new List<Keys>(keybinds[functions.IndexOf(ControlFunctions.MoveRight)]),
+                new List<Buttons>(buttonBinds[functions.IndexOf(ControlFunctions.MoveRight)]), false, true));
+            _controls.Add(ControlFunctions.Confirm, new Control(new List<Keys>(keybinds[functions.IndexOf(ControlFunctions.Confirm)]),
+                new List<Buttons>(buttonBinds[functions.IndexOf(ControlFunctions.Confirm)]), true, true));
+            _controls.Add(ControlFunctions.Back, new Control(new List<Keys>(keybinds[functions.IndexOf(ControlFunctions.Back)]),
+                new List<Buttons>(buttonBinds[functions.IndexOf(ControlFunctions.Back)]), true, true));
+            _controls.Add(ControlFunctions.Cast, new Control(new List<Keys>(keybinds[functions.IndexOf(ControlFunctions.Cast)]),
+                new List<Buttons>(buttonBinds[functions.IndexOf(ControlFunctions.Cast)]), true, true));
+            _controls.Add(ControlFunctions.Cycle, new Control(new List<Keys>(keybinds[functions.IndexOf(ControlFunctions.Cycle)]),
+                new List<Buttons>(buttonBinds[functions.IndexOf(ControlFunctions.Cycle)]), true, true));
+            _controls.Add(ControlFunctions.Menu, new Control(new List<Keys>(keybinds[functions.IndexOf(ControlFunctions.Menu)]),
+                new List<Buttons>(buttonBinds[functions.IndexOf(ControlFunctions.Menu)]), true, true));
+            _controls.Add(ControlFunctions.Run, new Control(new List<Keys>(keybinds[functions.IndexOf(ControlFunctions.Run)]),
+                new List<Buttons>(buttonBinds[functions.IndexOf(ControlFunctions.Run)]), false, true));
+            _controls.Add(ControlFunctions.Grab, new Control(new List<Keys>(keybinds[functions.IndexOf(ControlFunctions.Grab)]),
+                new List<Buttons>(buttonBinds[functions.IndexOf(ControlFunctions.Grab)]), false, true));            
         }
 
         public void UpdateInputs(GamePadState gamePadState, KeyboardState keyboardState)
@@ -237,11 +242,19 @@ namespace Element.Input
                 if (_controls[func].Keys.Contains(key))
                 {
                     _controls[func].UpdateKeyBinding(oldKey);
-                    break;
                 }
             }
 
             _controls[function].UpdateKeyBinding(key);
+
+            if (function == ControlFunctions.Confirm)
+            {
+                _controls[ControlFunctions.Grab].UpdateKeyBinding(key);
+            }
+            else if (function == ControlFunctions.Back)
+            {
+                _controls[ControlFunctions.Run].UpdateKeyBinding(key);
+            }
         }
 
         public void RebindInput(Buttons button, ControlFunctions function)
@@ -253,59 +266,21 @@ namespace Element.Input
                 if (_controls[func].Buttons.Contains(button))
                 {
                     _controls[func].UpdateButtonBinding(oldButton);
-                    break;
                 }
             }
 
             _controls[function].UpdateButtonBinding(oldButton);
-        }
 
-        public void RebindInput(List<Keys> keys, ControlFunctions function)
-        {
-            InputEmpty = false;
-            _controls[function].UpdateKeyBinding(keys);
-
-            foreach (var func in _controls.Keys)
+            if (function == ControlFunctions.Confirm)
             {
-                if (func == function)
-                    continue;
-
-                foreach (var key in keys)
-                {
-                    if (_controls[func].Keys.Contains(key))
-                    {
-                        _controls[func].Keys.Remove(key);
-
-                        if (_controls.Count == 0)
-                            InputEmpty = true;
-                    }
-                }
+                _controls[ControlFunctions.Grab].UpdateButtonBinding(button);
+            }
+            else if (function == ControlFunctions.Back)
+            {
+                _controls[ControlFunctions.Run].UpdateButtonBinding(button);
             }
         }
-
-        public void RebindInput(List<Buttons> buttons, ControlFunctions function)
-        {
-            InputEmpty = false;
-            _controls[function].UpdateButtonBinding(buttons);
-
-            foreach (var func in _controls.Keys)
-            {
-                if (func == function)
-                    continue;
-
-                foreach (var button in buttons)
-                {
-                    if (_controls[func].Buttons.Contains(button))
-                    {
-                        _controls[func].Buttons.Remove(button);
-
-                        if (_controls.Count == 0)
-                            InputEmpty = true;
-                    }
-                }
-            }
-        }
-
+        
         #endregion
 
         public bool InputEmpty { get; private set; }
