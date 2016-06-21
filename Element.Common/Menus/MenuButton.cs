@@ -41,7 +41,7 @@ namespace Element.Common.Menus
             _type = type;
 
             _state = ButtonStates.Enabled;
-            _animator = new Animator(ButtonAnimator.GetAnimationsFromStyle(_style), (int)ButtonStates.Enabled);
+            _animator = new Animator(ButtonAnimator.GetAnimationsFromStyle(_style), (int)ButtonStates.Enabled, ButtonAnimator.GetImageSizeFromStyle(_style));
         }
 
         #endregion

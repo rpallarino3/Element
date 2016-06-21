@@ -58,7 +58,7 @@ namespace Element.Graphics
             foreach (var button in activeMenuPage.Buttons)
             {
                 var texture = resourceManager.MenuResourceManager.ButtonTextures[button.Style];
-                var imageSize = button.Animator.CurrentAnimation.ImageSize;
+                var imageSize = button.Animator.ImageSize;
                 var rectangle = new Rectangle((int)(button.Animator.AnimationCounter * imageSize.X),
                     (int)(button.Animator.CurrentAnimation.Row * imageSize.Y),
                     (int)imageSize.X, (int)imageSize.Y); // this could be different if button is too big?
@@ -87,7 +87,7 @@ namespace Element.Graphics
                 foreach (var button in activeMenuPage.CurrentDialog.Buttons)
                 {
                     var texture = resourceManager.MenuResourceManager.ButtonTextures[button.Style];
-                    var imageSize = button.Animator.CurrentAnimation.ImageSize;
+                    var imageSize = button.Animator.ImageSize;
                     var rectangle = new Rectangle((int)(button.Animator.AnimationCounter * imageSize.X),
                         (int)(button.Animator.CurrentAnimation.Row * imageSize.Y),
                         (int)imageSize.X, (int)imageSize.Y); // this could be different if button is too big?

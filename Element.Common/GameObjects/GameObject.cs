@@ -21,6 +21,11 @@ namespace Element.Common.GameObjects
             _level = level;
         }
 
+        public Animator Animator
+        {
+            get { return _animator; }
+        }
+
         public Vector2 Location
         {
             get { return _location; }

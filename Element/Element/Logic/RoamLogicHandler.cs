@@ -57,8 +57,8 @@ namespace Element.Logic
                 foreach (var region in _regionsToAdd.Keys)
                 {
                     regionsToAdd[region] = _regionsToAdd[region];
-                    _regionsToAdd.Remove(region);
                 }
+                _regionsToAdd.Clear();
             }
 
             foreach (var region in regionsToAdd.Keys)

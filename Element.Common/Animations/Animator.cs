@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace Element.Common.Animations
 {
@@ -14,10 +15,17 @@ namespace Element.Common.Animations
         private int _animtionCounter;
         private int _frameCounter;
 
-        public Animator(Dictionary<int, Animation> animations, int startingAnimation)
+        private Vector2 _imageSize;
+        private Vector2 _drawOffset;
+
+        public Animator(Dictionary<int, Animation> animations, int startingAnimation, Vector2 imageSize) : this(animations, startingAnimation, imageSize, new Vector2(0, 0)) { }
+
+        public Animator(Dictionary<int, Animation> animations, int startingAnimation, Vector2 imageSize, Vector2 drawOffset)
         {
             _animations = animations;
             _currentAnimation = _animations[startingAnimation];
+            _imageSize = imageSize;
+            _drawOffset = drawOffset;
         }
 
         public void AdvanceAnimation()
@@ -104,6 +112,16 @@ namespace Element.Common.Animations
         public bool AnimationFinished
         {
             get { return _animationFinished; }
+        }
+
+        public Vector2 ImageSize
+        {
+            get { return _imageSize; }
+        }
+
+        public Vector2 DrawOffset
+        {
+            get { return _drawOffset; }
         }
     }
 }

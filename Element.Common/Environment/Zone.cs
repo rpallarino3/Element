@@ -20,6 +20,8 @@ namespace Element.Common.Environment
         private List<SceneryObject> _sceneryObjects;
         private List<Rectangle> _cameraCollisionBoxes;
 
+        private bool _indoors;
+
         public Zone(Vector2 size, int levels)
         {
             _size = size;
@@ -75,6 +77,11 @@ namespace Element.Common.Environment
         public int Levels
         {
             get { return _levels; }
+        }
+
+        public bool Indoors
+        {
+            get { return _indoors; }
         }
     }
 }

@@ -11,16 +11,14 @@ namespace Element.Common.Animations
         private int _row;
         private int _numImages;
         private int _imageTime;
-        private Vector2 _imageSize;
 
-        public Animation(int row, int numImages, int imageTime, Vector2 imageSize)
+        public Animation(int row, int numImages, int imageTime)
         {
             _row = row;
             _numImages = numImages;
             _imageTime = imageTime;
-            _imageSize = imageSize;
         }
-
+        
         public int Row
         {
             get { return _row; }
@@ -34,11 +32,6 @@ namespace Element.Common.Animations
         public int ImageTime
         {
             get { return _imageTime; }
-        }
-
-        public Vector2 ImageSize
-        {
-            get { return _imageSize; }
-        }
+        }        
     }
 }

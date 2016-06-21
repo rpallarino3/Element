@@ -42,6 +42,11 @@ namespace Element.Graphics
             }
         }
 
+        public static void DrawBlackScreen(SpriteBatch sb)
+        {
+
+        }
+
         public static void DrawCenteredText(SpriteBatch sb, SpriteFont font, string text, Vector2 drawLocation, Vector2 areaSize, Vector2 screenRatio, Color color)
         {
             var split = text.Split(Environment.NewLine.ToCharArray());

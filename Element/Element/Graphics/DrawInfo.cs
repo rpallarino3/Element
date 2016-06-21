@@ -28,20 +28,41 @@ namespace Element.Graphics
         {
             if (_onFloor && !other.OnFloor)
             {
-                // this is a floor object
-                // the other is not, this should go below?
+                if (_level < other.Level)
+                    return -1;
+                else if (_level > other.Level)
+                    return 1;
+                else
+                    return -1;
             }
             else if (!_onFloor && other.OnFloor)
             {
-                // the other is a floor object
-                // this is not, this should go on top?
+                if (_level < other.Level)
+                    return -1;
+                else if (_level > other.Level)
+                    return 1;
+                else
+                    return 1;
             }
             else
             {
-                // do normal comparison
+                if (_drawLocation.Y < other.DrawLocation.Y)
+                    return -1;
+                else if (_drawLocation.Y > other.DrawLocation.Y)
+                    return 1;
+                else
+                {
+                    if (_level < other.Level)
+                        return -1;
+                    else if (_level > other.Level)
+                        return 1;
+                    else
+                    {
+                        // i guess this means they could be on the same level at the same y but next to each other
+                        return 0;
+                    }
+                }
             }
-
-            return 0;
         }
 
         public bool OnFloor { get { return _onFloor; } }

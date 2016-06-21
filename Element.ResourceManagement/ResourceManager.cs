@@ -100,7 +100,6 @@ namespace Element.ResourceManagement
             foreach (var content in contentToAdd)
             {
                 _regionContent.Add(content.Region, content);
-                contentToAdd.Remove(content);
             }
 
             var crossRegionContentToAdd = new List<CrossRegionContent>();
@@ -117,15 +116,14 @@ namespace Element.ResourceManagement
                 {
                     var npcContent = content as CrossRegionNpcContent;
                     _crossRegionNpcContent.Add(npcContent.Id, npcContent);
-                    crossRegionContentToAdd.Remove(npcContent);
                 }
                 else if (content is CrossRegionSoundContent)
                 {
                     var soundContent = content as CrossRegionSoundContent;
                     _crossRegionSoundContent.Add(soundContent.Id, soundContent);
-                    crossRegionContentToAdd.Remove(soundContent);
                 }
             }
+            crossRegionContentToAdd.Clear();
         }
 
         public void CheckUnload()
@@ -145,9 +143,7 @@ namespace Element.ResourceManagement
                     _regionContent[region].ContentManager.Unload();
                     _regionContent[region].ContentManager.Dispose();
                     _regionContent.Remove(region);
-                }
-
-                contentToRemove.Remove(region);
+                }                
             }
 
             var crossRegionNpcContentToRemove = new List<NpcNames>();
@@ -409,6 +405,10 @@ namespace Element.ResourceManagement
         #endregion
 
         public MenuResourceManager MenuResourceManager { get { return _menuResourceManager; } }
+
+        public Dictionary<RegionNames, RegionContent> RegionContent { get { return _regionContent; } }
+        public Dictionary<NpcNames, CrossRegionNpcContent> CrossRegionNpcContent { get { return _crossRegionNpcContent; } }
+        public Dictionary<SoundName, CrossRegionSoundContent> CrossRegionSoundContenet { get { return _crossRegionSoundContent; } }
 
         #region Events
 
