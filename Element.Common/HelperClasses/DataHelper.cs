@@ -41,7 +41,7 @@ namespace Element.Common.HelperClasses
 
             saveData.PlayerRegion = RegionNames.Test0;
             saveData.PlayerZone = 0;
-            saveData.PlayerLocation = new Vector2(0, 0);
+            saveData.PlayerLocation = new Vector2(22, 13);
             saveData.PlayerLevel = 0;
             saveData.PlayerFacingDirection = Directions.Down;
 

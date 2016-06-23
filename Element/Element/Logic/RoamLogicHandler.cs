@@ -150,6 +150,7 @@ namespace Element.Logic
             // update teh camera here too, this isn't going to be entirely correct
             Camera.Zone = transition.DestinationZone;
             Camera.Region = transition.DestinationRegion;
+            Camera.Location = transition.DestinationCoords * GameConstants.TILE_SIZE; // going to need to calc camera position based on player coords and zone size
         }
 
         public bool IsRegionLoaded(RegionNames region)

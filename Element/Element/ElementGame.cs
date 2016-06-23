@@ -163,6 +163,8 @@ namespace Element
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            // is there a reason to clear?
+            GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
             _graphicsHandler.Draw(spriteBatch, _logicHandler, _resourceManager);
             spriteBatch.End();

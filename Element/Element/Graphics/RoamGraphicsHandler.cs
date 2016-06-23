@@ -31,33 +31,30 @@ namespace Element.Graphics
             var drawInfo = new List<DrawInfo>();
 
             // do we need to do the player first?
-            
+
             // maybe do the transition handler.showregionimage here
             if (!logic.RoamLogicHandler.Regions.ContainsKey(cameraRegion))
-            {
-                // draw black screen
                 return;
-            }
 
             // did we decide to check if the zone was present first before we drew it?
 
             var currentZone = logic.RoamLogicHandler.Regions[cameraRegion].Zones[cameraZone];
-            CreateZoneDrawInfo(cameraRegion, currentZone, drawInfo, new Vector2(0, 0), resourceManager);
+            CreateZoneDrawInfo(cameraRegion, currentZone, drawInfo, new Vector2(0, 0), resourceManager, cameraTopLeft);
 
             foreach (var offset in cameraZoneOffsets)
             {
                 var zone = logic.RoamLogicHandler.Regions[offset.OtherRegion].Zones[offset.OtherZone];
-                CreateZoneDrawInfo(offset.OtherRegion, zone, drawInfo, offset.Offset, resourceManager);
+                CreateZoneDrawInfo(offset.OtherRegion, zone, drawInfo, offset.Offset, resourceManager, cameraTopLeft);
             }
 
             // need to do cross region npcs here too
 
             drawInfo.Sort();
-            DrawDrawInfo(sb, screenRatio, drawInfo, logic.DrawColor);
+            DrawDrawInfo(sb, screenRatio, drawInfo, logic.DrawColor, cameraTopLeft);
             // do whatever else we need to do here
         }
 
-        private void CreateZoneDrawInfo(RegionNames region, Zone zone, List<DrawInfo> info, Vector2 offset, ResourceManager resourceManager)
+        private void CreateZoneDrawInfo(RegionNames region, Zone zone, List<DrawInfo> info, Vector2 offset, ResourceManager resourceManager, Vector2 cameraTopLeft)
         {
             foreach (var scenery in zone.SceneryObjects)
             {
@@ -68,7 +65,9 @@ namespace Element.Graphics
                 var y = (scenery.Animator.ImageSize.Y * scenery.Animator.CurrentAnimation.Row) % GameConstants.MAX_TEXTURE_SIZE.Y;
                 var drawRectangle = new Rectangle((int)x, (int)y, (int)scenery.Animator.ImageSize.X, (int)scenery.Animator.ImageSize.Y);
                 var drawInfo = new DrawInfo(scenery.OnFloor, texture, drawLocation, drawRectangle, scenery.Level);
-                info.Add(drawInfo);
+
+                if (IsOnScreen(cameraTopLeft, drawLocation, scenery.Animator.ImageSize))
+                    info.Add(drawInfo);
             }
 
             foreach (var tileObject in zone.TileObjects)
@@ -80,7 +79,9 @@ namespace Element.Graphics
                 var y = (tileObject.Animator.ImageSize.Y * tileObject.Animator.CurrentAnimation.Row) % GameConstants.MAX_TEXTURE_SIZE.Y;
                 var drawRectangle = new Rectangle((int)x, (int)y, (int)tileObject.Animator.ImageSize.X, (int)tileObject.Animator.ImageSize.Y);
                 var drawInfo = new DrawInfo(false, texture, drawLocation, drawRectangle, tileObject.Level);
-                info.Add(drawInfo);
+
+                if (IsOnScreen(cameraTopLeft, drawLocation, tileObject.Animator.ImageSize))
+                    info.Add(drawInfo);
             }
 
             foreach (var npc in zone.Npcs)
@@ -92,17 +93,19 @@ namespace Element.Graphics
                 var y = (npc.Animator.ImageSize.Y * npc.Animator.CurrentAnimation.Row) % GameConstants.MAX_TEXTURE_SIZE.Y;
                 var drawRectangle = new Rectangle((int)x, (int)y, (int)npc.Animator.ImageSize.X, (int)npc.Animator.ImageSize.Y);
                 var drawInfo = new DrawInfo(false, texture, drawLocation, drawRectangle, npc.Level);
-                info.Add(drawInfo);
+
+                if (IsOnScreen(cameraTopLeft, drawLocation, npc.Animator.ImageSize))
+                    info.Add(drawInfo);
             }
         }
 
-        private void DrawDrawInfo(SpriteBatch sb, Vector2 screenRatio, List<DrawInfo> drawInfo, Color color)
+        private void DrawDrawInfo(SpriteBatch sb, Vector2 screenRatio, List<DrawInfo> drawInfo, Color color, Vector2 cameraTopLeft)
         {
             foreach (var item in drawInfo)
             {
                 sb.Draw(
                     item.Texture, 
-                    item.DrawLocation * screenRatio, 
+                    cameraTopLeft + (item.DrawLocation * screenRatio), 
                     item.DrawRectangle, 
                     color, 
                     GameConstants.DEFAULT_ROTATION, 

@@ -13,5 +13,7 @@ namespace Element.Common.HelperClasses
         public static readonly Vector2 DEFAULT_IMAGE_ORIGIN = new Vector2(0, 0);
         public static readonly float DEFAULT_ROTATION = 0f;
         public static readonly float DEFAULT_LAYER = 0;
+
+        public static readonly float TILE_SIZE = 30;
     }
 }

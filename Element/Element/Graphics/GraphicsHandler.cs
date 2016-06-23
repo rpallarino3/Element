@@ -44,7 +44,8 @@ namespace Element.Graphics
 
         public static void DrawBlackScreen(SpriteBatch sb)
         {
-
+            var screenRatio = DataHelper.GetScreenRatioFromResolution();
+            // draw a black rectangle
         }
 
         public static void DrawCenteredText(SpriteBatch sb, SpriteFont font, string text, Vector2 drawLocation, Vector2 areaSize, Vector2 screenRatio, Color color)
