@@ -13,6 +13,11 @@ namespace Element.Logic
         private RegionNames _region;
         private int _zone;
 
+        public void UpdatePlayerLogic()
+        {
+
+        }
+
         public PlayerLogicHandler()
         {
             _region = RegionNames.None;
