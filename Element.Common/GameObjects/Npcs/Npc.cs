@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.NPCs;
+using Element.Common.HelperClasses;
 
 namespace Element.Common.GameObjects.Npcs
 {
@@ -13,13 +14,15 @@ namespace Element.Common.GameObjects.Npcs
         private List<RegionNames> _possibleRegions;
         private NpcNames _name;
         private NpcTypes _type;
+        private CharacterStates _state;
 
         public Npc(Vector2 location, int level) : base(location, level)
         {
-
+            _animator = NpcAnimator.GetNpcAnimatorFromType(_type);
         }
 
-        public List<RegionNames> PossibleRegions
+        // make sure to get this value from npc mapper on npc creation
+        public List<RegionNames> PossibleRegions 
         {
             get { return _possibleRegions; }
         }

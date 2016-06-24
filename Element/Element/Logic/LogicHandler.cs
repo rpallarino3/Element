@@ -10,32 +10,18 @@ using Element.Common.HelperClasses;
 
 namespace Element.Logic
 {
-    public class LogicHandler
+    public static class LogicHandler
     {
-        private ResourceManager _resourceManager;
-        private InputHandler _inputHandler;
-        private TransitionHandler _transitionHandler;
-        private PlayerLogicHandler _playerLogicHandler;
-        private RoamLogicHandler _roamLogicHandler;
-        private StartAndExitMenuLogicHandler _startAndExitMenuLogicHandler;
-        
-        public LogicHandler(ResourceManager resourceManager, InputHandler inputHandler)
+        public static void SetStartingState()
         {
-            _resourceManager = resourceManager;
-            _inputHandler = inputHandler;
-            _playerLogicHandler = new PlayerLogicHandler();
-            _roamLogicHandler = new RoamLogicHandler(resourceManager);
-            _startAndExitMenuLogicHandler = new StartAndExitMenuLogicHandler(resourceManager, inputHandler);
-            _transitionHandler = new TransitionHandler(resourceManager, _playerLogicHandler, _roamLogicHandler, _startAndExitMenuLogicHandler);
-
             GameStateHelper.ChangeState(GameStates.Start);
         }
 
-        public void UpdateGameLogic()
+        public static void UpdateGameLogic()
         {
-            if (_transitionHandler.Transitioning)
+            if (TransitionHandler.Transitioning)
             {
-                _transitionHandler.ContinueTransition();
+                TransitionHandler.ContinueTransition();
             }
             else if (GameStateHelper.CurrentState == GameStates.Start)
             {
@@ -43,11 +29,11 @@ namespace Element.Logic
             }
             else if (GameStateHelper.CurrentState == GameStates.StartMenu || GameStateHelper.CurrentState == GameStates.ExitMenu)
             {
-                _startAndExitMenuLogicHandler.UpdateGameLogic();
+                StartAndExitMenuLogicHandler.UpdateGameLogic();
             }
             else if (GameStateHelper.CurrentState == GameStates.Roam)
             {
-                _roamLogicHandler.UpdateLogic();
+                RoamLogicHandler.UpdateLogic();
             }
             else if (GameStateHelper.CurrentState == GameStates.Chat)
             {
@@ -55,9 +41,6 @@ namespace Element.Logic
             }            
         }
         
-        public Color DrawColor { get { return _transitionHandler.DrawColor; } }
-
-        public StartAndExitMenuLogicHandler StartAndExitMenuLogicHandler { get { return _startAndExitMenuLogicHandler; } }
-        public RoamLogicHandler RoamLogicHandler {  get { return _roamLogicHandler; } }
+        public static Color DrawColor { get { return TransitionHandler.DrawColor; } }        
     }
 }

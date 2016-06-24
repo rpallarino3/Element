@@ -18,34 +18,24 @@ namespace Element.Logic
     /// <summary>
     /// This whole class is a fucking mess. There is definitely a better way to do this but this should work ok.
     /// </summary>
-    public class StartAndExitMenuLogicHandler
+    public static class StartAndExitMenuLogicHandler
     {
         private const int INPUT_DELAY = 5;
+        
+        private static Dictionary<MenuPageNames, MenuPage> _menuPages;
+        private static MenuPage _activeMenuPage;
 
-        private ResourceManager _resourceManager;
-        private InputHandler _inputHandler;
+        private static int _inputCounter;
 
-        private Dictionary<MenuPageNames, MenuPage> _menuPages;
-        private MenuPage _activeMenuPage;
+        private static bool _requestKeybindChange;
+        private static ControlFunctions _functionToChange;
+        private static bool _waitForSave;
 
-        private int _inputCounter;
+        private static bool _switchPages;
+        private static SwitchPageEventArgs _switchPageArgs;
 
-        private bool _requestKeybindChange;
-        private ControlFunctions _functionToChange;
-        private bool _waitForSave;
-
-        private bool _switchPages;
-        private SwitchPageEventArgs _switchPageArgs;
-
-        public StartAndExitMenuLogicHandler(ResourceManager resourceManager, InputHandler inputHandler)
-        {
-            GameStateHelper.StateChange += StateChange;
-
-            _resourceManager = resourceManager;
-            _resourceManager.SaveCompleted += SaveCompleted;
-
-            _inputHandler = inputHandler;
-
+        static StartAndExitMenuLogicHandler()
+        {            
             _inputCounter = 0;
             _menuPages = new Dictionary<MenuPageNames, MenuPage>();
             CreateMenuPages();
@@ -55,7 +45,13 @@ namespace Element.Logic
             // need to have some way to update with preference data when we first enter a page
         }
 
-        private void CreateMenuPages()
+        public static void SubscribeToEvents()
+        {
+            GameStateHelper.StateChange += StateChange;
+            ResourceManager.SaveCompleted += SaveCompleted;
+        }
+
+        private static void CreateMenuPages()
         {
             var titlePage = new TitleMenuPage();
             var startPage = new StartMenuPage();
@@ -153,7 +149,7 @@ namespace Element.Logic
             
         }
 
-        public void UpdateGameLogic()
+        public static void UpdateGameLogic()
         {
             // might want to add something in here to wait for saves/loads that are requested from menus
 
@@ -205,7 +201,7 @@ namespace Element.Logic
             if (_requestKeybindChange)
             {
                 // this will update the preference data if a key is redbound
-                var changed = _inputHandler.RequestSingleKeyRebind(_functionToChange);
+                var changed = InputHandler.RequestSingleKeyRebind(_functionToChange);
 
                 if (changed)
                 {
@@ -216,7 +212,7 @@ namespace Element.Logic
             }
             else if (_activeMenuPage.Name == MenuPageNames.Title)
             {
-                if (_inputHandler.RequestSingleKeypress())
+                if (InputHandler.RequestSingleKeypress())
                 {
                     // this should cause the switch page event to go
                     _activeMenuPage.SelectButton();
@@ -224,21 +220,21 @@ namespace Element.Logic
             }
             else
             {
-                if (_inputHandler.IsFunctionReady(ControlFunctions.Confirm))
+                if (InputHandler.IsFunctionReady(ControlFunctions.Confirm))
                 {
                     _activeMenuPage.SelectButton();
                     _inputCounter = 0;
                     return;
                 }
 
-                if (_inputHandler.IsFunctionReady(ControlFunctions.Back))
+                if (InputHandler.IsFunctionReady(ControlFunctions.Back))
                 {
                     _activeMenuPage.ReturnToPreviousMenu();
                     _inputCounter = 0;
                     return;
                 }
 
-                if (_inputHandler.IsFunctionReady(ControlFunctions.Menu))
+                if (InputHandler.IsFunctionReady(ControlFunctions.Menu))
                 {
                     if (_activeMenuPage == _menuPages[MenuPageNames.ExitMenu])
                     {
@@ -249,7 +245,7 @@ namespace Element.Logic
                     return;
                 }
 
-                var direction = _inputHandler.GetLongestDirection();
+                var direction = InputHandler.GetLongestDirection();
 
                 if (direction != null)
                 {
@@ -263,7 +259,7 @@ namespace Element.Logic
 
         #region Menu Changes
 
-        private void OpenDialog(MenuPageEventArgs e)
+        private static void OpenDialog(MenuPageEventArgs e)
         {
             var args = e as OpenDialogEventArgs;
 
@@ -272,7 +268,7 @@ namespace Element.Logic
             
         }
 
-        private void CloseDialog(MenuPageEventArgs e)
+        private static void CloseDialog(MenuPageEventArgs e)
         {
             var args = e as CloseDialogEventArgs;
 
@@ -283,7 +279,7 @@ namespace Element.Logic
             // really doesn't matter if buttons behind highlight slightly before
         }
 
-        private void SwitchMenuPage(MenuPageEventArgs e)
+        private static void SwitchMenuPage(MenuPageEventArgs e)
         {
             var args = e as SwitchPageEventArgs;
 
@@ -301,7 +297,7 @@ namespace Element.Logic
 
         #region Data Changes
 
-        private void SaveGame(MenuPageEventArgs e)
+        private static void SaveGame(MenuPageEventArgs e)
         {
             var args = e as SaveGameEventArgs;
 
@@ -314,10 +310,10 @@ namespace Element.Logic
             msg.FileNumber = args.FileNumber;
             msg.Data = DataHelper.GetSaveDataCopyForFileNumber(args.FileNumber);
 
-            _resourceManager.RequestSave(msg);
+            ResourceManager.RequestSave(msg);
         }
 
-        private void StartOrLoadGame(MenuPageEventArgs e)
+        private static void StartOrLoadGame(MenuPageEventArgs e)
         {
             // at this point we would already have the data loaded
             var args = e as StartOrLoadEventArgs;
@@ -342,17 +338,17 @@ namespace Element.Logic
                 });
         }
 
-        private void EraseFile(MenuPageEventArgs e)
+        private static void EraseFile(MenuPageEventArgs e)
         {
             var args = e as EraseFileEventArgs;
 
             if (args == null)
                 return;
 
-            _resourceManager.EraseFile(args.FileNumber);
+            ResourceManager.EraseFile(args.FileNumber);
         }
         
-        private void SaveCompleted()
+        private static void SaveCompleted()
         {
             _waitForSave = false;
             ((FileSelectMenuPage)_menuPages[MenuPageNames.FileSelect]).CloseSaveDialog();
@@ -363,7 +359,7 @@ namespace Element.Logic
 
         #region Preference Changes
 
-        private void KeybindChange(MenuPageEventArgs e)
+        private static void KeybindChange(MenuPageEventArgs e)
         {
             var args = e as KeybindChangeEventArgs;
 
@@ -374,7 +370,7 @@ namespace Element.Logic
             _functionToChange = args.Function;
         }
 
-        private void ResetPreferences(MenuPageEventArgs e)
+        private static void ResetPreferences(MenuPageEventArgs e)
         {
             var args = e as ResetPreferencesEventArgs;
 
@@ -384,11 +380,11 @@ namespace Element.Logic
             if (args.Type == PreferenceTypes.All)
             {
                 ResolutionChanged(new ResolutionChangeEventArgs(PreferenceValidator.DefaultResolution));
-                _resourceManager.ResetPreferenceData();
+                ResourceManager.ResetPreferenceData();
             }
             else if (args.Type == PreferenceTypes.Keybinds)
             {
-                _resourceManager.ResetPreferenceKeybinds();
+                ResourceManager.ResetPreferenceKeybinds();
                 ((OptionsMenuPage)_menuPages[MenuPageNames.Options]).UpdateWithPreferenceData(DataHelper.PreferenceData);
             }
             else if (args.Type == PreferenceTypes.Resolution)
@@ -397,21 +393,21 @@ namespace Element.Logic
             }
             else if (args.Type == PreferenceTypes.Volume)
             {
-                _resourceManager.UpdatePreferenceVolumeData(PreferenceValidator.DefaultVolume);
+                ResourceManager.UpdatePreferenceVolumeData(PreferenceValidator.DefaultVolume);
             }
         }
 
-        private void VolumeChange(MenuPageEventArgs e)
+        private static void VolumeChange(MenuPageEventArgs e)
         {
             var args = e as VolumeChangeEventArgs;
 
             if (args == null)
                 return;
 
-            _resourceManager.UpdatePreferenceVolumeData(args.Up);
+            ResourceManager.UpdatePreferenceVolumeData(args.Up);
         }
 
-        private void ResolutionChange(MenuPageEventArgs e)
+        private static void ResolutionChange(MenuPageEventArgs e)
         {
             var args = e as ResolutionChangeEventArgs;
 
@@ -419,14 +415,14 @@ namespace Element.Logic
                 return;
 
             ResolutionChanged(args);
-            _resourceManager.UpdatePreferenceResolutionData(args.Resolution);
+            ResourceManager.UpdatePreferenceResolutionData(args.Resolution);
         }
 
         #endregion
 
         #region State Changes
 
-        private void ExitGame(MenuPageEventArgs e)
+        private static void ExitGame(MenuPageEventArgs e)
         {
             var args = e as ExitGameEventArgs;
 
@@ -436,7 +432,7 @@ namespace Element.Logic
             BeginExit(args);
         }
 
-        private void ResumeGame(MenuPageEventArgs e)
+        private static void ResumeGame(MenuPageEventArgs e)
         {
             var args = e as ResumeGameEventArgs;
 
@@ -450,7 +446,7 @@ namespace Element.Logic
 
         #endregion
 
-        public void StateChange(StateChangeEventArgs e)
+        public static void StateChange(StateChangeEventArgs e)
         {
             if (e.NewState == GameStates.StartMenu)
             {
@@ -464,10 +460,10 @@ namespace Element.Logic
             }
         }
 
-        public MenuPage ActiveMenuPage { get { return _activeMenuPage; } }
+        public static MenuPage ActiveMenuPage { get { return _activeMenuPage; } }
 
-        public event TransitionEvent InitiateTransition;
-        public event MenuPageEvent ResolutionChanged;
-        public event MenuPageEvent BeginExit;
+        public static event TransitionEvent InitiateTransition;
+        public static event MenuPageEvent ResolutionChanged;
+        public static event MenuPageEvent BeginExit;
     }
 }

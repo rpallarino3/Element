@@ -18,39 +18,28 @@ using Element.Common.Data;
 
 namespace Element.ResourceManagement
 {
-    public class ResourceManager
+    public static class ResourceManager
     {
-        private IServiceProvider _serviceProvider;
-        private string _rootDirectory;
+        private static IServiceProvider _serviceProvider;
+        private static string _rootDirectory;
+        
+        private static Dictionary<RegionNames, RegionContent> _regionContent;
+        private static Dictionary<NpcNames, CrossRegionNpcContent> _crossRegionNpcContent;
+        private static Dictionary<SoundName, CrossRegionSoundContent> _crossRegionSoundContent;
 
-        private MenuResourceManager _menuResourceManager;
+        private static List<RegionNames> _contentToRemove;
+        private static List<RegionContent> _contentToAdd;
 
-        private Dictionary<RegionNames, RegionContent> _regionContent;
-        private Dictionary<NpcNames, CrossRegionNpcContent> _crossRegionNpcContent;
-        private Dictionary<SoundName, CrossRegionSoundContent> _crossRegionSoundContent;
+        private static List<NpcNames> _crossRegionNpcContentToRemove;
+        private static List<SoundName> _crossRegionSoundContentToRemove;
+        private static List<CrossRegionContent> _crossRegionContentToAdd;
 
-        private List<RegionNames> _contentToRemove;
-        private List<RegionContent> _contentToAdd;
+        private static ContentManager _playerContentManager;
+        private static BackgroundThread _backgroundThread;
 
-        private List<NpcNames> _crossRegionNpcContentToRemove;
-        private List<SoundName> _crossRegionSoundContentToRemove;
-        private List<CrossRegionContent> _crossRegionContentToAdd;
-
-        private ContentManager _playerContentManager;
-
-        private SaveLoadHandler _saveLoadHandler;
-        private BackgroundThread _backgroundThread;
-
-        public ResourceManager(IServiceProvider serviceProvider, string rootDirectory)
+        // we technically don't have to dispose of content managers, just unload the assets we don't want and the content manager is resusable. should unload then dispose if we want to get rid of content manager for good though
+        static ResourceManager()
         {
-            _serviceProvider = serviceProvider;
-            _rootDirectory = rootDirectory;
-
-            _menuResourceManager = new MenuResourceManager(_serviceProvider, rootDirectory);
-            _saveLoadHandler = new SaveLoadHandler();
-            
-            _playerContentManager = new ContentManager(_serviceProvider, rootDirectory);
-
             _regionContent = new Dictionary<RegionNames, RegionContent>();
             _crossRegionNpcContent = new Dictionary<NpcNames, CrossRegionNpcContent>();
             _crossRegionSoundContent = new Dictionary<SoundName, CrossRegionSoundContent>();
@@ -60,34 +49,41 @@ namespace Element.ResourceManagement
             _crossRegionNpcContentToRemove = new List<NpcNames>();
             _crossRegionSoundContentToRemove = new List<SoundName>();
             _crossRegionContentToAdd = new List<CrossRegionContent>();
+        }
 
-            _backgroundThread = new BackgroundThread(_saveLoadHandler, _serviceProvider, _rootDirectory);
+        public static void PassProviderAndRootDirectory(IServiceProvider serviceProvider, string rootDirectory)
+        {
+            _serviceProvider = serviceProvider;
+            _rootDirectory = rootDirectory;
+            _playerContentManager = new ContentManager(_serviceProvider, _rootDirectory);
+            MenuResourceManager.PassProviderAndRootDirectory(serviceProvider, rootDirectory);
+
+            _backgroundThread = new BackgroundThread(_serviceProvider, _rootDirectory);
             _backgroundThread.SaveInitiated += SaveStarted;
             _backgroundThread.SaveCompleted += SaveDone;
             _backgroundThread.AssetsLoaded += AssetsLoaded;
             _backgroundThread.AssetsUnloaded += AssetsUnloaded;
-
             var t = new Thread(() => _backgroundThread.Loop());
             t.Start();
         }
 
-        public void LoadStaticContent()
+        public static void LoadStaticContent()
         {
-            _menuResourceManager.LoadContent();
+            MenuResourceManager.LoadContent();
         }
 
-        public void Shutdown()
+        public static void Shutdown()
         {
-            _menuResourceManager.UnloadContent();
+            MenuResourceManager.UnloadContent();
             _backgroundThread.Shutdown();
         }
 
-        public bool IsBackgroundThreadClear()
+        public static bool IsBackgroundThreadClear()
         {
             return _backgroundThread.AreNoRequests();
         }
 
-        public void CheckLoad()
+        public static void CheckLoad()
         {
             var contentToAdd = new List<RegionContent>();
 
@@ -126,7 +122,7 @@ namespace Element.ResourceManagement
             crossRegionContentToAdd.Clear();
         }
 
-        public void CheckUnload()
+        public static void CheckUnload()
         {
             var contentToRemove = new List<RegionNames>();
 
@@ -183,12 +179,12 @@ namespace Element.ResourceManagement
 
         #region Save Data
 
-        public void RequestSave(SaveLoadMessage msg)
+        public static void RequestSave(SaveLoadMessage msg)
         {
             _backgroundThread.AddSaveRequest(msg);
         }
         
-        public void EraseFile(int fileNumber)
+        public static void EraseFile(int fileNumber)
         {
             var msg = new SaveLoadMessage();
 
@@ -202,13 +198,13 @@ namespace Element.ResourceManagement
             _backgroundThread.AddPreferenceRequest(DataHelper.PreferenceData.Copy());
         }
 
-        private void SaveStarted()
+        private static void SaveStarted()
         {
             // this should resolve any timing issues from different threads raising the events
             SaveInitiated();
         }
 
-        private void SaveDone()
+        private static void SaveDone()
         {
             SaveCompleted();
         }
@@ -217,28 +213,28 @@ namespace Element.ResourceManagement
 
         #region Region Load/Unload
 
-        public void RequestRegionLoad(List<RegionNames> regions)
+        public static void RequestRegionLoad(List<RegionNames> regions)
         {
             _backgroundThread.AddLoadRequests(regions);
         }
 
-        public void RequestRegionUnload(List<RegionNames> regions)
+        public static void RequestRegionUnload(List<RegionNames> regions)
         {
             _backgroundThread.AddUnloadRequests(regions);
         }
 
-        public void RequestRegionLoadUnload(List<RegionNames> regionsToLoad, List<RegionNames> regionsToUnload)
+        public static void RequestRegionLoadUnload(List<RegionNames> regionsToLoad, List<RegionNames> regionsToUnload)
         {
             _backgroundThread.AddLoadAndUnloadRequests(regionsToLoad, regionsToUnload);
         }
         
-        private void AssetsLoaded(AssetsLoadedEventArgs e)
+        private static void AssetsLoaded(AssetsLoadedEventArgs e)
         {
             AddLoadedContent(e);
             RegionsLoaded(e);
         }
 
-        private void AssetsUnloaded(AssetsUnloadedEventArgs e)
+        private static void AssetsUnloaded(AssetsUnloadedEventArgs e)
         {
             // need to make sure that the regions are removed BEFORE the textures are removed so that we don't try to draw on non existant texture
             // maybe check to see if there is a content manager for that region before we try to draw anything for that region?
@@ -246,7 +242,7 @@ namespace Element.ResourceManagement
             RemoveUnloadedContent(e);
         }
 
-        private void AddLoadedContent(AssetsLoadedEventArgs e)
+        private static void AddLoadedContent(AssetsLoadedEventArgs e)
         {
             lock (_contentToAdd)
             {
@@ -259,7 +255,7 @@ namespace Element.ResourceManagement
             }
         }
 
-        private void RemoveUnloadedContent(AssetsUnloadedEventArgs e)
+        private static void RemoveUnloadedContent(AssetsUnloadedEventArgs e)
         {
             lock (_contentToRemove)
             {
@@ -284,9 +280,9 @@ namespace Element.ResourceManagement
         // should really look at all these methods and see if we want to move them to the helper
 
         // i think this method is ok because it is called before any other thread should access the data
-        public void LoadFilesAndUpdatePreferenceData()
+        public static void LoadFilesAndUpdatePreferenceData()
         {
-            DataHelper.PreferenceData = _saveLoadHandler.LoadPreferenceData(); // something is not right here
+            DataHelper.PreferenceData = SaveLoadHandler.LoadPreferenceData(); // something is not right here
 
             if (DataHelper.PreferenceData == null)
             {
@@ -300,20 +296,20 @@ namespace Element.ResourceManagement
                 PreferenceValidator.ValidatePreferenceData();
             }
 
-            _saveLoadHandler.LoadFiles();
+            SaveLoadHandler.LoadFiles();
 
-            DataHelper.File0SaveData = _saveLoadHandler.File0Data != null ? _saveLoadHandler.File0Data.Copy() : DataHelper.CreateStartingSaveData();
-            DataHelper.File1SaveData = _saveLoadHandler.File1Data != null ? _saveLoadHandler.File1Data.Copy() : DataHelper.CreateStartingSaveData();
-            DataHelper.File2SaveData = _saveLoadHandler.File2Data != null ? _saveLoadHandler.File2Data.Copy() : DataHelper.CreateStartingSaveData();
+            DataHelper.File0SaveData = SaveLoadHandler.File0Data != null ? SaveLoadHandler.File0Data.Copy() : DataHelper.CreateStartingSaveData();
+            DataHelper.File1SaveData = SaveLoadHandler.File1Data != null ? SaveLoadHandler.File1Data.Copy() : DataHelper.CreateStartingSaveData();
+            DataHelper.File2SaveData = SaveLoadHandler.File2Data != null ? SaveLoadHandler.File2Data.Copy() : DataHelper.CreateStartingSaveData();
 
             DataHelper.PreferenceData.File0Info = DataHelper.File0SaveData.FileInfo;
             DataHelper.PreferenceData.File1Info = DataHelper.File1SaveData.FileInfo;
             DataHelper.PreferenceData.File2Info = DataHelper.File2SaveData.FileInfo;
 
-            _saveLoadHandler.SavePreferenceData(DataHelper.PreferenceData.Copy());
+            SaveLoadHandler.SavePreferenceData(DataHelper.PreferenceData.Copy());
         }
 
-        public void ResetPreferenceData()
+        public static void ResetPreferenceData()
         {
             var prefData = new PreferenceData();
             PreferenceValidator.AddDefaultKeybindsToDictionaries();
@@ -328,13 +324,13 @@ namespace Element.ResourceManagement
             _backgroundThread.AddPreferenceRequest(DataHelper.PreferenceData.Copy());
         }
 
-        public void ResetPreferenceKeybinds()
+        public static void ResetPreferenceKeybinds()
         {
             PreferenceValidator.AddDefaultKeybindsToDictionaries();
             _backgroundThread.AddPreferenceRequest(DataHelper.PreferenceData.Copy());
         }
 
-        public void UpdatePreferenceKeybindData(Dictionary<ControlFunctions, Control> controls)
+        public static void UpdatePreferenceKeybindData(Dictionary<ControlFunctions, Control> controls)
         {
             // we might need to validate the keybinds here?
 
@@ -362,13 +358,13 @@ namespace Element.ResourceManagement
             _backgroundThread.AddPreferenceRequest(DataHelper.PreferenceData.Copy());
         }
 
-        public void UpdatePreferenceResolutionData(Resolutions resolution)
+        public static void UpdatePreferenceResolutionData(Resolutions resolution)
         {
             DataHelper.PreferenceData.Resolution = resolution;
             _backgroundThread.AddPreferenceRequest(DataHelper.PreferenceData.Copy());
         }
 
-        public void UpdatePreferenceVolumeData(bool up)
+        public static void UpdatePreferenceVolumeData(bool up)
         {
             if (up)
                 DataHelper.PreferenceData.Volume++;
@@ -378,7 +374,7 @@ namespace Element.ResourceManagement
             UpdatePreferenceVolumeData(DataHelper.PreferenceData.Volume);
         }
 
-        public void UpdatePreferenceVolumeData(int volume)
+        public static void UpdatePreferenceVolumeData(int volume)
         {
             if (volume > 10)
                 volume = 10;
@@ -390,7 +386,7 @@ namespace Element.ResourceManagement
             _backgroundThread.AddPreferenceRequest(DataHelper.PreferenceData.Copy());
         }
 
-        public void UpdatePreferenceSaveFileInfo(int file, SaveFileInfo info)
+        public static void UpdatePreferenceSaveFileInfo(int file, SaveFileInfo info)
         {
             if (file == 0)
                 DataHelper.PreferenceData.File0Info = info;
@@ -403,20 +399,18 @@ namespace Element.ResourceManagement
         }
 
         #endregion
-
-        public MenuResourceManager MenuResourceManager { get { return _menuResourceManager; } }
-
-        public Dictionary<RegionNames, RegionContent> RegionContent { get { return _regionContent; } }
-        public Dictionary<NpcNames, CrossRegionNpcContent> CrossRegionNpcContent { get { return _crossRegionNpcContent; } }
-        public Dictionary<SoundName, CrossRegionSoundContent> CrossRegionSoundContenet { get { return _crossRegionSoundContent; } }
+        
+        public static Dictionary<RegionNames, RegionContent> RegionContent { get { return _regionContent; } }
+        public static Dictionary<NpcNames, CrossRegionNpcContent> CrossRegionNpcContent { get { return _crossRegionNpcContent; } }
+        public static Dictionary<SoundName, CrossRegionSoundContent> CrossRegionSoundContenet { get { return _crossRegionSoundContent; } }
 
         #region Events
 
-        public event AssetsLoadedEvent RegionsLoaded;
-        public event AssetsUnloadedEvent RegionsUnloaded;
+        public static event AssetsLoadedEvent RegionsLoaded;
+        public static event AssetsUnloadedEvent RegionsUnloaded;
         
-        public event SaveInitiatedEvent SaveInitiated;
-        public event SaveCompletedEvent SaveCompleted;
+        public static event SaveInitiatedEvent SaveInitiated;
+        public static event SaveCompletedEvent SaveCompleted;
 
         #endregion
     }

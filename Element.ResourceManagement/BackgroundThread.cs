@@ -19,7 +19,6 @@ namespace Element.ResourceManagement
     {
         private IServiceProvider _serviceProvider;
         private string _rootDirectory;
-        private SaveLoadHandler _saveLoadHandler;
 
         private List<SaveLoadMessage> _saveRequests; // save requests come from moving between zones, only use the latest save request, the list should be cleared
         private List<RegionNames> _loadRequests; // requests in game to load regions
@@ -36,12 +35,11 @@ namespace Element.ResourceManagement
 
         // everything here needs to be redone
 
-        public BackgroundThread(SaveLoadHandler saveLoadHandler, IServiceProvider serviceProvider, string rootDirectory)
+        public BackgroundThread(IServiceProvider serviceProvider, string rootDirectory)
         {
             _serviceProvider = serviceProvider;
             _rootDirectory = rootDirectory;
-
-            _saveLoadHandler = saveLoadHandler;
+            
             _saveRequests = new List<SaveLoadMessage>();
             _loadRequests = new List<RegionNames>();
             _unloadRequests = new List<RegionNames>();
@@ -350,10 +348,10 @@ namespace Element.ResourceManagement
             SaveInitiated();
 
             if (msg.Erase)
-                _saveLoadHandler.EraseFile(msg.FileNumber);
+                SaveLoadHandler.EraseFile(msg.FileNumber);
             else
             {
-                _saveLoadHandler.RequestSave(msg.FileNumber, msg.Data);
+                SaveLoadHandler.RequestSave(msg.FileNumber, msg.Data);
             }
 
             if (_saveRequests.Count == 0)
@@ -367,7 +365,7 @@ namespace Element.ResourceManagement
             if (data == null)
                 return;
 
-            _saveLoadHandler.SavePreferenceData(data);
+            SaveLoadHandler.SavePreferenceData(data);
         }
 
         private void ExecuteFileLoadRequest(int fileNumber)

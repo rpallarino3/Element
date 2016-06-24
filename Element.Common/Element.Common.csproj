@@ -96,6 +96,7 @@
     <Compile Include="HelperClasses\GameConstants.cs" />
     <Compile Include="HelperClasses\GameStateHelper.cs" />
     <Compile Include="HelperClasses\InputHelper.cs" />
+    <Compile Include="HelperClasses\NpcAnimator.cs" />
     <Compile Include="HelperClasses\PreferenceValidator.cs" />
     <Compile Include="HelperClasses\SoundEventArgs.cs" />
     <Compile Include="HelperClasses\SoundTransmitter.cs" />

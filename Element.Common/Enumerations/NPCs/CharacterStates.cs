@@ -7,13 +7,11 @@ namespace Element.Common.Enumerations.NPCs
 {
     public enum CharacterStates
     {
-        Stand,
-        Walk,
-        Jump,
-        Push,
-        Climb,
-        Fall,
-        Cast,
-        Lay,
+        Stationary,
+        Moving,
+        Climbing,
+        Falling,
+        Casting,
+        Dead,
     }
 }

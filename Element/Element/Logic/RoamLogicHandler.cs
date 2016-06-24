@@ -2,29 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Element.ResourceManagement;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Environment;
 using Element.Common.GameObjects.Npcs;
 using Element.Common.HelperClasses;
 using Element.Common.Messages;
+using Element.Input;
+using Element.ResourceManagement;
 
 namespace Element.Logic
 {
-    public class RoamLogicHandler
+    public static class RoamLogicHandler
     {
-        private ResourceManager _resourceManager;
+        private static Dictionary<RegionNames, Region> _regions;
 
-        private Dictionary<RegionNames, Region> _regions;
-        private RegionNames _currentPlayerRegion;
+        private static Dictionary<RegionNames, Region> _regionsToAdd;
+        private static List<RegionNames> _regionsToUnload;
+        private static List<Npc> _crossRegionNpcsToAdd;
 
-        private Dictionary<RegionNames, Region> _regionsToAdd;
-        private List<RegionNames> _regionsToUnload;
-        private List<Npc> _crossRegionNpcsToAdd;
+        private static List<Npc> _crossRegionNpcs;
 
-        private List<Npc> _crossRegionNpcs;
-
-        public RoamLogicHandler(ResourceManager resourceManager)
+        static RoamLogicHandler()
         {
             _regions = new Dictionary<RegionNames, Region>();
             _regionsToUnload = new List<RegionNames>();
@@ -33,14 +31,16 @@ namespace Element.Logic
             _regionsToUnload = new List<RegionNames>();
             _crossRegionNpcsToAdd = new List<Npc>();
 
-            _crossRegionNpcs = new List<Npc>();
-
-            _resourceManager = resourceManager;
-            _resourceManager.RegionsLoaded += AddLoadedRegions;
-            _resourceManager.RegionsUnloaded += RemoveUnloadRegions;
+            _crossRegionNpcs = new List<Npc>();            
         }
 
-        public void UpdateLogic()
+        public static void SubscribeToEvents()
+        {
+            ResourceManager.RegionsLoaded += AddLoadedRegions;
+            ResourceManager.RegionsUnloaded += RemoveUnloadRegions;
+        }
+
+        public static void UpdateLogic()
         {
             CheckLoad();
             CheckUnload();
@@ -48,7 +48,7 @@ namespace Element.Logic
 
         #region Load/Unload Regions
 
-        private void CheckLoad()
+        private static void CheckLoad()
         {
             var regionsToAdd = new Dictionary<RegionNames, Region>();
 
@@ -73,7 +73,7 @@ namespace Element.Logic
             }
         }
 
-        private void CheckUnload()
+        private static void CheckUnload()
         {
             var regionsToUnload = new List<RegionNames>();
 
@@ -112,7 +112,7 @@ namespace Element.Logic
             }
         }
         
-        private void AddLoadedRegions(AssetsLoadedEventArgs e)
+        private static void AddLoadedRegions(AssetsLoadedEventArgs e)
         {
             lock (_regionsToAdd)
             {
@@ -131,7 +131,7 @@ namespace Element.Logic
             }
         }
 
-        private void RemoveUnloadRegions(AssetsUnloadedEventArgs e)
+        private static void RemoveUnloadRegions(AssetsUnloadedEventArgs e)
         {
             lock (_regionsToUnload)
             {
@@ -145,7 +145,7 @@ namespace Element.Logic
 
         #endregion
         
-        public void UpdatePlayerPositionWithTransition(RoamTransition transition)
+        public static void UpdatePlayerPositionWithTransition(RoamTransition transition)
         {
             // update teh camera here too, this isn't going to be entirely correct
             Camera.Zone = transition.DestinationZone;
@@ -153,28 +153,23 @@ namespace Element.Logic
             Camera.Location = transition.DestinationCoords * GameConstants.TILE_SIZE; // going to need to calc camera position based on player coords and zone size
         }
 
-        public bool IsRegionLoaded(RegionNames region)
+        public static bool IsRegionLoaded(RegionNames region)
         {
             return _regions.Keys.Contains(region);
         }
 
         #region Properties
 
-        public Dictionary<RegionNames, Region> Regions
+        public static Dictionary<RegionNames, Region> Regions
         {
             get { return _regions; }
-        }
-
-        public RegionNames CurrentPlayerRegion
-        {
-            get { return _currentPlayerRegion; }
-        }
+        }        
 
         #endregion
 
         #region Events
 
-        public event TransitionEvent InitiateTransition;
+        public static event TransitionEvent InitiateTransition;
 
         #endregion
 

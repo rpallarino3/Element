@@ -14,10 +14,10 @@ using Element.Logic;
 
 namespace Element.Graphics
 {
-    public class RoamGraphicsHandler
+    public static class RoamGraphicsHandler
     {
 
-        public void DrawRoam(SpriteBatch sb, LogicHandler logic, ResourceManager resourceManager)
+        public static void DrawRoam(SpriteBatch sb)
         {
             var screenRatio = DataHelper.GetScreenRatioFromResolution();
 
@@ -33,32 +33,32 @@ namespace Element.Graphics
             // do we need to do the player first?
 
             // maybe do the transition handler.showregionimage here
-            if (!logic.RoamLogicHandler.Regions.ContainsKey(cameraRegion))
+            if (!RoamLogicHandler.Regions.ContainsKey(cameraRegion))
                 return;
 
             // did we decide to check if the zone was present first before we drew it?
 
-            var currentZone = logic.RoamLogicHandler.Regions[cameraRegion].Zones[cameraZone];
-            CreateZoneDrawInfo(cameraRegion, currentZone, drawInfo, new Vector2(0, 0), resourceManager, cameraTopLeft);
+            var currentZone = RoamLogicHandler.Regions[cameraRegion].Zones[cameraZone];
+            CreateZoneDrawInfo(cameraRegion, currentZone, drawInfo, new Vector2(0, 0), cameraTopLeft);
 
             foreach (var offset in cameraZoneOffsets)
             {
-                var zone = logic.RoamLogicHandler.Regions[offset.OtherRegion].Zones[offset.OtherZone];
-                CreateZoneDrawInfo(offset.OtherRegion, zone, drawInfo, offset.Offset, resourceManager, cameraTopLeft);
+                var zone = RoamLogicHandler.Regions[offset.OtherRegion].Zones[offset.OtherZone];
+                CreateZoneDrawInfo(offset.OtherRegion, zone, drawInfo, offset.Offset, cameraTopLeft);
             }
 
             // need to do cross region npcs here too
 
             drawInfo.Sort();
-            DrawDrawInfo(sb, screenRatio, drawInfo, logic.DrawColor, cameraTopLeft);
+            DrawDrawInfo(sb, screenRatio, drawInfo, LogicHandler.DrawColor, cameraTopLeft);
             // do whatever else we need to do here
         }
 
-        private void CreateZoneDrawInfo(RegionNames region, Zone zone, List<DrawInfo> info, Vector2 offset, ResourceManager resourceManager, Vector2 cameraTopLeft)
+        private static void CreateZoneDrawInfo(RegionNames region, Zone zone, List<DrawInfo> info, Vector2 offset, Vector2 cameraTopLeft)
         {
             foreach (var scenery in zone.SceneryObjects)
             {
-                var textures = resourceManager.RegionContent[region].SceneryTextures[scenery.Name];
+                var textures = ResourceManager.RegionContent[region].SceneryTextures[scenery.Name];
                 var texture = GetTextureFromList(textures, scenery.Animator);
                 var drawLocation = scenery.Location + scenery.Animator.DrawOffset + offset;
                 var x = scenery.Animator.ImageSize.X * scenery.Animator.AnimationCounter;
@@ -72,7 +72,7 @@ namespace Element.Graphics
 
             foreach (var tileObject in zone.TileObjects)
             {
-                var textures = resourceManager.RegionContent[region].ObjectTextures[tileObject.Name];
+                var textures = ResourceManager.RegionContent[region].ObjectTextures[tileObject.Name];
                 var texture = GetTextureFromList(textures, tileObject.Animator);
                 var drawLocation = tileObject.Location + tileObject.Animator.DrawOffset + offset;
                 var x = tileObject.Animator.ImageSize.X * tileObject.Animator.AnimationCounter;
@@ -86,7 +86,7 @@ namespace Element.Graphics
 
             foreach (var npc in zone.Npcs)
             {
-                var textures = resourceManager.RegionContent[region].NpcTextures[npc.Name];
+                var textures = ResourceManager.RegionContent[region].NpcTextures[npc.Name];
                 var texture = GetTextureFromList(textures, npc.Animator);
                 var drawLocation = npc.Location + npc.Animator.DrawOffset + offset;
                 var x = npc.Animator.ImageSize.X * npc.Animator.AnimationCounter;
@@ -99,7 +99,7 @@ namespace Element.Graphics
             }
         }
 
-        private void DrawDrawInfo(SpriteBatch sb, Vector2 screenRatio, List<DrawInfo> drawInfo, Color color, Vector2 cameraTopLeft)
+        private static void DrawDrawInfo(SpriteBatch sb, Vector2 screenRatio, List<DrawInfo> drawInfo, Color color, Vector2 cameraTopLeft)
         {
             foreach (var item in drawInfo)
             {
@@ -116,7 +116,7 @@ namespace Element.Graphics
             }
         }
 
-        private Texture2D GetTextureFromList(List<Texture2D> textures, Animator animator)
+        private static Texture2D GetTextureFromList(List<Texture2D> textures, Animator animator)
         {
             var imageHeight = animator.ImageSize.Y;
             var totalHeight = imageHeight * animator.CurrentAnimation.Row;
@@ -125,7 +125,7 @@ namespace Element.Graphics
             return textures[textureIndex];
         }
 
-        private bool IsOnScreen(Vector2 cameraTopLeft, Vector2 objLocation, Vector2 objSize)
+        private static bool IsOnScreen(Vector2 cameraTopLeft, Vector2 objLocation, Vector2 objSize)
         {
             if (objLocation.Y + objSize.Y <= cameraTopLeft.Y)
                 return false;

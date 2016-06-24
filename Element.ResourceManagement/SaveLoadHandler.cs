@@ -10,7 +10,7 @@ using Element.Common.Data;
 
 namespace Element.ResourceManagement
 {
-    public class SaveLoadHandler
+    public static class SaveLoadHandler
     {
         private const string PREF_DATA_FILE = "ElementPrefData.sav";
         private const string FILE_0_DATA_NAME = "ElementSave0.sav";
@@ -27,18 +27,18 @@ namespace Element.ResourceManagement
         private const string FILE_1_DATA_NAME_NEW = "ElementSave1.sav.new";
         private const string FILE_2_DATA_NAME_NEW = "ElementSave2.sav.new";
 
-        private IAsyncResult result;
+        private static IAsyncResult result;
 
         // these should be maintained at the level of which we loaded/saved them
         // i'll need to copy the save data to another object to manipulate within the game
-        private SaveData _file0Data;
-        private SaveData _file1Data;
-        private SaveData _file2Data;
+        private static SaveData _file0Data;
+        private static SaveData _file1Data;
+        private static SaveData _file2Data;
 
         #region Load
 
         // this should be called on start up of the game
-        public void LoadFiles()
+        public static void LoadFiles()
         {
             try
             {
@@ -81,7 +81,7 @@ namespace Element.ResourceManagement
 
         // this should be called when we want to load specific data from the exit menu?
         // this actually might not be useful at all?
-        public void RequestLoad(int index)
+        public static void RequestLoad(int index)
         {
             try
             {
@@ -128,7 +128,7 @@ namespace Element.ResourceManagement
             }
         }
 
-        private SaveData LoadFile(StorageContainer container, string fileName)
+        private static SaveData LoadFile(StorageContainer container, string fileName)
         {
             try
             {
@@ -160,7 +160,7 @@ namespace Element.ResourceManagement
 
         #region Save
 
-        public void RequestSave(int index, SaveData data) // do we use this data or the data in this class?
+        public static void RequestSave(int index, SaveData data) // do we use this data or the data in this class?
         {
             try
             {
@@ -206,7 +206,7 @@ namespace Element.ResourceManagement
 
         }
 
-        private void SaveFile(StorageContainer container, string fileName, SaveData data)
+        private static void SaveFile(StorageContainer container, string fileName, SaveData data)
         {
             try
             {
@@ -224,7 +224,7 @@ namespace Element.ResourceManagement
             }
         }
 
-        private void CopyFile(StorageContainer container, string fileName, string newFileName)
+        private static void CopyFile(StorageContainer container, string fileName, string newFileName)
         {
             if (!container.FileExists(fileName))
                 return;
@@ -246,7 +246,7 @@ namespace Element.ResourceManagement
 
         #region Erase
 
-        public void EraseFile(int index)
+        public static void EraseFile(int index)
         {
             try
             {
@@ -309,7 +309,7 @@ namespace Element.ResourceManagement
 
         #region Preference Data
 
-        public void SavePreferenceData(PreferenceData preferenceData)
+        public static void SavePreferenceData(PreferenceData preferenceData)
         {
             try
             {
@@ -350,7 +350,7 @@ namespace Element.ResourceManagement
             }
         }
 
-        public PreferenceData LoadPreferenceData() // fix this to close the stream if file doesn't deserialize properly
+        public static PreferenceData LoadPreferenceData() // fix this to close the stream if file doesn't deserialize properly
         {
             try
             {
@@ -400,7 +400,7 @@ namespace Element.ResourceManagement
 
         #endregion
 
-        private T LoadFile<T>(string fileName, Stream stream)
+        private static T LoadFile<T>(string fileName, Stream stream)
         {
             try
             {
@@ -415,7 +415,7 @@ namespace Element.ResourceManagement
             }
         }
 
-        private void SaveFile<T>(T data, Stream stream)
+        private static void SaveFile<T>(T data, Stream stream)
         {
             try
             {
@@ -428,8 +428,8 @@ namespace Element.ResourceManagement
             }
         }
 
-        public SaveData File0Data { get { return _file0Data; } }
-        public SaveData File1Data { get { return _file1Data; } }
-        public SaveData File2Data { get { return _file2Data; } }
+        public static SaveData File0Data { get { return _file0Data; } }
+        public static SaveData File1Data { get { return _file1Data; } }
+        public static SaveData File2Data { get { return _file2Data; } }
     }
 }

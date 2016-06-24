@@ -12,8 +12,11 @@ namespace Element.Common.HelperClasses
 
         public static void ChangeState(GameStates newState)
         {
-            StateChange(new StateChangeEventArgs(_currentState, newState));
+            var oldState = _currentState;
             _currentState = newState;
+
+            if (StateChange != null)
+                StateChange(new StateChangeEventArgs(oldState, newState));
         }
 
         public static GameStates CurrentState

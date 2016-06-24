@@ -11,34 +11,25 @@ using Element.Logic;
 
 namespace Element.Graphics
 {
-    public class GraphicsHandler
+    public static class GraphicsHandler
     {
-        private MenuGraphicsHandler _menuGraphicsHandler;
-        private RoamGraphicsHandler _roamGraphicsHandler;
-
-        public GraphicsHandler()
+        public static void Draw(SpriteBatch sb)
         {
-            _menuGraphicsHandler = new MenuGraphicsHandler();
-            _roamGraphicsHandler = new RoamGraphicsHandler();
-        }
-
-        public void Draw(SpriteBatch sb, LogicHandler logic, ResourceManager resourceManager)
-        {
-            resourceManager.CheckLoad();
-            resourceManager.CheckUnload();
+            ResourceManager.CheckLoad();
+            ResourceManager.CheckUnload();
 
             var state = GameStateHelper.CurrentState;
 
             if (state == GameStates.Start)
-                _menuGraphicsHandler.DrawStart(sb, logic, resourceManager);
+                MenuGraphicsHandler.DrawStart(sb);
             else if (state == GameStates.StartMenu)
-                _menuGraphicsHandler.DrawStartMenu(sb, logic, resourceManager);
+                MenuGraphicsHandler.DrawStartMenu(sb);
             else if (state == GameStates.Roam)
-                _roamGraphicsHandler.DrawRoam(sb, logic, resourceManager);
+                RoamGraphicsHandler.DrawRoam(sb);
             else if (state == GameStates.ExitMenu)
             {
-                _roamGraphicsHandler.DrawRoam(sb, logic, resourceManager);
-                _menuGraphicsHandler.DrawExitMenu(sb, logic, resourceManager);
+                RoamGraphicsHandler.DrawRoam(sb);
+                MenuGraphicsHandler.DrawExitMenu(sb);
             }
         }
 

@@ -11,6 +11,7 @@ namespace Element.Common.GameObjects
     {
         protected Animator _animator;
         protected Vector2 _location;
+        protected Vector2 _tileLocation;
         protected int _level;
         protected bool _locked;
         protected int _id;
@@ -30,6 +31,12 @@ namespace Element.Common.GameObjects
         {
             get { return _location; }
             set { _location = value; }
+        }
+
+        public Vector2 TileLocation
+        {
+            get { return _tileLocation; }
+            set { _tileLocation = value; }
         }
 
         public int Level

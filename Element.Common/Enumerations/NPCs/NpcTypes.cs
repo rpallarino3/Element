@@ -7,5 +7,6 @@ namespace Element.Common.Enumerations.NPCs
 {
     public enum NpcTypes
     {
+        BasicHumanoid,
     }
 }

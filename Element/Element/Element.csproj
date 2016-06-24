@@ -79,7 +79,6 @@
     <Compile Include="Input\InputHandler.cs" />
     <Compile Include="Logic\Camera.cs" />
     <Compile Include="Logic\LogicHandler.cs" />
-    <Compile Include="Logic\MenuLogicHandler.cs" />
     <Compile Include="Logic\PlayerLogicHandler.cs" />
     <Compile Include="Logic\RoamLogicHandler.cs" />
     <Compile Include="Logic\StartAndExitMenuLogicHandler.cs" />

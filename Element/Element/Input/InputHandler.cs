@@ -11,29 +11,30 @@ using Element.ResourceManagement;
 
 namespace Element.Input
 {
-    public class InputHandler
-    {
-        private ResourceManager _resourceManager;
-        private Dictionary<ControlFunctions, Control> _controls;
+    public static class InputHandler
+    {        
+        private static Dictionary<ControlFunctions, Control> _controls;
 
-        private GamePadState _padState;
-        private KeyboardState _keyboardState;
+        private static GamePadState _padState;
+        private static KeyboardState _keyboardState;
 
-        private int _upCount;
-        private int _downCount;
-        private int _leftCount;
-        private int _rightCount;
+        private static int _upCount;
+        private static int _downCount;
+        private static int _leftCount;
+        private static int _rightCount;
 
-        public InputHandler(ResourceManager resourceManager)
+        static InputHandler()
         {
-            _resourceManager = resourceManager;
             _controls = new Dictionary<ControlFunctions, Control>();
 
             _upCount = 0;
             _downCount = 0;
             _leftCount = 0;
-            _rightCount = 0;
+            _rightCount = 0;     
+        }
 
+        public static void FillInputsWithInitialData()
+        {
             var keybinds = DataHelper.PreferenceData.Keybindings;
             var buttonBinds = DataHelper.PreferenceData.ButtonBindings;
             var functions = DataHelper.PreferenceData.Functions;
@@ -59,10 +60,10 @@ namespace Element.Input
             _controls.Add(ControlFunctions.Run, new Control(new List<Keys>(keybinds[functions.IndexOf(ControlFunctions.Run)]),
                 new List<Buttons>(buttonBinds[functions.IndexOf(ControlFunctions.Run)]), false, true));
             _controls.Add(ControlFunctions.Grab, new Control(new List<Keys>(keybinds[functions.IndexOf(ControlFunctions.Grab)]),
-                new List<Buttons>(buttonBinds[functions.IndexOf(ControlFunctions.Grab)]), false, true));            
+                new List<Buttons>(buttonBinds[functions.IndexOf(ControlFunctions.Grab)]), false, true));
         }
 
-        public void UpdateInputs(GamePadState gamePadState, KeyboardState keyboardState)
+        public static void UpdateInputs(GamePadState gamePadState, KeyboardState keyboardState)
         {
             _padState = gamePadState;
             _keyboardState = keyboardState;
@@ -77,7 +78,7 @@ namespace Element.Input
             UpdateMovementCounts();
         }
 
-        public void UpdateMovementCounts()
+        public static void UpdateMovementCounts()
         {
             _upCount = _controls[ControlFunctions.MoveUp].FunctionReady ? _upCount + 1 : 0;
             _downCount = _controls[ControlFunctions.MoveDown].FunctionReady ? _downCount + 1 : 0;
@@ -85,7 +86,7 @@ namespace Element.Input
             _rightCount = _controls[ControlFunctions.MoveRight].FunctionReady ? _rightCount + 1 : 0;
         }
 
-        public Directions? GetLongestDirection()
+        public static Directions? GetLongestDirection()
         {
             Directions? longest = null;
             int longestTime = 0;
@@ -117,12 +118,12 @@ namespace Element.Input
             return longest;
         }
 
-        public bool IsFunctionReady(ControlFunctions function)
+        public static bool IsFunctionReady(ControlFunctions function)
         {
             return _controls[function].FunctionReady;
         }
 
-        public void ClearInputs()
+        public static void ClearInputs()
         {
             foreach (ControlFunctions cf in _controls.Keys)
             {
@@ -130,7 +131,7 @@ namespace Element.Input
             }
         }
         
-        public bool RequestSingleKeypress()
+        public static bool RequestSingleKeypress()
         {
             var keys = _keyboardState.GetPressedKeys();
 
@@ -154,7 +155,7 @@ namespace Element.Input
             return false;
         }
 
-        public bool RequestSingleKeyRebind(ControlFunctions function)
+        public static bool RequestSingleKeyRebind(ControlFunctions function)
         {
             var keys = _keyboardState.GetPressedKeys();
 
@@ -225,7 +226,7 @@ namespace Element.Input
 
             if (rebound)
             {
-                _resourceManager.UpdatePreferenceKeybindData(_controls);
+                ResourceManager.UpdatePreferenceKeybindData(_controls);
             }
 
             return rebound;
@@ -233,7 +234,7 @@ namespace Element.Input
 
         #region Rebind
 
-        public void RebindInput(Keys key, ControlFunctions function)
+        public static void RebindInput(Keys key, ControlFunctions function)
         {
             var oldKey = _controls[function].Keys[0];
 
@@ -257,7 +258,7 @@ namespace Element.Input
             }
         }
 
-        public void RebindInput(Buttons button, ControlFunctions function)
+        public static void RebindInput(Buttons button, ControlFunctions function)
         {
             var oldButton = _controls[function].Buttons[0];
 
@@ -283,6 +284,6 @@ namespace Element.Input
         
         #endregion
 
-        public bool InputEmpty { get; private set; }
+        public static bool InputEmpty { get; private set; }
     }
 }

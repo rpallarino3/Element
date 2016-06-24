@@ -12,37 +12,26 @@ using Element.Common.HelperClasses;
 
 namespace Element.Logic
 {
-    public class TransitionHandler
+    public static class TransitionHandler
     {
-        private ResourceManager _resourceManager;
-        private PlayerLogicHandler _playerLogicHandler;
-        private RoamLogicHandler _roamLogicHandler;
-        private StartAndExitMenuLogicHandler _startAndExitMenuLogicHandler;
+        private static bool _transitioning;
+        private static Transition _transition;
 
-        private bool _transitioning;
-        private Transition _transition;
+        private static readonly Color WHITE_COLOR = Color.White;
+        private static readonly Color DIM_COLOR = new Color(100, 100, 100);
+        private static List<Color> _fadeColors;
 
-        private readonly Color WHITE_COLOR = Color.White;
-        private readonly Color DIM_COLOR = new Color(100, 100, 100);
-        private List<Color> _fadeColors;
+        private static Color _drawColor;
+        private static int _fadeCounter;
+        private static bool _fading;
+        private static bool _fadeOut;
 
-        private Color _drawColor;
-        private int _fadeCounter;
-        private bool _fading;
-        private bool _fadeOut;
+        private static bool _saving;
+        private static bool _loading;
+        private static bool _waitOnLoad;
 
-        private bool _saving;
-        private bool _loading;
-        private bool _waitOnLoad;
-
-        public TransitionHandler(ResourceManager resourceManager, PlayerLogicHandler playerLogicHandler, RoamLogicHandler roamLogicHandler,
-            StartAndExitMenuLogicHandler startAndExitMenuLogicHandler)
+        static TransitionHandler()
         {
-            _resourceManager = resourceManager;
-            _playerLogicHandler = playerLogicHandler;
-            _roamLogicHandler = roamLogicHandler;
-            _startAndExitMenuLogicHandler = startAndExitMenuLogicHandler;
-
             _transitioning = false;
             _fadeCounter = 0;
             _drawColor = WHITE_COLOR;
@@ -67,13 +56,16 @@ namespace Element.Logic
             _fadeColors.Add(new Color(50, 50, 50));
             _fadeColors.Add(new Color(25, 25, 25));
             _fadeColors.Add(new Color(25, 25, 25));
-            _fadeColors.Add(Color.Black);
-            
-            _roamLogicHandler.InitiateTransition += TransitionRequested;
-            _startAndExitMenuLogicHandler.InitiateTransition += TransitionRequested;
+            _fadeColors.Add(Color.Black);            
         }
 
-        private void TransitionRequested(Transition transition)
+        public static void SubscribeToEvents()
+        {
+            RoamLogicHandler.InitiateTransition += TransitionRequested;
+            StartAndExitMenuLogicHandler.InitiateTransition += TransitionRequested;
+        }
+
+        private static void TransitionRequested(Transition transition)
         {
             if (transition == null)
                 return;
@@ -86,7 +78,7 @@ namespace Element.Logic
                 ExecuteTransition();
         }
 
-        public void ExecuteTransition()
+        public static void ExecuteTransition()
         {
             if (_transition is StateTransition)
                 ExecuteStateTransition();
@@ -98,7 +90,7 @@ namespace Element.Logic
                 ExecuteCameraTransition();
         }
 
-        private void ExecuteStateTransition()
+        private static void ExecuteStateTransition()
         {
             var transition = _transition as StateTransition;
 
@@ -111,22 +103,22 @@ namespace Element.Logic
             GameStateHelper.ChangeState(transition.DestinationState);
         }
 
-        private void ExecuteRoamTransition()
+        private static void ExecuteRoamTransition()
         {
             var transition = _transition as RoamTransition;
 
             if (transition == null)
                 return;
             
-            if (transition.DestinationRegion == _roamLogicHandler.CurrentPlayerRegion && GameStateHelper.CurrentState == GameStates.Roam)
+            if (transition.DestinationRegion == PlayerLogicHandler.Region && GameStateHelper.CurrentState == GameStates.Roam)
             {
-                _roamLogicHandler.UpdatePlayerPositionWithTransition(transition);
+                RoamLogicHandler.UpdatePlayerPositionWithTransition(transition);
                 return;
             }
 
             var adjacentRegions = RegionLayout.RegionInfo[transition.DestinationRegion].AdjacentRegions;
             //var adjacentRegions = RegionMapper.GetAdjacentRegions(transition.DestinationRegion); // this is going to become regions to load
-            var currentlyLoadedRegions = new List<RegionNames>(_roamLogicHandler.Regions.Keys.ToList()); // this is going to become regions to unload?
+            var currentlyLoadedRegions = new List<RegionNames>(RoamLogicHandler.Regions.Keys.ToList()); // this is going to become regions to unload?
 
             List<RegionNames> regionsToLoad = new List<RegionNames>();
             List<RegionNames> regionsToUnload = new List<RegionNames>();
@@ -149,19 +141,19 @@ namespace Element.Logic
                     regionsToUnload.Add(region);
             }
 
-            _resourceManager.RequestRegionLoadUnload(regionsToLoad, regionsToUnload);
+            ResourceManager.RequestRegionLoadUnload(regionsToLoad, regionsToUnload);
 
             // we can wait on load if we are loading new regions and fading
             if (transition.Fade)
                 _waitOnLoad = true;
 
-            _roamLogicHandler.UpdatePlayerPositionWithTransition(transition);
+            RoamLogicHandler.UpdatePlayerPositionWithTransition(transition);
 
             if (GameStateHelper.CurrentState != GameStates.Roam)
                 GameStateHelper.ChangeState(GameStates.Roam);
         }
         
-        private void ExecuteChatTransition()
+        private static void ExecuteChatTransition()
         {
             var transition = _transition as ChatTransition;
 
@@ -169,7 +161,7 @@ namespace Element.Logic
                 return;
         }
 
-        private void ExecuteCameraTransition()
+        private static void ExecuteCameraTransition()
         {
             var transition = _transition as CameraTransition;
 
@@ -177,7 +169,7 @@ namespace Element.Logic
                 return;
         }
 
-        public void ContinueTransition()
+        public static void ContinueTransition()
         {
             if (_fading)
             {
@@ -197,16 +189,16 @@ namespace Element.Logic
             }
         }
 
-        private void CheckLoad()
+        private static void CheckLoad()
         {
-            if (!_resourceManager.IsBackgroundThreadClear())
+            if (!ResourceManager.IsBackgroundThreadClear())
                 return;
 
             _waitOnLoad = false;
             FadeIn();
         }
 
-        private void ContinueFade()
+        private static void ContinueFade()
         {
             if (_fadeOut)
             {
@@ -231,7 +223,7 @@ namespace Element.Logic
             }
         }
 
-        private void FadeOut()
+        private static void FadeOut()
         {
             _transitioning = true;
             _fading = true;
@@ -239,16 +231,16 @@ namespace Element.Logic
             _fadeCounter = 0;
         }
 
-        private void FadeIn()
+        private static void FadeIn()
         {
             _fading = true;
             _fadeOut = false;
             _fadeCounter = _fadeColors.Count - 1;
         }
 
-        public Color DrawColor { get { return _drawColor; } }
-        public bool Transitioning { get { return _transitioning; } }
-        public bool ShowRegionImage {  get { return (_waitOnLoad && !_fading); } } // this doesn't neccessarily mean we want to show image, need to think about this more
-        public RegionNames RegionLoadToDisplay { get; private set; }
+        public static Color DrawColor { get { return _drawColor; } }
+        public static bool Transitioning { get { return _transitioning; } }
+        public static bool ShowRegionImage {  get { return (_waitOnLoad && !_fading); } } // this doesn't neccessarily mean we want to show image, need to think about this more
+        public static RegionNames RegionLoadToDisplay { get; private set; }
     }
 }

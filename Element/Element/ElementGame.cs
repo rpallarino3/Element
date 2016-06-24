@@ -23,11 +23,6 @@ namespace Element
     /// </summary>
     public class ElementGame : Microsoft.Xna.Framework.Game
     {
-        private LogicHandler _logicHandler;
-        private InputHandler _inputHandler;
-        private GraphicsHandler _graphicsHandler;
-        private ResourceManager _resourceManager;
-
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
@@ -49,17 +44,19 @@ namespace Element
         /// </summary>
         protected override void Initialize()
         {
-            _resourceManager = new ResourceManager(Content.ServiceProvider, Content.RootDirectory);
-            _resourceManager.LoadFilesAndUpdatePreferenceData();
+            ResourceManager.PassProviderAndRootDirectory(Content.ServiceProvider, Content.RootDirectory);
+            ResourceManager.LoadFilesAndUpdatePreferenceData();
             ChangeResolution(new ResolutionChangeEventArgs(DataHelper.PreferenceData.Resolution));
+            InputHandler.FillInputsWithInitialData();
+            
+            StartAndExitMenuLogicHandler.ResolutionChanged += ChangeResolution;
+            StartAndExitMenuLogicHandler.BeginExit += ExitGame;
+            
+            RoamLogicHandler.SubscribeToEvents();
+            StartAndExitMenuLogicHandler.SubscribeToEvents();
+            TransitionHandler.SubscribeToEvents();
 
-            _inputHandler = new InputHandler(_resourceManager);
-
-            _logicHandler = new LogicHandler(_resourceManager, _inputHandler);
-            _logicHandler.StartAndExitMenuLogicHandler.ResolutionChanged += ChangeResolution;
-            _logicHandler.StartAndExitMenuLogicHandler.BeginExit += ExitGame;
-
-            _graphicsHandler = new GraphicsHandler();
+            LogicHandler.SetStartingState();
 
             base.Initialize();
         }
@@ -114,7 +111,7 @@ namespace Element
             if (args == null)
                 return;
 
-            _resourceManager.Shutdown();
+            ResourceManager.Shutdown();
             this.Exit();
         }
 
@@ -126,7 +123,7 @@ namespace Element
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            _resourceManager.LoadStaticContent();
+            ResourceManager.LoadStaticContent();
             // TODO: use this.Content to load your game content here
         }
 
@@ -146,8 +143,8 @@ namespace Element
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            _inputHandler.UpdateInputs(GamePad.GetState(PlayerIndex.One), Keyboard.GetState());
-            _logicHandler.UpdateGameLogic();
+            InputHandler.UpdateInputs(GamePad.GetState(PlayerIndex.One), Keyboard.GetState());
+            LogicHandler.UpdateGameLogic();
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -166,7 +163,7 @@ namespace Element
             // is there a reason to clear?
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
-            _graphicsHandler.Draw(spriteBatch, _logicHandler, _resourceManager);
+            GraphicsHandler.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);

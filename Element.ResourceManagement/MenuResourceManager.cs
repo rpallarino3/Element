@@ -9,40 +9,42 @@ using Element.Common.Enumerations.Menu;
 
 namespace Element.ResourceManagement
 {
-    public class MenuResourceManager
+    public static class MenuResourceManager
     {
-        private IServiceProvider _serviceProvider;
-        private string _rootDirectory;
+        private static IServiceProvider _serviceProvider;
+        private static string _rootDirectory;
 
-        private ContentManager _contentManager;
+        private static ContentManager _contentManager;
 
-        private Texture2D _splashScreen;
-        private Texture2D _titleBackground;
-        private Texture2D _startBackground;
-        private Texture2D _dialogBackgroundSmall;
-        private Texture2D _dialogBackgroundLarge;
-        private Texture2D _fileMenuBackground;
-        private Texture2D _exitMenuBackground;
-        private Texture2D _optionsMenuBackground;
-        private Texture2D _fileImageHighlight;
+        private static Texture2D _splashScreen;
+        private static Texture2D _titleBackground;
+        private static Texture2D _startBackground;
+        private static Texture2D _dialogBackgroundSmall;
+        private static Texture2D _dialogBackgroundLarge;
+        private static Texture2D _fileMenuBackground;
+        private static Texture2D _exitMenuBackground;
+        private static Texture2D _optionsMenuBackground;
+        private static Texture2D _fileImageHighlight;
 
-        private SpriteFont _menuFont; // make my own font
+        private static SpriteFont _menuFont; // make my own font
 
-        private Dictionary<RegionNames, Texture2D> _filePictures;
-        private Dictionary<ButtonStyles, Texture2D> _buttonTextures;
+        private static Dictionary<RegionNames, Texture2D> _filePictures;
+        private static Dictionary<ButtonStyles, Texture2D> _buttonTextures;
 
-        public MenuResourceManager(IServiceProvider serviceProvider, string rootDirectory)
+        static MenuResourceManager()
         {
-            _serviceProvider = serviceProvider;
-            _rootDirectory = rootDirectory;
-
-            _contentManager = new ContentManager(_serviceProvider, _rootDirectory);
-
             _filePictures = new Dictionary<RegionNames, Texture2D>();
             _buttonTextures = new Dictionary<ButtonStyles, Texture2D>();
         }
 
-        public void LoadContent()
+        public static void PassProviderAndRootDirectory(IServiceProvider serviceProvider, string rootDirectory)
+        {
+            _serviceProvider = serviceProvider;
+            _rootDirectory = rootDirectory;
+            _contentManager = new ContentManager(_serviceProvider, _rootDirectory);
+        }
+
+        public static void LoadContent()
         {
             _filePictures.Add(RegionNames.None, _contentManager.Load<Texture2D>("Menus/FileImages/NewGame"));
             _filePictures.Add(RegionNames.Test0, _contentManager.Load<Texture2D>("Menus/FileImages/TestRegion0"));
@@ -72,22 +74,23 @@ namespace Element.ResourceManagement
             _menuFont = _contentManager.Load<SpriteFont>("Menus/MenuFont");
         }
 
-        public void UnloadContent()
+        public static void UnloadContent()
         {
             _contentManager.Unload();
+            _contentManager.Dispose();
         }
 
-        public Texture2D SlashScreen { get { return _splashScreen; } }
-        public Texture2D TitleBackground { get { return _titleBackground; } }
-        public Texture2D StartBackground { get { return _startBackground; } }
-        public Texture2D DialogBackgroundSmall { get { return _dialogBackgroundSmall; } }
-        public Texture2D DialogBackgroundLarge { get { return _dialogBackgroundLarge; } }
-        public Texture2D FileMenuBackground { get { return _fileMenuBackground; } }
-        public Texture2D ExitMenuBackground { get { return _exitMenuBackground; } }
-        public Texture2D OptionsMenuBackground { get { return _optionsMenuBackground; } }
-        public Texture2D FileImageHighlight { get { return _fileImageHighlight; } }
-        public SpriteFont MenuFont { get { return _menuFont; } }
-        public Dictionary<RegionNames, Texture2D> FilePictures { get { return _filePictures; } }
-        public Dictionary<ButtonStyles, Texture2D> ButtonTextures { get { return _buttonTextures; } }
+        public static Texture2D SlashScreen { get { return _splashScreen; } }
+        public static Texture2D TitleBackground { get { return _titleBackground; } }
+        public static Texture2D StartBackground { get { return _startBackground; } }
+        public static Texture2D DialogBackgroundSmall { get { return _dialogBackgroundSmall; } }
+        public static Texture2D DialogBackgroundLarge { get { return _dialogBackgroundLarge; } }
+        public static Texture2D FileMenuBackground { get { return _fileMenuBackground; } }
+        public static Texture2D ExitMenuBackground { get { return _exitMenuBackground; } }
+        public static Texture2D OptionsMenuBackground { get { return _optionsMenuBackground; } }
+        public static Texture2D FileImageHighlight { get { return _fileImageHighlight; } }
+        public static SpriteFont MenuFont { get { return _menuFont; } }
+        public static Dictionary<RegionNames, Texture2D> FilePictures { get { return _filePictures; } }
+        public static Dictionary<ButtonStyles, Texture2D> ButtonTextures { get { return _buttonTextures; } }
     }
 }

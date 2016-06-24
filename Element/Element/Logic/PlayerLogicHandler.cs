@@ -4,37 +4,37 @@ using System.Linq;
 using System.Text;
 using Element.Common.Enumerations.Environment;
 using Element.Common.GameObjects.Npcs;
+using Element.Input;
 
 namespace Element.Logic
 {
-    public class PlayerLogicHandler
+    public static class PlayerLogicHandler
     {
-        private Npc _player;
-        private RegionNames _region;
-        private int _zone;
-
-        public void UpdatePlayerLogic()
-        {
-
-        }
-
-        public PlayerLogicHandler()
+        private static Npc _player;
+        private static RegionNames _region;
+        private static int _zone;
+        
+        static PlayerLogicHandler()
         {
             _region = RegionNames.None;
         }
 
-        public Npc Player
+        public static void UpdatePlayerLogic()
+        {
+        }
+
+        public static Npc Player
         {
             get { return _player; }
         }
 
-        public RegionNames Region
+        public static RegionNames Region
         {
             get { return _region; }
             set { _region = value; }
         }
 
-        public int Zone
+        public static int Zone
         {
             get { return _zone; }
             set { _zone = value; }
