@@ -75,6 +75,7 @@
     <Compile Include="Enumerations\Environment\RegionNames.cs" />
     <Compile Include="Enumerations\Environment\RegionTheme.cs" />
     <Compile Include="Enumerations\GameBasics\Resolutions.cs" />
+    <Compile Include="Enumerations\NPCs\NpcAction.cs" />
     <Compile Include="Enumerations\NPCs\NpcNames.cs" />
     <Compile Include="Enumerations\NPCs\NpcTypes.cs" />
     <Compile Include="Enumerations\Sound\SoundName.cs" />

@@ -21,6 +21,7 @@ namespace Element.Logic
 
         public static void UpdatePlayerLogic()
         {
+            // i guess cast and cycle technically aren't npc actions, they are player specific actions and should be handled here
         }
 
         public static Npc Player
