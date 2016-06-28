@@ -118,6 +118,22 @@ namespace Element.Input
             return longest;
         }
 
+        public static int GetLongestTime()
+        {
+            int longestTime = 0;
+
+            if (_upCount > longestTime)
+                longestTime = _upCount;
+            else if (_downCount > longestTime)
+                longestTime = _downCount;
+            else if (_leftCount > longestTime)
+                longestTime = _leftCount;
+            else if (_rightCount > longestTime)
+                longestTime = _rightCount;
+
+            return longestTime;
+        }
+
         public static bool IsFunctionReady(ControlFunctions function)
         {
             return _controls[function].FunctionReady;

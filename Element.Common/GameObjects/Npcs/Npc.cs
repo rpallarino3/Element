@@ -16,6 +16,7 @@ namespace Element.Common.GameObjects.Npcs
         private NpcNames _name;
         private NpcTypes _type;
         private CharacterStates _state;
+        private Directions _facingDirection;
 
         public Npc(Vector2 location, int level) : base(location, level)
         {
@@ -27,7 +28,27 @@ namespace Element.Common.GameObjects.Npcs
             return false;
         }
 
+        public bool CanExecuteInFacingDirection(NpcAction action)
+        {
+            return CanExecute(action, _facingDirection);
+        }
+
         public void ExecuteAction(NpcAction action, Directions direction)
+        {
+
+        }
+
+        public void ExecuteActionInFacingDirection(NpcAction action)
+        {
+            ExecuteAction(action, _facingDirection);
+        }
+
+        public void ReleaseGrab()
+        {
+
+        }
+
+        public void SetRun(bool run)
         {
 
         }
@@ -46,6 +67,11 @@ namespace Element.Common.GameObjects.Npcs
         public NpcTypes Type
         {
             get { return _type; }
+        }
+
+        public Directions FacingDirection
+        {
+            get { return _facingDirection; }
         }
     }
 }

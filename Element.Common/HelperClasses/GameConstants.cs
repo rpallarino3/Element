@@ -15,5 +15,6 @@ namespace Element.Common.HelperClasses
         public static readonly float DEFAULT_LAYER = 0;
 
         public static readonly float TILE_SIZE = 30;
+        public static readonly int TURN_THRESHOLD = 3;
     }
 }

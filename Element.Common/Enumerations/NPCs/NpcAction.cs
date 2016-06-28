@@ -7,5 +7,8 @@ namespace Element.Common.Enumerations.NPCs
 {
     public enum NpcAction
     {
+        None,
+        Turn,
+        Cast,
     }
 }
