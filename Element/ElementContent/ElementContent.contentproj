@@ -167,6 +167,7 @@
   <ItemGroup>
     <Folder Include="Npcs\BasicHumanoid\BasicHumanoidTest0\" />
     <Folder Include="Npcs\BasicHumanoid\BasicHumanoidTest1\" />
+    <Folder Include="Npcs\Player\" />
     <Folder Include="Sounds\" />
     <Folder Include="TileObjects\Pillar\TestTheme0\" />
     <Folder Include="TileObjects\Pillar\TestTheme1\" />

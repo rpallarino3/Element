@@ -26,6 +26,9 @@ namespace Element.Logic
 
         public static void UpdatePlayerLogic()
         {
+            // should check if the player is 'locked' in an object at some point
+            // should also remember to recheck in front if we turn
+
             var exit = CheckMenu();
             if (exit)
             {

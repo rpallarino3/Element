@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Element.Common.Environment.Tiles;
 using Element.Common.GameObjects.Npcs;
 using Element.Common.GameObjects.Scenery;
-using Element.Common.GameObjects.Tile;
 using Element.Common.GameObjects.TileObjects;
 
 namespace Element.Common.Environment

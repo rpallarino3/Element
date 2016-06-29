@@ -8,21 +8,17 @@ using Element.Common.Enumerations.GameBasics;
 
 namespace Element.Common.GameObjects.TileObjects
 {
-    public abstract class TileObject : GameObject
+    public abstract class FloorObject : TileObject
     {
         protected ObjectNames _name;
 
-        public TileObject(Vector2 location, int level) : base(location, level)
+        public FloorObject(Vector2 location, int level) : base(location, level)
         {
 
         }
 
-        public virtual bool CanWalkOn(Directions dir)
-        {
-            return true;
-        }
-
-        public virtual bool CanWalkOff(Directions dir)
+        // generally can't walk on if you can jump over
+        public virtual bool CanJumpOver(Directions dir)
         {
             return true;
         }

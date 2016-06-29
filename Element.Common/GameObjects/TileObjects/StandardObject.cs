@@ -5,26 +5,22 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.GameBasics;
+using Element.Common.Enumerations.NPCs;
 
 namespace Element.Common.GameObjects.TileObjects
 {
-    public abstract class TileObject : GameObject
+    public abstract class StandardObject : TileObject
     {
         protected ObjectNames _name;
 
-        public TileObject(Vector2 location, int level) : base(location, level)
+        public StandardObject(Vector2 location, int level) : base(location, level)
         {
 
         }
 
-        public virtual bool CanWalkOn(Directions dir)
+        public virtual NpcAction GetNpcActionFromMove(Directions dir)
         {
-            return true;
-        }
-
-        public virtual bool CanWalkOff(Directions dir)
-        {
-            return true;
+            return NpcAction.None;
         }
 
         public ObjectNames Name

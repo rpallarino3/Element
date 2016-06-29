@@ -9,6 +9,9 @@ namespace Element.Common.Enumerations.NPCs
     {
         None,
         Turn,
+        Walk,
+        Jump,
+        Push,
         Cast,
     }
 }
