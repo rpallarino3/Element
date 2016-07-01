@@ -147,9 +147,11 @@ namespace Element.Logic
                 }
             }
 
+            // check for transition here too
             // is longest direction necessarily the direction we want?
+            // yes we want longest direction and not facing direction
 
-            var movementAction = GetMovementAction(longestDirection.Value);
+            var movementAction = GetMovementAction(longestDirection.Value); // maybe use the TileMapHandler so we can reuse some of the methods
 
             if (_player.CanExecute(movementAction, longestDirection.Value))
                 return false;
@@ -161,7 +163,29 @@ namespace Element.Logic
 
         private static NpcAction GetMovementAction(Directions direction)
         {
-            return NpcAction.None;
+            var currentTile = TrafficHandler.GetTile(_region, _zone, _player.TileLocation, _player.Level);
+            var destinationTile = TrafficHandler.GetTileInDirection(direction, _region, _zone, _player.TileLocation, _player.Level);
+            var destinationTileBelow = TrafficHandler.GetTileBelow(direction, _region, _zone, _player.TileLocation, _player.Level);
+            var landingTile = TrafficHandler.GetTileInDirection(direction, _region, _zone, _player.TileLocation, _player.Level, 2);
+            var landingTileBloew = TrafficHandler.GetTileBelow(direction, _region, _zone, _player.TileLocation, _player.Level, 2);
+
+            if (!currentTile.CanMoveOffTile(direction))
+                return NpcAction.None;
+
+            var destinationAction = destinationTile.GetMoveActionFromTile(direction);
+
+            if (destinationAction == NpcAction.Push)
+            {
+                // push
+                return NpcAction.Push;
+            }
+            else if (destinationAction == NpcAction.Jump)
+            {
+                // jump, check below for climb down
+                return NpcAction.Jump;
+            }
+            else
+                return destinationAction;            
         }
 
         private static bool CheckCycle()

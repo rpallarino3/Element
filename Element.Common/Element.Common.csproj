@@ -103,6 +103,7 @@
     <Compile Include="HelperClasses\PreferenceValidator.cs" />
     <Compile Include="HelperClasses\SoundEventArgs.cs" />
     <Compile Include="HelperClasses\SoundTransmitter.cs" />
+    <Compile Include="HelperClasses\TrafficHandler.cs" />
     <Compile Include="HelperClasses\TransitionEvent.cs" />
     <Compile Include="Instructions\AddObjectInstruction.cs" />
     <Compile Include="Instructions\ModifyObjectInstruction.cs" />

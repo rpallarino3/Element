@@ -16,6 +16,9 @@ namespace Element.Common.Environment.Tiles
 
         public override NpcAction GetMoveActionFromTile(Directions direction)
         {
+            if (_reserved)
+                return NpcAction.None;
+
             if (_standardObject != null)
                 return _standardObject.GetNpcActionFromMove(direction);
 

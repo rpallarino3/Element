@@ -44,6 +44,7 @@ namespace Element.Logic
         {
             CheckLoad();
             CheckUnload();
+            TrafficHandler.Regions = _regions;
         }
 
         #region Load/Unload Regions
@@ -144,7 +145,7 @@ namespace Element.Logic
         }
 
         #endregion
-        
+                
         public static void UpdatePlayerPositionWithTransition(RoamTransition transition)
         {
             // update teh camera here too, this isn't going to be entirely correct

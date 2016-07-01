@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Element.Common.Animations;
+using Element.Common.Enumerations.Environment;
 
 namespace Element.Common.GameObjects
 {
@@ -15,6 +16,8 @@ namespace Element.Common.GameObjects
         protected int _level;
         protected bool _locked;
         protected int _id;
+        protected RegionNames _region;
+        protected int _zone;
 
         public GameObject(Vector2 location, int level)
         {
@@ -49,6 +52,16 @@ namespace Element.Common.GameObjects
         {
             get { return _locked; }
             set { _locked = value; }
+        }
+
+        public RegionNames Region
+        {
+            get { return _region; }
+        }
+
+        public int Zone
+        {
+            get { return _zone; }
         }
     }
 }

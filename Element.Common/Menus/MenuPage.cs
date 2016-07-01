@@ -78,7 +78,8 @@ namespace Element.Common.Menus
             if (e == null)
                 return;
 
-            OpenDialog(e);
+            if (OpenDialog != null)
+                OpenDialog(e);
         }
 
         protected void RaiseCloseDialogEvent(MenuPageEventArgs e)
@@ -86,7 +87,8 @@ namespace Element.Common.Menus
             if (e == null)
                 return;
 
-            CloseDialog(e);
+            if (CloseDialog != null)
+                CloseDialog(e);
         }
 
         protected void RaiseSwitchPageEvent(MenuPageEventArgs e)
@@ -94,7 +96,8 @@ namespace Element.Common.Menus
             if (e == null)
                 return;
 
-            SwitchPage(e);
+            if (SwitchPage != null)
+                SwitchPage(e);
         }
 
         protected void RaiseEraseFileEvent(MenuPageEventArgs e)
@@ -102,7 +105,8 @@ namespace Element.Common.Menus
             if (e == null)
                 return;
 
-            EraseFile(e);
+            if (EraseFile != null)
+                EraseFile(e);
         }
 
         protected void RaiseSaveGameEvent(MenuPageEventArgs e)
@@ -110,7 +114,8 @@ namespace Element.Common.Menus
             if (e == null)
                 return;
 
-            SaveGame(e);
+            if (SaveGame != null)
+                SaveGame(e);
         }
 
         protected void RaiseLoadGameEvent(MenuPageEventArgs e)
@@ -118,7 +123,8 @@ namespace Element.Common.Menus
             if (e == null)
                 return;
 
-            LoadGame(e);
+            if (LoadGame != null)
+                LoadGame(e);
         }
 
         protected void RaiseKeybindChangeEvent(MenuPageEventArgs e)
@@ -126,7 +132,8 @@ namespace Element.Common.Menus
             if (e == null)
                 return;
 
-            KeybindChange(e);
+            if (KeybindChange != null)
+                KeybindChange(e);
         }
 
         protected void RaiseVolumeChangeEvent(MenuPageEventArgs e)
@@ -134,7 +141,8 @@ namespace Element.Common.Menus
             if (e == null)
                 return;
 
-            VolumeChange(e);
+            if (VolumeChange != null)
+                VolumeChange(e);
         }
 
         protected void RaiseResolutionChangeEvent(MenuPageEventArgs e)
@@ -142,7 +150,8 @@ namespace Element.Common.Menus
             if (e == null)
                 return;
 
-            ResolutionChange(e);
+            if (ResolutionChange != null)
+                ResolutionChange(e);
         }
 
         protected void RaiseExitGameEvent(MenuPageEventArgs e)
@@ -150,7 +159,8 @@ namespace Element.Common.Menus
             if (e == null)
                 return;
 
-            ExitGame(e);
+            if (ExitGame != null)
+                ExitGame(e);
         }
 
         protected void RaisePreferenceResetEvent(MenuPageEventArgs e)
@@ -158,7 +168,8 @@ namespace Element.Common.Menus
             if (e == null)
                 return;
 
-            ResetPreferences(e);
+            if (ResetPreferences != null)
+                ResetPreferences(e);
         }
 
         protected void RaiseResumeGameEvent(MenuPageEventArgs e)
@@ -166,7 +177,8 @@ namespace Element.Common.Menus
             if (e == null)
                 return;
 
-            ResumeGame(e);
+            if (ResumeGame != null)
+                ResumeGame(e);
         }
 
         #endregion

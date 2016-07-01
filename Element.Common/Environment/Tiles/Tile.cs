@@ -15,6 +15,7 @@ namespace Element.Common.Environment.Tiles
         protected StandardObject _standardObject;
         protected FloorObject _floorObject;
         protected Npc _npc;
+        protected bool _reserved;
 
         // should return a copy of the tile minus the shit that's inside of it
         public abstract Tile Copy();
@@ -23,6 +24,16 @@ namespace Element.Common.Environment.Tiles
         public virtual bool CanMoveOnTile(Directions dir)
         {
             return true;
+        }
+
+        public void ReserveTile()
+        {
+            _reserved = true;
+        }
+
+        public void OpenTile()
+        {
+            _reserved = false;
         }
 
         public virtual bool CanMoveOffTile(Directions dir)
