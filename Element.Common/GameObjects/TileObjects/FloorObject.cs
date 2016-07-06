@@ -17,7 +17,7 @@ namespace Element.Common.GameObjects.TileObjects
 
         }
 
-        // generally can't walk on if you can jump over
+        // generally can't walk on if you can jump over, this should change to CanExecute(ObjectAction.Jump, Directions direction)
         public virtual bool CanJumpOver(Directions dir)
         {
             return true;

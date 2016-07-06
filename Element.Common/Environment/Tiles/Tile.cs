@@ -20,6 +20,9 @@ namespace Element.Common.Environment.Tiles
         // should return a copy of the tile minus the shit that's inside of it
         public abstract Tile Copy();
         public abstract NpcAction GetMoveActionFromTile(Directions direction);
+        public abstract bool? CanBeMovedInto(Directions direction);
+        public abstract bool CanMoveOnTop(Directions direction);
+        public abstract bool? CanLandOn();
 
         public virtual bool CanMoveOnTile(Directions dir)
         {

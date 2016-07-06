@@ -11,6 +11,7 @@ namespace Element.Common.Environment
     {
         private RegionNames _name;
         private List<Zone> _zones;
+        private List<RegionOffset> _offsets;
         
         public Region(RegionNames name)
         {
@@ -26,6 +27,11 @@ namespace Element.Common.Environment
         public List<Zone> Zones
         {
             get { return _zones; }
+        }
+
+        public List<RegionOffset> Offsets
+        {
+            get { return _offsets; }
         }
     }
 }

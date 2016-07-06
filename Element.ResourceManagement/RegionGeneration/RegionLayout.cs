@@ -27,7 +27,7 @@ namespace Element.ResourceManagement.RegionGeneration
             test0Info.AdjacentRegions.Add(RegionNames.Test1);
             test0Info.ZoneTileSizes.Add(new Vector2(60, 60));
             test0Info.ZoneLevels.Add(1);
-            test0Info.RegionOffsets.Add(new RegionOffset(RegionNames.Test0, RegionNames.Test1, 0, 0, new Vector2(1800, 0)));
+            test0Info.RegionOffsets.Add(new RegionOffset(RegionNames.Test0, RegionNames.Test1, 0, 0, new Vector2(1800, 0))); // this should be tile offset I think
             test0Info.Scenery.Add(SceneryNames.Test0Level0);
             return test0Info;
         }

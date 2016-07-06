@@ -75,7 +75,6 @@
     <Compile Include="RegionGeneration\RegionFactory.cs" />
     <Compile Include="RegionGeneration\RegionInfo.cs" />
     <Compile Include="RegionGeneration\RegionLayout.cs" />
-    <Compile Include="RegionGeneration\RegionOffset.cs" />
     <Compile Include="ResourceManager.cs" />
     <Compile Include="SaveEvent.cs" />
     <Compile Include="SaveLoadHandler.cs" />

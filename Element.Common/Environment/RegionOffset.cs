@@ -5,7 +5,7 @@ using System.Text;
 using Element.Common.Enumerations.Environment;
 using Microsoft.Xna.Framework;
 
-namespace Element.ResourceManagement.RegionGeneration
+namespace Element.Common.Environment
 {
     public class RegionOffset
     {
@@ -13,15 +13,17 @@ namespace Element.ResourceManagement.RegionGeneration
         private RegionNames _otherRegion;
         private int _anchorZone;
         private int _otherZone;
-        private Vector2 _offset;
+        private Vector2 _offset; // this should be tile offset
+        private int _levelOffset;
 
-        public RegionOffset(RegionNames anchorRegion, RegionNames otherRegion, int anchorZone, int otherZone, Vector2 offset)
+        public RegionOffset(RegionNames anchorRegion, RegionNames otherRegion, int anchorZone, int otherZone, Vector2 offset, int levelOffset)
         {
             _anchorRegion = anchorRegion;
             _otherRegion = otherRegion;
             _anchorZone = anchorZone;
             _otherZone = otherZone;
             _offset = offset;
+            _levelOffset = levelOffset;
         }
 
         public RegionNames AnchorRegion
@@ -52,6 +54,12 @@ namespace Element.ResourceManagement.RegionGeneration
         {
             get { return _offset; }
             set { _offset = value; }
+        }
+
+        public int LevelOffset
+        {
+            get { return _levelOffset; }
+            set { _levelOffset = value; }
         }
     }
 }

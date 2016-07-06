@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.GameBasics;
+using Element.Common.Enumerations.TileObjects;
 
 namespace Element.Common.GameObjects.TileObjects
 {
@@ -17,15 +18,8 @@ namespace Element.Common.GameObjects.TileObjects
 
         }
 
-        public virtual bool CanWalkOn(Directions dir)
-        {
-            return true;
-        }
-
-        public virtual bool CanWalkOff(Directions dir)
-        {
-            return true;
-        }
+        public abstract void Execute(TileObjectActions action, Directions direction);
+        public abstract bool CanExecute(TileObjectActions action, Directions dir);
 
         public ObjectNames Name
         {
