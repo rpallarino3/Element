@@ -18,6 +18,8 @@ namespace Element.Common.GameObjects.Npcs
         private CharacterStates _state;
         private Directions _facingDirection;
 
+        private bool _grabbing;
+
         public Npc(Vector2 location, int level) : base(location, level)
         {
             _animator = NpcAnimator.GetNpcAnimatorFromType(_type);
@@ -72,6 +74,11 @@ namespace Element.Common.GameObjects.Npcs
         public Directions FacingDirection
         {
             get { return _facingDirection; }
+        }
+
+        public bool Grabbing
+        {
+            get { return _grabbing; }
         }
     }
 }

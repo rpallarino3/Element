@@ -10,5 +10,7 @@ namespace Element.Common.Enumerations.TileObjects
         WalkOn,
         WalkOff,
         JumpOver,
+        Push,
+        Pull,
     }
 }

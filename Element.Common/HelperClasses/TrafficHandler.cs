@@ -16,24 +16,77 @@ namespace Element.Common.HelperClasses
     {
         private static Dictionary<RegionNames, Region> _regions;
 
-        public static bool CheckDownForPush(Directions direction, RegionNames region, int zone, Vector2 position, int level)
-        {
-            var tileMap = _regions[region].Zones[zone].TileMap;
-            var offset = GetOffsetFromDirection(direction);
+        #region Push
 
-            if (!IsInBounds(tileMap, position + offset, level))
+        public static bool CheckDownForPush(Directions direction, RegionNames region, int zone, Vector2 position, int level, int distance)
+        {
+            var tile = GetTileInDirection(direction, region, zone, position, level, distance);
+
+            if (tile == null)
                 return false;
 
-            return CheckAllTheWayDown(region, zone, position + offset, level);
+            var canPush = tile.CanPushInto(direction);
+            
+            if (canPush.HasValue)
+                return canPush.Value;
+            
+            // we already know that the tile is in bounds because we got it
+            var offset = GetOffsetFromDirection(direction, distance);
+            
+            return CheckPushThenFallAllTheWayDown(direction, region, zone, position + offset, level);
         }
 
-        public static bool CheckAllTheWayDown(RegionNames region, int zone, Vector2 position, int level)
+        #endregion
+
+        // this one would imply we are falling
+        public static bool CheckFallAllTheWayDown(RegionNames region, int zone, Vector2 position, int level)
         {
             var tileMap = _regions[region].Zones[zone].TileMap;
             for (int i = level; i >= 0; i--)
             {
                 var tile = tileMap[(int)position.X, (int)position.Y + 2 * (level - i), i];
+
+                if (tile == null) // might be double checking here but should do in case we call this method from something else
+                    return false;
+
                 var canLand = tile.CanLandOn();
+
+                if (canLand.HasValue)
+                    return canLand.Value;
+            }
+
+            return false;
+        }
+
+        // eh this isn't exactly right, the top tile is slightly different?
+        // at this point we have already checked the top tile to make sure we can push into
+        public static bool CheckPushThenFallAllTheWayDown(Directions direction, RegionNames region, int zone, Vector2 position, int level)
+        {
+            if (level - 1 < 0)
+                return false;
+
+            var tileMap = _regions[region].Zones[zone].TileMap;
+            for (int i = level - 1; i >= 0; i--)
+            {
+                var tile = tileMap[(int)position.X, (int)position.Y + 2 * (level - i), i];
+
+                if (tile == null) // might be double checking here but should do in case we call this method from something else
+                    return false;
+
+                if (level - 1 == i)
+                {
+                    // this means we check to make sure we can move into top
+                    var canPush = tile.CanMoveOnTop(direction);
+
+                    if (canPush.HasValue)
+                        return canPush.Value;
+                }
+                else
+                {
+
+                }
+
+                var canLand = tile.CanLandOn(); 
 
                 if (canLand.HasValue)
                     return canLand.Value;
@@ -73,6 +126,14 @@ namespace Element.Common.HelperClasses
             else if (direction == Directions.Right) return new Vector2(1 * distance, 0);
 
             return new Vector2(0, 0);
+        }
+
+        public static Directions GetOppositeDirection(Directions direction)
+        {
+            if (direction == Directions.Up) return Directions.Down;
+            else if (direction == Directions.Down) return Directions.Up;
+            else if (direction == Directions.Left) return Directions.Right;
+            else return Directions.Left;
         }
 
         #region GetTile

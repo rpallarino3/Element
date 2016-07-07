@@ -12,7 +12,8 @@ namespace Element.Common.GameObjects.Scenery
     {
         private SceneryNames _name;
         private bool _onFloor;
-                
+                afsda
+        // make some sort of timed scenery
         public SceneryObject(SceneryNames name, Vector2 location, int level, Animator animator, bool onFloor) : base(location, level)
         {
             _name = name;

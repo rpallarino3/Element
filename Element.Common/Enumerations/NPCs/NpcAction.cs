@@ -10,8 +10,13 @@ namespace Element.Common.Enumerations.NPCs
         None,
         Turn,
         Walk,
+        TryWalk,
         Jump,
+        Fall,
         Push,
+        Pull,
+        TryPush,
+        TryPull,
         Cast,
     }
 }

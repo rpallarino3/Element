@@ -5,6 +5,8 @@ using System.Text;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.GameBasics;
 using Element.Common.Enumerations.NPCs;
+using Element.Common.Enumerations.TileObjects;
+using Element.Common.Environment.Tiles;
 using Element.Common.GameObjects.Npcs;
 using Element.Common.HelperClasses;
 using Element.Input;
@@ -17,6 +19,13 @@ namespace Element.Logic
         private static RegionNames _region;
         private static int _zone;
         private static NpcAction _actionInFront;
+
+        private static Tile _currentTile;
+        private static Tile _currentTileBelow;
+        private static Tile _firstTile;
+        private static Tile _firstTileBelow;
+        private static Tile _secondTile;
+        private static Tile _secondTileBelow;
         
         static PlayerLogicHandler()
         {
@@ -147,7 +156,13 @@ namespace Element.Logic
                 }
             }
 
-            // check for transition here too
+            _currentTile = TrafficHandler.GetTile(_region, _zone, _player.TileLocation, _player.Level);
+
+            // if (currentTile.Transition != null)
+            // if (currentTile.Transition.Direction == direction || it is a fall in transition)
+            // var exit = ExecuteTransition()
+            // if (exit) return true;
+
             // is longest direction necessarily the direction we want?
             // yes we want longest direction and not facing direction
 
@@ -163,29 +178,150 @@ namespace Element.Logic
 
         private static NpcAction GetMovementAction(Directions direction)
         {
-            var currentTile = TrafficHandler.GetTile(_region, _zone, _player.TileLocation, _player.Level);
-            var destinationTile = TrafficHandler.GetTileInDirection(direction, _region, _zone, _player.TileLocation, _player.Level);
-            var destinationTileBelow = TrafficHandler.GetTileBelow(direction, _region, _zone, _player.TileLocation, _player.Level);
-            var landingTile = TrafficHandler.GetTileInDirection(direction, _region, _zone, _player.TileLocation, _player.Level, 2);
-            var landingTileBloew = TrafficHandler.GetTileBelow(direction, _region, _zone, _player.TileLocation, _player.Level, 2);
-
-            if (!currentTile.CanMoveOffTile(direction))
+            if (!_currentTile.CanMoveOffTile(direction))
                 return NpcAction.None;
 
-            var destinationAction = destinationTile.GetMoveActionFromTile(direction);
+            if (_player.Grabbing)
+                _firstTile = TrafficHandler.GetTileInDirection(_player.FacingDirection, _region, _zone, _player.TileLocation, _player.Level);
+            else
+                _firstTile = TrafficHandler.GetTileInDirection(direction, _region, _zone, _player.TileLocation, _player.Level);
 
-            if (destinationAction == NpcAction.Push)
+            if (_firstTile == null)
+                return NpcAction.TryWalk;
+
+            var action = _firstTile.GetMoveActionFromTile(direction);
+
+            if (action == NpcAction.Push)
+                return CheckPush(direction);
+            else if (action == NpcAction.Jump)
+                return CheckJump(direction);
+            else if (action == NpcAction.Fall)
             {
-                // push
-                return NpcAction.Push;
-            }
-            else if (destinationAction == NpcAction.Jump)
-            {
-                // jump, check below for climb down
-                return NpcAction.Jump;
+                return NpcAction.Fall;
             }
             else
-                return destinationAction;            
+                return action;            
+        }
+
+        private static NpcAction CheckPush(Directions direction)
+        {
+            bool pulling = false;
+
+            if (TrafficHandler.GetOppositeDirection(_player.FacingDirection) == direction)
+                pulling = true;
+            else if (direction != _player.FacingDirection)
+                return NpcAction.None; // trying to move in one of the non pulling/pushing directions
+
+            if (!_firstTile.CanStandardObjectExecute(TileObjectActions.Pull, direction))
+                return GetPushPull(pulling, true);
+            
+            var playerMoveTile = TrafficHandler.GetTileInDirection(direction, _region, _zone, _player.TileLocation, _player.Level);
+            
+            if (playerMoveTile == null)
+                return GetPushPull(pulling, true);
+
+            var canMoveInto = playerMoveTile.CanBeMovedInto(direction);
+            
+            if (canMoveInto.HasValue && !canMoveInto.Value)
+                return GetPushPull(pulling, true);
+            if (!canMoveInto.HasValue)
+            {
+                var playerMoveTileBelow = TrafficHandler.GetTileBelow(direction, _region, _zone, _player.TileLocation, _player.Level);
+
+                if (playerMoveTileBelow == null)
+                    return GetPushPull(pulling, true);
+
+                if (!playerMoveTileBelow.CanMoveOnTop(direction)) // need to rethink all of these can move on top things
+                    return GetPushPull(pulling, true);
+            }
+            
+            bool canPush;
+
+            if (pulling)
+                canPush = TrafficHandler.CheckDownForPush(direction, _region, _zone, _player.TileLocation, _player.Level, 0);
+            else
+                canPush = TrafficHandler.CheckDownForPush(direction, _region, _zone, _player.TileLocation, _player.Level, 2);
+
+            if (!canPush)
+                return GetPushPull(pulling, true);
+            
+            //Tile objectDestinationTile;
+
+            //if (pulling)
+            //    objectDestinationTile = _currentTile;
+            //else
+            //    objectDestinationTile = TrafficHandler.GetTileInDirection(direction, _region, _zone, _player.TileLocation, _player.Level, 2);
+
+            //if (objectDestinationTile == null)
+            //    return GetPushPull(pulling, true);
+
+            //var canMoveObj = objectDestinationTile.CanPushInto(direction);
+
+            //if (canMoveObj.HasValue && !canMoveObj.Value)
+            //    return GetPushPull(pulling, true);
+            //if (!canMoveObj.HasValue) // hrm need to check all the way down at some point
+            //{
+            //    Tile objectDestinationTileBelow;
+
+            //    if (pulling)
+            //        objectDestinationTileBelow = TrafficHandler.GetTileBelow(_region, _zone, _player.TileLocation, _player.Level);
+            //    else
+            //        objectDestinationTileBelow = TrafficHandler.GetTileBelow(direction, _region, _zone, _player.TileLocation, _player.Level, 2);
+
+            //    if (objectDestinationTileBelow == null)
+            //        return GetPushPull(pulling, true);
+
+            //    if (!objectDestinationTileBelow.CanMoveOnTop(direction))
+            //        return GetPushPull(pulling, true);
+            //}
+
+            return GetPushPull(pulling, false);
+        }
+
+        private static NpcAction GetPushPull(bool pulling, bool trying)
+        {
+            if (trying)
+            {
+                if (pulling)
+                    return NpcAction.TryPull;
+                else
+                    return NpcAction.TryPush;
+            }
+            else
+            {
+                if (pulling)
+                    return NpcAction.Pull;
+                else
+                    return NpcAction.Push;
+            }
+        }
+
+        private static NpcAction CheckJump(Directions direction)
+        {
+            _secondTile = TrafficHandler.GetTileInDirection(direction, _region, _zone, _player.TileLocation, _player.Level, 2);
+
+            if (_secondTile == null)
+                return NpcAction.None;
+
+            var canLand = _secondTile.CanMoveOnTile(direction);
+
+            if (canLand.HasValue)
+            {
+                if (canLand.Value)
+                    return NpcAction.Jump;
+                else
+                    return NpcAction.None;
+            }
+
+            _secondTileBelow = TrafficHandler.GetTileBelow(direction, _region, _zone, _player.TileLocation, _player.Level, 2);
+
+            if (_secondTileBelow == null)
+                return NpcAction.None;
+
+            if (!_secondTileBelow.CanMoveOnTop(direction))
+                return NpcAction.None;
+
+            return NpcAction.Jump;
         }
 
         private static bool CheckCycle()
