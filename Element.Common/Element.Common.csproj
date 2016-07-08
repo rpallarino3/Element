@@ -87,6 +87,7 @@
     <Compile Include="Environment\Tiles\GapTile.cs" />
     <Compile Include="Environment\Tiles\ImpassTile.cs" />
     <Compile Include="Environment\Tiles\LiquidTile.cs" />
+    <Compile Include="Environment\Tiles\StairTile.cs" />
     <Compile Include="Environment\Tiles\Tile.cs" />
     <Compile Include="Environment\Transition.cs" />
     <Compile Include="Environment\Zone.cs" />

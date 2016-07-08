@@ -4,19 +4,25 @@ using System.Linq;
 using System.Text;
 using Element.Common.Enumerations.GameBasics;
 using Element.Common.Enumerations.NPCs;
+using Element.Common.Enumerations.TileObjects;
 
 namespace Element.Common.Environment.Tiles
 {
-    public class ImpassTile : Tile
+    public class StairTile : Tile
     {
         public override bool? CanMoveInto(Directions direction)
         {
-            return false;
+            if (_reserved)
+                return false;
+            if (_npc != null)
+                return false;
+
+            return true;
         }
 
         public override bool CanMoveOnTop(Directions direction)
         {
-            return false;
+            return false; // i think this is right
         }
 
         public override bool? CanPushInto(Directions direction)
@@ -41,7 +47,7 @@ namespace Element.Common.Environment.Tiles
 
         public override NpcAction GetMoveActionFromTile(Directions direction)
         {
-            return NpcAction.None;
+            throw new NotImplementedException();
         }
     }
 }

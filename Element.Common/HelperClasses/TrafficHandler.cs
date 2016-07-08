@@ -173,6 +173,30 @@ namespace Element.Common.HelperClasses
             return GetTile(region, zone, updatedPosition, level);
         }
 
+        public static Tile GetTileAbove(RegionNames region, int zone, Vector2 position, int level)
+        {
+            return GetTileAbove(Directions.Up, region, zone, position, level, 0);
+        }
+
+        public static Tile GetTileAbove(Directions direction, RegionNames region, int zone, Vector2 position, int level)
+        {
+            return GetTileAbove(direction, region, zone, position, level, 1);
+        }
+
+        public static Tile GetTileAbove(Directions direction, RegionNames region, int zone, Vector2 position, int level, int distance)
+        {
+            var updatedPosition = position + GetOffsetFromDirection(direction, distance) + new Vector2(0, -2);
+            var updatedLevel = level + 1;
+            return GetTile(region, zone, updatedPosition, updatedLevel);
+        }
+
+        public static Tile GetTileLevelsAbove(Directions direction, RegionNames region, int zone, Vector2 position, int level, int depth)
+        {
+            var updatedPosition = position + GetOffsetFromDirection(direction) + new Vector2(0, -2 * depth);
+            var updatedLevel = level + depth;
+            return GetTile(region, zone, updatedPosition, updatedLevel);
+        }
+
         public static Tile GetTileBelow(RegionNames region, int zone, Vector2 position, int level)
         {
             return GetTileBelow(Directions.Up, region, zone, position, level, 0);

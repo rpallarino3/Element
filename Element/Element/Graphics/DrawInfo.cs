@@ -10,14 +10,16 @@ namespace Element.Graphics
     public class DrawInfo : IComparable<DrawInfo>
     {
         private bool _onFloor;
+        private bool _isNpc;
         private Texture2D _texture;
         private Vector2 _drawLocation;
         private Rectangle _drawRectangle;
         private int _level;
 
-        public DrawInfo(bool onFloor, Texture2D texture, Vector2 drawLocation, Rectangle drawRectangle, int level)
+        public DrawInfo(bool onFloor, bool isNpc, Texture2D texture, Vector2 drawLocation, Rectangle drawRectangle, int level)
         {
             _onFloor = onFloor;
+            _isNpc = isNpc;
             _texture = texture;
             _drawLocation = drawLocation;
             _drawRectangle = drawRectangle;
@@ -59,13 +61,19 @@ namespace Element.Graphics
                     else
                     {
                         // i guess this means they could be on the same level at the same y but next to each other
-                        return 0;
+                        if (_isNpc && !other.IsNpc)
+                            return 1;
+                        else if (!_isNpc && other.IsNpc)
+                            return -1;
+                        else
+                            return 0;
                     }
                 }
             }
         }
 
         public bool OnFloor { get { return _onFloor; } }
+        public bool IsNpc { get { return _isNpc; } }
         public Texture2D Texture {  get { return _texture; } }
         public Vector2 DrawLocation { get { return _drawLocation; } }
         public Rectangle DrawRectangle { get { return _drawRectangle; } }

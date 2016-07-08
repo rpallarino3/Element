@@ -5,23 +5,26 @@ using System.Text;
 using Element.Common.Enumerations.GameBasics;
 using Element.Common.Enumerations.NPCs;
 using Element.Common.Enumerations.TileObjects;
+using Element.Common.GameObjects.TileObjects;
 
 namespace Element.Common.Environment.Tiles
 {
     public class FreeTile : Tile
     {
-        public override bool? CanBeMovedInto(Directions direction)
-        {
-            if (_standardObject != null)
-                return false;
+        private bool _pushable;
 
+        public override bool? CanMoveInto(Directions direction)
+        {
+            if (_reserved)
+                return false;
             if (_npc != null)
                 return false;
+            if (_standardObject != null)
+                return _standardObject.CanExecute(TileObjectActions.WalkOn, direction);
+            if (_floorObject != null)
+                return _floorObject.CanExecute(TileObjectActions.WalkOn, direction);
 
-            if (_floorObject.CanExecute(TileObjectActions.WalkOn, direction))
-                return true;
-            else
-                return false;
+            return true;
         }
 
         public override bool CanMoveOnTop(Directions direction)
@@ -29,7 +32,49 @@ namespace Element.Common.Environment.Tiles
             if (_standardObject == null)
                 return false;
 
-            return _standardObject.CanWalkOn(direction); // is this the one i want?
+            return _standardObject.CanExecute(TileObjectActions.WalkOnTop, direction);
+        }
+
+        public override bool? CanPushInto(Directions direction)
+        {
+            if (_reserved)
+                return false;
+            if (_npc != null)
+                return false;
+            if (_standardObject != null)
+                return false;
+            if (_floorObject != null)
+                return _floorObject.CanExecute(TileObjectActions.PushOnTop, direction);
+
+            return _pushable;
+        }
+
+        public override bool? CanPushOnTop(Directions direction)
+        {
+            if (_standardObject == null)
+                return null;
+
+            return _standardObject.CanExecute(TileObjectActions.PushOnTop, direction);
+        }
+
+        public override bool? CanLandOn(bool pushed)
+        {
+            if (_reserved)
+                return false;
+
+            if (_npc != null)
+                return false;
+
+            if (_standardObject != null)
+                return _standardObject.CanExecute(TileObjectActions.LandOnTop, Directions.Up); // direction doesn't matter here
+
+            if (_floorObject != null)
+                return _floorObject.CanExecute(TileObjectActions.LandOnTop, Directions.Up);
+
+            if (pushed)
+                return _pushable;
+            else
+                return true;
         }
 
         public override Tile Copy()

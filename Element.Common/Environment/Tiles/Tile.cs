@@ -19,10 +19,9 @@ namespace Element.Common.Environment.Tiles
         protected bool _reserved;
         protected Transition _transition;
 
+        // should return a copy of the tile minus the shit that's inside of it
         public abstract Tile Copy();
-
-        public abstract NpcAction GetMoveActionFromTile(Directions direction);
-
+        
         // need to rethink all of these
 
         // we need to layout all the possible ways we would want an object or npc to enter/leave a tile
@@ -37,25 +36,22 @@ namespace Element.Common.Environment.Tiles
         // fall through the tile (to the tile below)
         // be removed from the tile
 
-        // should return a copy of the tile minus the shit that's inside of it
-        public abstract bool? CanBeMovedInto(Directions direction);
-
-        /// <summary>
-        /// Checks if you can move another object above this tile.
-        /// </summary>
-        /// <param name="direction"></param>
-        /// <returns>
-        /// true if there is a standard object in this tile that allows you to move on top of it from the direction
-        /// false if there is a standard object in this tile that does not allow you to move on top of it OR there is a floor object that does not allow things on top of it?
-        /// null if the tile is essentially empty, meaning that you cannot move onto it, but you can push things onto it to fall
-        /// </returns>
-        public abstract bool? CanMoveOnTop(Directions direction); 
-
-        public abstract bool? CanLandOn(); // this should be can land on top of the standard object or on top of the floor object or just on top of the tile
+        public abstract NpcAction GetMoveActionFromTile(Directions direction);
+        public abstract bool? CanMoveInto(Directions direction);
+        public abstract bool CanMoveOnTop(Directions direction); // are we sure we don't want nullable here?
         public abstract bool? CanPushInto(Directions direction);
-
-        public virtual bool? CanMoveOnTile(Directions dir)
+        public abstract bool? CanPushOnTop(Directions direction);
+        public abstract bool? CanLandOn(bool pushed);
+        
+        public virtual bool CanMoveOffTile(Directions dir)
         {
+            // standard objects should have priority over floor objects since they are 'on top'
+            if (_standardObject != null) 
+                return _standardObject.CanWalkOff(dir);
+
+            if (_floorObject != null)
+                return _floorObject.CanWalkOff(dir);
+
             return true;
         }
 
@@ -67,18 +63,6 @@ namespace Element.Common.Environment.Tiles
         public void OpenTile()
         {
             _reserved = false;
-        }
-
-        public virtual bool CanMoveOffTile(Directions dir)
-        {
-            // standard objects should have priority over floor objects since they are 'on top'
-            if (_standardObject != null) 
-                return _standardObject.CanWalkOff(dir);
-
-            if (_floorObject != null)
-                return _floorObject.CanWalkOff(dir);
-
-            return true;
         }
 
         public bool CanStandardObjectExecute(TileObjectActions action, Directions direction)
