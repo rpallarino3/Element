@@ -144,8 +144,14 @@ namespace Element.Logic
 
             _player.SetRun(InputHandler.IsFunctionReady(ControlFunctions.Run));
 
-            if (longestTime == 0 || longestDirection == null)
+
+            if (longestDirection == null && longestTime == 0) // these should always be true together?
                 return false;
+            
+
+            // eh not sure if this is right
+            if (_player.Climbing)
+                return CheckClimbAction(longestDirection.Value, longestTime);
 
             if (longestDirection != _player.FacingDirection && longestTime <= GameConstants.TURN_THRESHOLD)
             {
@@ -173,6 +179,12 @@ namespace Element.Logic
 
             _player.ExecuteAction(movementAction, longestDirection.Value);
 
+            return false;
+        }
+
+        private static bool CheckClimbAction(Directions longestDirection, int longestTime)
+        {
+            var action = TrafficHandler.GetClimbAction(longestDirection, _player.Region, _player.Zone, _player.Location, _player.Level);
             return false;
         }
 

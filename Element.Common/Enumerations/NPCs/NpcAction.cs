@@ -18,5 +18,8 @@ namespace Element.Common.Enumerations.NPCs
         TryPush,
         TryPull,
         Cast,
+        Climb,
+        TryClimb,
+        ClimbOff,
     }
 }

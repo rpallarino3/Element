@@ -30,6 +30,7 @@ namespace Element.Common.Environment.Tiles
         // move on top of the tile (technically would be in the tile above but need to say if this is ok, need to know if we can only move on top, not drop in)
         // drop into the tile from above (need to know if it would be ok for an object to 'fall' into the tile)
         // be placed into the tile from another, faraway tile (maybe a transition or another object)
+        // also add climbed into
         // exit:
         // move from the tile by moving out (need to know if we can move out of the tile)
         // push an object into the tile (some tiles may not allow objects to be pushed into them in order to restrict where objects can go)

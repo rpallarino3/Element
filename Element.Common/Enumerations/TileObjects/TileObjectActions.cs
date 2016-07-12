@@ -15,5 +15,7 @@ namespace Element.Common.Enumerations.TileObjects
         PushOnTop,
         Pull,
         LandOnTop,
+        ClimbOnTop,
+        ClimbOnBottom,
     }
 }

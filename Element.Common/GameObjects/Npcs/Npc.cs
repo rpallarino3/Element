@@ -19,6 +19,7 @@ namespace Element.Common.GameObjects.Npcs
         private Directions _facingDirection;
 
         private bool _grabbing;
+        private bool _climbing;
 
         public Npc(Vector2 location, int level) : base(location, level)
         {
@@ -79,6 +80,11 @@ namespace Element.Common.GameObjects.Npcs
         public bool Grabbing
         {
             get { return _grabbing; }
+        }
+
+        public bool Climbing
+        {
+            get { return _climbing; }
         }
     }
 }

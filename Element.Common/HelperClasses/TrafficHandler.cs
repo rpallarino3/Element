@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.GameBasics;
+using Element.Common.Enumerations.NPCs;
+using Element.Common.Enumerations.TileObjects;
 using Element.Common.Environment;
 using Element.Common.Environment.Tiles;
 using Element.Common.GameObjects.Npcs;
@@ -15,6 +17,117 @@ namespace Element.Common.HelperClasses
     public static class TrafficHandler
     {
         private static Dictionary<RegionNames, Region> _regions;
+
+        #region Climb
+        // might just want to move this out?
+        public static NpcAction GetClimbAction(Directions direction, RegionNames region, int zone, Vector2 position, int level, int climbIndex)
+        {
+            var rootTile = GetTileInDirection(Directions.Up, region, zone, position, level);
+
+            if (rootTile == null)
+                return NpcAction.TryClimb;
+
+            if (direction == Directions.Up)
+            {
+                if (climbIndex == 0)
+                {
+                    if (rootTile.CanStandardObjectExecute(TileObjectActions.ClimbOnTop, Directions.Up)) // this direction is irrelevant
+                        return NpcAction.Climb;
+                    else
+                        return NpcAction.TryClimb;
+                }
+                else
+                {
+                    var playerAboveTile = GetTileAbove(region, zone, position, level);
+
+                    if (playerAboveTile == null)
+                        return NpcAction.TryClimb;
+
+                    if (!playerAboveTile.CanMoveIntoFromBelow())
+                        return NpcAction.TryClimb;
+
+                    var rootAboveTile = GetTileAbove(Directions.Up, region, zone, position, level);
+
+                    if (rootAboveTile == null)
+                        return NpcAction.TryClimb;
+
+                    var canMove = rootAboveTile.CanMoveInto(Directions.Up);
+
+                    if (!canMove.HasValue || !canMove.Value) // not sure this is right. need to rethink what this actually means
+                        return NpcAction.ClimbOff;
+
+                    var canClimb = rootAboveTile.CanStandardObjectExecute(TileObjectActions.ClimbOnBottom, Directions.Up);
+
+                    if (!canClimb)
+                        return NpcAction.TryClimb;
+
+                    return NpcAction.Climb;
+                }
+            }
+            else if (direction == Directions.Down)
+            {
+                if (climbIndex == 1)
+                {
+                    if (rootTile.CanStandardObjectExecute(TileObjectActions.ClimbOnBottom, Directions.Up))
+                        return NpcAction.Climb;
+                    else
+                        return NpcAction.TryClimb;
+                }
+                else
+                {
+                    var playerCurrentTile = GetTile(region, zone, position, level);
+
+                    if (playerCurrentTile == null) // this wouldn't make any sense
+                        return NpcAction.TryClimb;
+
+                    var canLandOn = playerCurrentTile.CanLandOn(false);
+
+                    if (canLandOn.HasValue && canLandOn.Value)
+                        return NpcAction.ClimbOff;
+
+                    if (canLandOn.HasValue && !canLandOn.Value)
+                        return NpcAction.TryClimb;
+
+                    // this means that we need to check below
+                    var playerBelowTile = GetTileBelow(region, zone, position, level);
+
+                    if (playerBelowTile == null)
+                        return NpcAction.TryClimb;
+                    
+                    // if we can go on top of the tile below climb off
+                    // if not check to make sure the tile is empty
+                    // if not try climb
+                    // if empty, get tile below root and check to see if we can climb on top
+                }
+            }
+            else
+            {
+                var playerAdjacentTile = GetTileInDirection(direction, region, zone, position, level);
+
+                if (playerAdjacentTile == null)
+                    return NpcAction.TryClimb;
+
+                var canMoveOn = playerAdjacentTile.CanMoveInto(direction); // not sure if this is the right method
+
+                if (canMoveOn.HasValue && !canMoveOn.Value)
+                    return NpcAction.TryClimb;
+
+                var rootAdjacentTile = GetTileInDirection(direction, region, zone, position + GetOffsetFromDirection(Directions.Up), level);
+
+                if (rootAdjacentTile == null)
+                    return NpcAction.TryClimb;
+
+                var canClimb = climbIndex == 0 ? rootAdjacentTile.CanStandardObjectExecute(TileObjectActions.ClimbOnBottom, direction) :
+                    rootAdjacentTile.CanStandardObjectExecute(TileObjectActions.ClimbOnTop, direction);
+
+                if (!canClimb)
+                    return NpcAction.TryClimb;
+
+                return NpcAction.Climb;
+            }
+        }
+
+        #endregion
 
         #region Push
 
