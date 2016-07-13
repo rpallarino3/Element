@@ -38,12 +38,18 @@ namespace Element.Common.Environment.Tiles
         // be removed from the tile
 
         public abstract NpcAction GetMoveActionFromTile(Directions direction);
-        public abstract bool? CanMoveInto(Directions direction);
-        public abstract bool CanMoveOnTop(Directions direction); // are we sure we don't want nullable here?
+
+        public abstract bool? CanMoveOn(Directions direction);
+        public abstract bool CanMoveOnTop(Directions direction);
         public abstract bool? CanPushInto(Directions direction);
         public abstract bool? CanPushOnTop(Directions direction);
-        public abstract bool? CanLandOn(bool pushed);
-        
+        public abstract bool? CanPushOver();
+        public abstract bool CanMoveVerticallyThrough();
+        public abstract bool CanLandOnTop(Directions direction);
+        public abstract bool? CanLandOn(Directions direction);
+        public abstract bool? CanBePlacedIn();
+        public abstract bool? CanDropInto();
+
         public virtual bool CanMoveOffTile(Directions dir)
         {
             // standard objects should have priority over floor objects since they are 'on top'
