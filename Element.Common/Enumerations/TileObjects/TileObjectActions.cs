@@ -9,7 +9,9 @@ namespace Element.Common.Enumerations.TileObjects
     {
         WalkOn,
         WalkOff,
+        // walk on top is a direction agnostic walk, for floor object it is effectively place on top
         WalkOnTop,
+        FallOnTop,
         JumpOver,
         Push,
         PushOnTop,

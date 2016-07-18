@@ -10,10 +10,11 @@ namespace Element.Common.Environment.Tiles
 {
     public class StairTile : Tile
     {
-        public override bool? CanMoveInto(Directions direction)
+        public override bool? CanMoveOn(Directions direction)
         {
             if (_reserved)
                 return false;
+
             if (_npc != null)
                 return false;
 
@@ -22,7 +23,8 @@ namespace Element.Common.Environment.Tiles
 
         public override bool CanMoveOnTop(Directions direction)
         {
-            return false; // i think this is right
+            // not exactly sure how this is supposed to work
+            return false;
         }
 
         public override bool? CanPushInto(Directions direction)
@@ -35,7 +37,32 @@ namespace Element.Common.Environment.Tiles
             return false;
         }
 
-        public override bool? CanLandOn(bool pushed)
+        public override bool? CanPushOver()
+        {
+            return false;
+        }
+
+        public override bool CanMoveVerticallyThrough()
+        {
+            return false;
+        }
+
+        public override bool CanLandOnTop(Directions direction)
+        {
+            return false;
+        }
+
+        public override bool? CanLandOn(Directions direction)
+        {
+            return false;
+        }
+
+        public override bool? CanBePlacedIn()
+        {
+            return false;
+        }
+
+        public override bool? CanDropInto()
         {
             return false;
         }

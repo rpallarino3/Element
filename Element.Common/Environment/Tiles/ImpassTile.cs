@@ -9,7 +9,7 @@ namespace Element.Common.Environment.Tiles
 {
     public class ImpassTile : Tile
     {
-        public override bool? CanMoveInto(Directions direction)
+        public override bool? CanMoveOn(Directions direction)
         {
             return false;
         }
@@ -29,7 +29,32 @@ namespace Element.Common.Environment.Tiles
             return false;
         }
 
-        public override bool? CanLandOn(bool pushed)
+        public override bool? CanPushOver()
+        {
+            return false;
+        }
+
+        public override bool CanMoveVerticallyThrough()
+        {
+            return false;
+        }
+
+        public override bool CanLandOnTop(Directions direction)
+        {
+            return false;
+        }
+
+        public override bool? CanLandOn(Directions direction)
+        {
+            return false;
+        }
+
+        public override bool? CanBePlacedIn()
+        {
+            return false;
+        }
+
+        public override bool? CanDropInto()
         {
             return false;
         }

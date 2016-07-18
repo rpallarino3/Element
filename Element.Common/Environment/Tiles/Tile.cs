@@ -43,21 +43,23 @@ namespace Element.Common.Environment.Tiles
         public abstract bool CanMoveOnTop(Directions direction);
         public abstract bool? CanPushInto(Directions direction);
         public abstract bool? CanPushOnTop(Directions direction);
-        public abstract bool? CanPushOver();
+        public abstract bool? CanPushOver(Directions direction);
         public abstract bool CanMoveVerticallyThrough();
+        // i think this is just can we land on top of a standard object inside
         public abstract bool CanLandOnTop(Directions direction);
+        // this is can we land on at the ground level
         public abstract bool? CanLandOn(Directions direction);
         public abstract bool? CanBePlacedIn();
         public abstract bool? CanDropInto();
 
-        public virtual bool CanMoveOffTile(Directions dir)
+        public virtual bool CanMoveOffTile(Directions direction)
         {
             // standard objects should have priority over floor objects since they are 'on top'
             if (_standardObject != null) 
-                return _standardObject.CanWalkOff(dir);
+                return _standardObject.CanExecute(TileObjectActions.WalkOff, direction);
 
             if (_floorObject != null)
-                return _floorObject.CanWalkOff(dir);
+                return _floorObject.CanExecute(TileObjectActions.WalkOff, direction);
 
             return true;
         }
