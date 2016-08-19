@@ -63,6 +63,8 @@
     <Compile Include="Animations\Animator.cs" />
     <Compile Include="Enumerations\Environment\ObjectNames.cs" />
     <Compile Include="Enumerations\Environment\SceneryNames.cs" />
+    <Compile Include="Enumerations\GameObjects\ClimbIndex.cs" />
+    <Compile Include="Enumerations\GameObjects\GameObjectActionType.cs" />
     <Compile Include="Enumerations\GameBasics\PreferenceTypes.cs" />
     <Compile Include="Enumerations\Menu\ButtonStates.cs" />
     <Compile Include="Enumerations\Menu\ButtonStyles.cs" />
@@ -91,6 +93,13 @@
     <Compile Include="Environment\Tiles\Tile.cs" />
     <Compile Include="Environment\Transition.cs" />
     <Compile Include="Environment\Zone.cs" />
+    <Compile Include="GameObjects\Actions\ClimbAction.cs" />
+    <Compile Include="GameObjects\Actions\GameObjectAction.cs" />
+    <Compile Include="GameObjects\Actions\JumpAction.cs" />
+    <Compile Include="GameObjects\Actions\PullAction.cs" />
+    <Compile Include="GameObjects\Actions\PushAction.cs" />
+    <Compile Include="GameObjects\Actions\TurnAction.cs" />
+    <Compile Include="GameObjects\Actions\WalkAction.cs" />
     <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="GameObjects\Npcs\Npc.cs" />
     <Compile Include="GameObjects\Scenery\SceneryObject.cs" />

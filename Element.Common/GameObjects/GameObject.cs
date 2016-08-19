@@ -5,35 +5,53 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Element.Common.Animations;
 using Element.Common.Enumerations.Environment;
+using Element.Common.Enumerations.GameBasics;
+using Element.Common.Enumerations.GameObjects;
 
 namespace Element.Common.GameObjects
 {
     public abstract class GameObject
     {
         protected Animator _animator;
-        protected Vector2 _location;
+        protected Vector2 _position;
         protected Vector2 _tileLocation;
         protected int _level;
         protected bool _locked;
         protected int _id;
         protected RegionNames _region;
         protected int _zone;
+        protected Directions _facingDirection;
+        protected ClimbIndex _climbIndex;
 
-        public GameObject(Vector2 location, int level)
+        public GameObject(Vector2 position, int level)
         {
-            _location = location;
+            _position = position;
             _level = level;
         }
+
+        // maybe make some of these virtual
+        public virtual bool CanExecute(GameObjectActionType action, Directions direction)
+        {
+            return false;
+        }
+
+        public virtual bool CanExecuteOn(GameObjectActionType action, Directions direction)
+        {
+            return false;
+        }
+
+        public virtual void Execute(GameObjectActionType action, Directions direction) { }
+        public virtual void ExecuteOn(GameObjectActionType action, Directions direction) { }
 
         public Animator Animator
         {
             get { return _animator; }
         }
 
-        public Vector2 Location
+        public Vector2 Position
         {
-            get { return _location; }
-            set { _location = value; }
+            get { return _position; }
+            set { _position = value; }
         }
 
         public Vector2 TileLocation
@@ -62,6 +80,16 @@ namespace Element.Common.GameObjects
         public int Zone
         {
             get { return _zone; }
+        }
+
+        public Directions FacingDirection
+        {
+            get { return _facingDirection; }
+        }
+
+        public ClimbIndex ClimbIndex
+        {
+            get { return _climbIndex; }
         }
     }
 }

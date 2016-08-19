@@ -8,6 +8,7 @@ using Element.Common.Enumerations.NPCs;
 using Element.Common.Enumerations.TileObjects;
 using Element.Common.Environment;
 using Element.Common.Environment.Tiles;
+using Element.Common.GameObjects;
 using Element.Common.GameObjects.Npcs;
 using Element.Common.GameObjects.TileObjects;
 using Microsoft.Xna.Framework;
@@ -17,192 +18,43 @@ namespace Element.Common.HelperClasses
     public static class TrafficHandler
     {
         private static Dictionary<RegionNames, Region> _regions;
-
-        #region Climb
-        // might just want to move this out?
-        public static NpcAction GetClimbAction(Directions direction, RegionNames region, int zone, Vector2 position, int level, int climbIndex)
+        
+        public static bool CanObjectBeOver(Directions direction, RegionNames region, int zone, Vector2 position, int level, GameObject gameObject, int distance)
         {
-            var rootTile = GetTileInDirection(Directions.Up, region, zone, position, level);
-
-            if (rootTile == null)
-                return NpcAction.TryClimb;
-
-            if (direction == Directions.Up)
-            {
-                if (climbIndex == 0)
-                {
-                    if (rootTile.CanStandardObjectExecute(TileObjectActions.ClimbOnTop, Directions.Up)) // this direction is irrelevant
-                        return NpcAction.Climb;
-                    else
-                        return NpcAction.TryClimb;
-                }
-                else
-                {
-                    var playerAboveTile = GetTileAbove(region, zone, position, level);
-
-                    if (playerAboveTile == null)
-                        return NpcAction.TryClimb;
-
-                    if (!playerAboveTile.CanMoveIntoFromBelow())
-                        return NpcAction.TryClimb;
-
-                    var rootAboveTile = GetTileAbove(Directions.Up, region, zone, position, level);
-
-                    if (rootAboveTile == null)
-                        return NpcAction.TryClimb;
-
-                    var canMove = rootAboveTile.CanMoveInto(Directions.Up);
-
-                    if (!canMove.HasValue || !canMove.Value) // not sure this is right. need to rethink what this actually means
-                        return NpcAction.ClimbOff;
-
-                    var canClimb = rootAboveTile.CanStandardObjectExecute(TileObjectActions.ClimbOnBottom, Directions.Up);
-
-                    if (!canClimb)
-                        return NpcAction.TryClimb;
-
-                    return NpcAction.Climb;
-                }
-            }
-            else if (direction == Directions.Down)
-            {
-                if (climbIndex == 1)
-                {
-                    if (rootTile.CanStandardObjectExecute(TileObjectActions.ClimbOnBottom, Directions.Up))
-                        return NpcAction.Climb;
-                    else
-                        return NpcAction.TryClimb;
-                }
-                else
-                {
-                    var playerCurrentTile = GetTile(region, zone, position, level);
-
-                    if (playerCurrentTile == null) // this wouldn't make any sense
-                        return NpcAction.TryClimb;
-
-                    var canLandOn = playerCurrentTile.CanLandOn(false);
-
-                    if (canLandOn.HasValue && canLandOn.Value)
-                        return NpcAction.ClimbOff;
-
-                    if (canLandOn.HasValue && !canLandOn.Value)
-                        return NpcAction.TryClimb;
-
-                    // this means that we need to check below
-                    var playerBelowTile = GetTileBelow(region, zone, position, level);
-
-                    if (playerBelowTile == null)
-                        return NpcAction.TryClimb;
-                    
-                    // if we can go on top of the tile below climb off
-                    // if not check to make sure the tile is empty
-                    // if not try climb
-                    // if empty, get tile below root and check to see if we can climb on top
-                }
-            }
-            else
-            {
-                var playerAdjacentTile = GetTileInDirection(direction, region, zone, position, level);
-
-                if (playerAdjacentTile == null)
-                    return NpcAction.TryClimb;
-
-                var canMoveOn = playerAdjacentTile.CanMoveInto(direction); // not sure if this is the right method
-
-                if (canMoveOn.HasValue && !canMoveOn.Value)
-                    return NpcAction.TryClimb;
-
-                var rootAdjacentTile = GetTileInDirection(direction, region, zone, position + GetOffsetFromDirection(Directions.Up), level);
-
-                if (rootAdjacentTile == null)
-                    return NpcAction.TryClimb;
-
-                var canClimb = climbIndex == 0 ? rootAdjacentTile.CanStandardObjectExecute(TileObjectActions.ClimbOnBottom, direction) :
-                    rootAdjacentTile.CanStandardObjectExecute(TileObjectActions.ClimbOnTop, direction);
-
-                if (!canClimb)
-                    return NpcAction.TryClimb;
-
-                return NpcAction.Climb;
-            }
-        }
-
-        #endregion
-
-        #region Push
-
-        public static bool CheckDownForPush(Directions direction, RegionNames region, int zone, Vector2 position, int level, int distance)
-        {
-            var tile = GetTileInDirection(direction, region, zone, position, level, distance);
-
-            if (tile == null)
-                return false;
-
-            var canPush = tile.CanPushInto(direction);
-            
-            if (canPush.HasValue)
-                return canPush.Value;
-            
-            // we already know that the tile is in bounds because we got it
             var offset = GetOffsetFromDirection(direction, distance);
-            
-            return CheckPushThenFallAllTheWayDown(direction, region, zone, position + offset, level);
+            return CanObjectBeOver(region, zone, position + offset, level, gameObject);
         }
 
-        #endregion
-
-        // this one would imply we are falling
-        public static bool CheckFallAllTheWayDown(RegionNames region, int zone, Vector2 position, int level)
+        public static bool CanObjectBeOver(Directions direction, RegionNames region, int zone, Vector2 position, int level, GameObject gameObject)
         {
-            var tileMap = _regions[region].Zones[zone].TileMap;
-            for (int i = level; i >= 0; i--)
-            {
-                var tile = tileMap[(int)position.X, (int)position.Y + 2 * (level - i), i];
-
-                if (tile == null) // might be double checking here but should do in case we call this method from something else
-                    return false;
-
-                var canLand = tile.CanLandOn();
-
-                if (canLand.HasValue)
-                    return canLand.Value;
-            }
-
-            return false;
+            var offset = GetOffsetFromDirection(direction);
+            return CanObjectBeOver(region, zone, position + offset, level, gameObject);
         }
 
-        // eh this isn't exactly right, the top tile is slightly different?
-        // at this point we have already checked the top tile to make sure we can push into
-        public static bool CheckPushThenFallAllTheWayDown(Directions direction, RegionNames region, int zone, Vector2 position, int level)
+        // i think for now we assume that all objects that can be pushed over something can land on the tile below because the env will be set up that way
+        public static bool CanObjectBeOver(RegionNames region, int zone, Vector2 position, int level, GameObject gameObject)
         {
-            if (level - 1 < 0)
-                return false;
+            // this is essentially, can you place an object in a tile space that we know is a gap?
+            // do we need to know if the object in question is a npc or a tileobject? i think we do, just for liquid tiles
+            // i think we use CanObjectBePushedOver instead when we are pushing something?
+            var npc = gameObject is Npc;
 
-            var tileMap = _regions[region].Zones[zone].TileMap;
             for (int i = level - 1; i >= 0; i--)
             {
-                var tile = tileMap[(int)position.X, (int)position.Y + 2 * (level - i), i];
+                var tile = GetTile(region, zone, position + new Vector2(0, 2 * (level - i)), i);
 
-                if (tile == null) // might be double checking here but should do in case we call this method from something else
+                if (tile == null) // this would be strange
                     return false;
 
-                if (level - 1 == i)
-                {
-                    // this means we check to make sure we can move into top
-                    var canPush = tile.CanMoveOnTop(direction);
+                if (tile.CanDropOnTop(npc))
+                    continue;
 
-                    if (canPush.HasValue)
-                        return canPush.Value;
-                }
-                else
-                {
+                var canDropInto = tile.CanDropInto(npc);
 
-                }
+                if (!canDropInto.HasValue)
+                    continue;
 
-                var canLand = tile.CanLandOn(); 
-
-                if (canLand.HasValue)
-                    return canLand.Value;
+                return canDropInto.Value;
             }
 
             return false;

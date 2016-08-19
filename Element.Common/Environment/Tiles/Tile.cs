@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Element.Common.Enumerations.GameBasics;
 using Element.Common.Enumerations.NPCs;
 using Element.Common.Enumerations.TileObjects;
+using Element.Common.GameObjects;
 using Element.Common.GameObjects.Npcs;
 using Element.Common.GameObjects.TileObjects;
 
@@ -18,50 +19,44 @@ namespace Element.Common.Environment.Tiles
         protected Npc _npc;
         protected bool _reserved;
         protected Transition _transition;
-
-        // should return a copy of the tile minus the shit that's inside of it
-        public abstract Tile Copy();
         
-        // need to rethink all of these
+        public abstract Tile Copy();
 
-        // we need to layout all the possible ways we would want an object or npc to enter/leave a tile
-        // enter:
-        // simply move into the floor level of the tile from another adjacent tile (need to know if we can move into the tile)
-        // move on top of the tile (technically would be in the tile above but need to say if this is ok, need to know if we can only move on top, not drop in)
-        // drop into the tile from above (need to know if it would be ok for an object to 'fall' into the tile)
-        // be placed into the tile from another, faraway tile (maybe a transition or another object)
-        // also add climbed into
-        // exit:
-        // move from the tile by moving out (need to know if we can move out of the tile)
-        // push an object into the tile (some tiles may not allow objects to be pushed into them in order to restrict where objects can go)
-        // fall through the tile (to the tile below)
-        // be removed from the tile
+        // ****************** break here for game object stuff ****************
 
-        public abstract NpcAction GetMoveActionFromTile(Directions direction);
-
+        /// <summary>
+        /// Determines if the Npc/Standard object inside can move out of the tile.
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <returns>true if yes, false if no</returns>
+        public abstract bool CanMoveOff(Directions direction);
         public abstract bool? CanMoveOn(Directions direction);
         public abstract bool CanMoveOnTop(Directions direction);
-        public abstract bool? CanPushInto(Directions direction);
-        public abstract bool? CanPushOnTop(Directions direction);
-        public abstract bool? CanPushOver(Directions direction);
-        public abstract bool CanMoveVerticallyThrough();
-        // i think this is just can we land on top of a standard object inside
-        public abstract bool CanLandOnTop(Directions direction);
-        // this is can we land on at the ground level
+        public abstract bool? CanDropInto(bool npc);
+        public abstract bool CanDropOnTop(bool npc);
         public abstract bool? CanLandOn(Directions direction);
-        public abstract bool? CanBePlacedIn();
-        public abstract bool? CanDropInto();
+        public abstract bool CanLandOnTop(Directions direction);
+        public abstract bool? CanPushAvailable(Directions direction, bool pulling);
+        public abstract bool CanPushOut(Directions direction, bool pulling);
+        public abstract bool? CanPushInto(Directions direction, bool pulling);
+        public abstract bool CanPushOnTop(Directions direction, bool pulling);
+        public abstract bool CanClimbOnTop(Directions direction);
+        public abstract bool CanClimbOnBottom(Directions direction);
+        public abstract bool CanMoveUpThrough();
+        public abstract bool CanSlideDown(Directions direction); // this might be nullable
+        public abstract bool CanFloatIn();
 
-        public virtual bool CanMoveOffTile(Directions direction)
+        // ********************************************************************
+
+        public GameObject GetOccupyingObject()
         {
-            // standard objects should have priority over floor objects since they are 'on top'
-            if (_standardObject != null) 
-                return _standardObject.CanExecute(TileObjectActions.WalkOff, direction);
+            if (_npc != null)
+                return _npc;
 
-            if (_floorObject != null)
-                return _floorObject.CanExecute(TileObjectActions.WalkOff, direction);
+            if (_standardObject != null)
+                return _standardObject;
 
-            return true;
+            return null;
         }
 
         public void ReserveTile()

@@ -17,7 +17,7 @@ namespace Element.Common.Environment
 
     public class ChatTransition : Transition { }
 
-    public class RoamTransition : Transition
+    public class RoamTransition : Transition // need to add something here about falling into
     {
         public List<Directions> InitiationDirections { get; set; }
         public RegionNames DestinationRegion { get; set; }
