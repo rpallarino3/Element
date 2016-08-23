@@ -5,8 +5,9 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.GameBasics;
-using Element.Common.Enumerations.NPCs;
+using Element.Common.Enumerations.GameObjects.NPCs;
 using Element.Common.HelperClasses;
+using Element.Common.Enumerations.GameObjects;
 
 namespace Element.Common.GameObjects.Npcs
 {
@@ -20,35 +21,41 @@ namespace Element.Common.GameObjects.Npcs
 
         private bool _grabbing;
         private bool _climbing;
+        private bool _running;
 
         public Npc(Vector2 location, int level) : base(location, level)
         {
             _animator = NpcAnimator.GetNpcAnimatorFromType(_type);
         }
 
-        public bool CanExecute(NpcAction action, Directions direction)
+        public override void UpdateLogic()
         {
-            return false;
+            throw new NotImplementedException();
         }
 
-        public bool CanExecuteInFacingDirection(NpcAction action)
+        public override bool CanExecute(GameObjectActionType action, Directions direction)
         {
-            return CanExecute(action, _facingDirection);
+            return base.CanExecute(action, direction);
         }
 
-        public void ExecuteAction(NpcAction action, Directions direction)
+        public override bool CanExecuteOn(GameObjectActionType action, Directions direction)
         {
-
+            return base.CanExecuteOn(action, direction);
         }
 
-        public void ExecuteActionInFacingDirection(NpcAction action)
+        public override void Execute(GameObjectActionType action, Directions direction)
         {
-            ExecuteAction(action, _facingDirection);
+            base.Execute(action, direction);
         }
 
-        public void ReleaseGrab()
+        public override void ExecuteOn(GameObjectActionType action, Directions direction)
         {
+            base.ExecuteOn(action, direction);
+        }
 
+        public override ActionInFrontType GetInteractAction()
+        {
+            return base.GetInteractAction();
         }
 
         public void SetRun(bool run)

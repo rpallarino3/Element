@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Element.Common.Enumerations.GameBasics;
-using Element.Common.Enumerations.NPCs;
-using Element.Common.Enumerations.TileObjects;
 
 namespace Element.Common.Environment.Tiles
 {

@@ -10,6 +10,11 @@ namespace Element.Common.Enumerations.GameObjects
     {
         None,
         Turn,
+        Grab, // is this actually an action?
+        ReleaseGrab,
+        Interact,
+        Cast,
+        // don't know if we need to add cycle here
 
         // single tile level translation
         Walk,

@@ -14,7 +14,7 @@ namespace Element.Common.HelperClasses
         public static readonly float DEFAULT_ROTATION = 0f;
         public static readonly float DEFAULT_LAYER = 0;
 
-        public static readonly float TILE_SIZE = 30;
+        public static readonly float TILE_SIZE = 40;
         public static readonly int TURN_THRESHOLD = 3;
         public static readonly int WIDTH_INDEX = 0;
         public static readonly int HEIGHT_INDEX = 1;

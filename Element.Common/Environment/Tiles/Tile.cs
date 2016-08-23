@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Element.Common.Enumerations.GameBasics;
-using Element.Common.Enumerations.NPCs;
-using Element.Common.Enumerations.TileObjects;
+using Element.Common.Enumerations.GameObjects;
 using Element.Common.GameObjects;
 using Element.Common.GameObjects.Npcs;
 using Element.Common.GameObjects.TileObjects;
@@ -69,7 +68,37 @@ namespace Element.Common.Environment.Tiles
             _reserved = false;
         }
 
-        public bool CanStandardObjectExecute(TileObjectActions action, Directions direction)
+        // going to need more methods here
+
+        public bool CanNpcExecute(GameObjectActionType action, Directions direction)
+        {
+            if (_npc == null)
+                return false;
+
+            return _npc.CanExecute(action, direction);
+        }
+
+        public void NpcExecute(GameObjectActionType action, Directions direction)
+        {
+            if (_npc != null)
+                _npc.Execute(action, direction);
+        }
+
+        public bool CanExecuteOnNpc(GameObjectActionType action, Directions direction)
+        {
+            if (_npc == null)
+                return false;
+
+            return _npc.CanExecuteOn(action, direction);
+        }
+
+        public void ExecuteOnNpc(GameObjectActionType action, Directions direction)
+        {
+            if (_npc != null)
+                _npc.ExecuteOn(action, direction);
+        }
+
+        public bool CanStandardObjectExecute(GameObjectActionType action, Directions direction)
         {
             if (_standardObject == null)
                 return false;
@@ -77,7 +106,27 @@ namespace Element.Common.Environment.Tiles
             return _standardObject.CanExecute(action, direction);
         }
 
-        public bool CanFloorObjectExecute(TileObjectActions action, Directions direction)
+        public void StandardObjectExecute(GameObjectActionType action, Directions direction)
+        {
+            if (_standardObject != null)
+                _standardObject.Execute(action, direction);
+        }
+
+        public bool CanExecuteOnStandardObject(GameObjectActionType action, Directions direction)
+        {
+            if (_standardObject == null)
+                return false;
+
+            return _standardObject.CanExecuteOn(action, direction);
+        }
+
+        public void ExecuteOnStandardObject(GameObjectActionType action, Directions direction)
+        {
+            if (_standardObject != null)
+                _standardObject.ExecuteOn(action, direction);
+        }
+
+        public bool CanFloorObjectExecute(GameObjectActionType action, Directions direction)
         {
             if (_floorObject == null)
                 return false;
@@ -85,16 +134,35 @@ namespace Element.Common.Environment.Tiles
             return _floorObject.CanExecute(action, direction);
         }
 
-        public void StandardObjectExecute(TileObjectActions action, Directions direction)
-        {
-            if (_standardObject != null)
-                _standardObject.Execute(action, direction);
-        }
-
-        public void FloorObjectExecute(TileObjectActions action, Directions direction)
+        public void FloorObjectExecute(GameObjectActionType action, Directions direction)
         {
             if (_floorObject != null)
                 _floorObject.Execute(action, direction);
+        }
+
+        public bool CanExecuteOnFloorObject(GameObjectActionType action, Directions direction)
+        {
+            if (_floorObject == null)
+                return false;
+
+            return _floorObject.CanExecuteOn(action, direction);
+        }
+
+        public void ExecuteOnFloorObject(GameObjectActionType action, Directions direction)
+        {
+            if (_floorObject != null)
+                _floorObject.ExecuteOn(action, direction);
+        }
+
+        public ActionInFrontType GetActionInFront()
+        {
+            if (_npc != null)
+                return _npc.GetInteractAction();
+
+            if (_standardObject != null)
+                return _standardObject.GetInteractAction();
+
+            return ActionInFrontType.None;
         }
 
         public Transition Transition

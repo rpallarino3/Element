@@ -7,6 +7,7 @@ using Element.Common.Animations;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.GameBasics;
 using Element.Common.Enumerations.GameObjects;
+using Element.Common.GameObjects.Actions;
 
 namespace Element.Common.GameObjects
 {
@@ -22,6 +23,8 @@ namespace Element.Common.GameObjects
         protected int _zone;
         protected Directions _facingDirection;
         protected ClimbIndex _climbIndex;
+
+        protected List<AvailableAction> availableActions;
 
         public GameObject(Vector2 position, int level)
         {
@@ -42,6 +45,19 @@ namespace Element.Common.GameObjects
 
         public virtual void Execute(GameObjectActionType action, Directions direction) { }
         public virtual void ExecuteOn(GameObjectActionType action, Directions direction) { }
+
+        public abstract void UpdateLogic();
+
+        public virtual ActionInFrontType GetInteractAction()
+        {
+            return ActionInFrontType.None;
+        }
+
+        public void PassAvailableActions(List<AvailableAction> actions)
+        {
+            actions.Sort();
+            availableActions = actions;
+        }
 
         public Animator Animator
         {

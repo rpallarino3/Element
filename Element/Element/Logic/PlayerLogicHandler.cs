@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using Element.Common.Enumerations.Environment;
 using Element.Common.Enumerations.GameBasics;
-using Element.Common.Enumerations.NPCs;
-using Element.Common.Enumerations.TileObjects;
+using Element.Common.Enumerations.GameObjects;
 using Element.Common.Environment.Tiles;
+using Element.Common.GameObjects.Actions;
 using Element.Common.GameObjects.Npcs;
 using Element.Common.HelperClasses;
 using Element.Input;
@@ -18,329 +18,123 @@ namespace Element.Logic
         private static Npc _player;
         private static RegionNames _region;
         private static int _zone;
-        private static NpcAction _actionInFront;
 
-        private static Tile _currentTile;
-        private static Tile _currentTileBelow;
-        private static Tile _firstTile;
-        private static Tile _firstTileBelow;
-        private static Tile _secondTile;
-        private static Tile _secondTileBelow;
+        private static bool _moving;
+        private static ActionInFrontType _inFrontAction;
         
         static PlayerLogicHandler()
         {
             _region = RegionNames.None;
-            _actionInFront = NpcAction.None;
         }
 
         public static void UpdatePlayerLogic()
         {
-            // should check if the player is 'locked' in an object at some point
-            // should also remember to recheck in front if we turn
-
-            var exit = CheckMenu();
-            if (exit)
+            if (InputHandler.IsFunctionReady(ControlFunctions.Menu))
             {
-                _actionInFront = NpcAction.None;
+                // do some menu shit here
                 return;
             }
 
-            exit = CheckCast();
-            if (exit)
+            var actions = new List<AvailableAction>();
+
+            if (InputHandler.IsFunctionReady(ControlFunctions.Cast))
             {
-                _actionInFront = NpcAction.None;
-                return;
+                // either we get the priority from some static class or just put it here
+                var castAction = new AvailableAction(GameObjectActionType.Cast, _player.FacingDirection, 0);
+                actions.Add(castAction);
             }
 
-            exit = CheckConfirm();
-            if (exit)
+            if (InputHandler.IsFunctionReady(ControlFunctions.Confirm))
             {
-                _actionInFront = NpcAction.None;
-                return;
+                var interactAction = new AvailableAction(GameObjectActionType.Interact, _player.FacingDirection, 1);
+                actions.Add(interactAction);
             }
 
-            exit = CheckGrab();
-            if (exit)
-            {
-                _actionInFront = NpcAction.None; // maybe change this to release, not sure if we will ever get here
-                return;
-            }
-
-            exit = CheckMove();
-            if (exit)
-            {
-                _actionInFront = NpcAction.None;
-                return;
-            }
-
-            exit = CheckCycle();
-            if (exit) return;
-        }
-
-        private static bool CheckMenu()
-        {
-            return false;
-        }
-
-        private static bool CheckCast()
-        {
-            if (!InputHandler.IsFunctionReady(ControlFunctions.Cast))
-                return false;
-
-            if (!_player.CanExecuteInFacingDirection(NpcAction.Cast))
-                return false;
-
-            _player.ExecuteActionInFacingDirection(NpcAction.Cast);
-            Cast();
-
-            return true;
-        }
-
-        private static void Cast()
-        {
-
-        }
-
-        private static bool CheckConfirm()
-        {
-            CheckInFrontForConfirmAction(); // so we know this will always get evaluated
-            if (!InputHandler.IsFunctionReady(ControlFunctions.Confirm))
-                return false;
-
-            // we know that the player can execute the action or it will be none which does nothing
-
-            _player.ExecuteActionInFacingDirection(_actionInFront); // probably won't do much
-            ExecuteConfirmAction();
-            return true;
-        }
-
-        private static void CheckInFrontForConfirmAction()
-        {
-            _actionInFront = NpcAction.None; // figure out the action here
-
-            if (!_player.CanExecuteInFacingDirection(_actionInFront))
-                _actionInFront = NpcAction.None;            
-        }
-
-        private static void ExecuteConfirmAction()
-        {
-
-        }
-
-        private static bool CheckGrab()
-        {
             if (InputHandler.IsFunctionReady(ControlFunctions.Grab))
-                return false;
-
-            _player.ReleaseGrab();
-
-            return false; // return false for now, could be true
-        }
-
-        private static bool CheckMove()
-        {
-            var longestDirection = InputHandler.GetLongestDirection();
-            var longestTime = InputHandler.GetLongestTime();
-
-            _player.SetRun(InputHandler.IsFunctionReady(ControlFunctions.Run));
-
-
-            if (longestDirection == null && longestTime == 0) // these should always be true together?
-                return false;
-            
-
-            // eh not sure if this is right
-            if (_player.Climbing)
-                return CheckClimbAction(longestDirection.Value, longestTime);
-
-            if (longestDirection != _player.FacingDirection && longestTime <= GameConstants.TURN_THRESHOLD)
             {
-                if (_player.CanExecute(NpcAction.Turn, longestDirection.Value)) // should only be able to turn if standing
+                var grabAction = new AvailableAction(GameObjectActionType.Grab, _player.FacingDirection, 2);
+                actions.Add(grabAction);
+            }
+            else
+            {
+                var releaseAction = new AvailableAction(GameObjectActionType.ReleaseGrab, _player.FacingDirection, 3);
+                actions.Add(releaseAction);
+            }
+
+            var longestTime = InputHandler.GetLongestTime();
+            var longestDirection = InputHandler.GetLongestDirection();
+
+            if (!longestDirection.HasValue) // this should also mean that longest time = 0
+                _moving = false;
+            else
+            {
+                if (_player.Climbing)
                 {
-                    _player.ExecuteAction(NpcAction.Turn, longestDirection.Value);
-                    return false;
+                    var climbAction = new AvailableAction(GameObjectActionType.Climb, longestDirection.Value, 4);
+                    actions.Add(climbAction);
+                }
+                else
+                {
+                    if (longestTime < GameConstants.TURN_THRESHOLD && !_moving)
+                    {
+                        var turnAction = new AvailableAction(GameObjectActionType.Turn, longestDirection.Value, 5);
+                        actions.Add(turnAction);
+                    }
+                    else
+                    {
+                        _moving = true;
+                        if (_player.Grabbing)
+                        {
+                            var pullAction = new AvailableAction(GameObjectActionType.Pull, longestDirection.Value, 5);
+                            actions.Add(pullAction);
+                        }
+                        else
+                        {
+                            var pushAction = new AvailableAction(GameObjectActionType.Push, longestDirection.Value, 5);
+                        }
+
+                        var jumpAction = new AvailableAction(GameObjectActionType.Jump, longestDirection.Value, 6);
+                        actions.Add(jumpAction);
+                        var walkAction = new AvailableAction(GameObjectActionType.Walk, longestDirection.Value, 7);
+                        actions.Add(walkAction);
+                    }
                 }
             }
 
-            _currentTile = TrafficHandler.GetTile(_region, _zone, _player.TileLocation, _player.Level);
-
-            // if (currentTile.Transition != null)
-            // if (currentTile.Transition.Direction == direction || it is a fall in transition)
-            // var exit = ExecuteTransition()
-            // if (exit) return true;
-
-            // is longest direction necessarily the direction we want?
-            // yes we want longest direction and not facing direction
-
-            var movementAction = GetMovementAction(longestDirection.Value); // maybe use the TileMapHandler so we can reuse some of the methods
-
-            if (_player.CanExecute(movementAction, longestDirection.Value))
-                return false;
-
-            _player.ExecuteAction(movementAction, longestDirection.Value);
-
-            return false;
-        }
-
-        private static bool CheckClimbAction(Directions longestDirection, int longestTime)
-        {
-            var action = TrafficHandler.GetClimbAction(longestDirection, _player.Region, _player.Zone, _player.Location, _player.Level);
-            return false;
-        }
-
-        private static NpcAction GetMovementAction(Directions direction)
-        {
-            if (!_currentTile.CanMoveOffTile(direction))
-                return NpcAction.None;
-
-            if (_player.Grabbing)
-                _firstTile = TrafficHandler.GetTileInDirection(_player.FacingDirection, _region, _zone, _player.TileLocation, _player.Level);
+            if (InputHandler.IsFunctionReady(ControlFunctions.Run))
+                _player.SetRun(true);
             else
-                _firstTile = TrafficHandler.GetTileInDirection(direction, _region, _zone, _player.TileLocation, _player.Level);
+                _player.SetRun(false);
 
-            if (_firstTile == null)
-                return NpcAction.TryWalk;
-
-            var action = _firstTile.GetMoveActionFromTile(direction);
-
-            if (action == NpcAction.Push)
-                return CheckPush(direction);
-            else if (action == NpcAction.Jump)
-                return CheckJump(direction);
-            else if (action == NpcAction.Fall)
+            if (InputHandler.IsFunctionReady(ControlFunctions.Cycle))
             {
-                return NpcAction.Fall;
+                // do some cycle stuff here
             }
-            else
-                return action;            
+
+            _player.PassAvailableActions(actions);
+            _player.UpdateLogic();
+            SetConfirmAction();
+            // maybe we need to get confirm action in front
+            // i think this is all we should need here for now
         }
 
-        private static NpcAction CheckPush(Directions direction)
+        private static void SetConfirmAction()
         {
-            bool pulling = false;
+            // we have none, interact, talk, check, grab/release
+            if (!_player.CanExecute(GameObjectActionType.Interact, _player.FacingDirection))
+                _inFrontAction = ActionInFrontType.None;
 
-            if (TrafficHandler.GetOppositeDirection(_player.FacingDirection) == direction)
-                pulling = true;
-            else if (direction != _player.FacingDirection)
-                return NpcAction.None; // trying to move in one of the non pulling/pushing directions
+            var destinationTile = TrafficHandler.GetTileInDirection(_player.FacingDirection, _region, _zone, _player.Position, _player.Level);
 
-            if (!_firstTile.CanStandardObjectExecute(TileObjectActions.Pull, direction))
-                return GetPushPull(pulling, true);
-            
-            var playerMoveTile = TrafficHandler.GetTileInDirection(direction, _region, _zone, _player.TileLocation, _player.Level);
-            
-            if (playerMoveTile == null)
-                return GetPushPull(pulling, true);
-
-            var canMoveInto = playerMoveTile.CanBeMovedInto(direction);
-            
-            if (canMoveInto.HasValue && !canMoveInto.Value)
-                return GetPushPull(pulling, true);
-            if (!canMoveInto.HasValue)
+            if (destinationTile == null)
             {
-                var playerMoveTileBelow = TrafficHandler.GetTileBelow(direction, _region, _zone, _player.TileLocation, _player.Level);
-
-                if (playerMoveTileBelow == null)
-                    return GetPushPull(pulling, true);
-
-                if (!playerMoveTileBelow.CanMoveOnTop(direction)) // need to rethink all of these can move on top things
-                    return GetPushPull(pulling, true);
-            }
-            
-            bool canPush;
-
-            if (pulling)
-                canPush = TrafficHandler.CheckDownForPush(direction, _region, _zone, _player.TileLocation, _player.Level, 0);
-            else
-                canPush = TrafficHandler.CheckDownForPush(direction, _region, _zone, _player.TileLocation, _player.Level, 2);
-
-            if (!canPush)
-                return GetPushPull(pulling, true);
-            
-            //Tile objectDestinationTile;
-
-            //if (pulling)
-            //    objectDestinationTile = _currentTile;
-            //else
-            //    objectDestinationTile = TrafficHandler.GetTileInDirection(direction, _region, _zone, _player.TileLocation, _player.Level, 2);
-
-            //if (objectDestinationTile == null)
-            //    return GetPushPull(pulling, true);
-
-            //var canMoveObj = objectDestinationTile.CanPushInto(direction);
-
-            //if (canMoveObj.HasValue && !canMoveObj.Value)
-            //    return GetPushPull(pulling, true);
-            //if (!canMoveObj.HasValue) // hrm need to check all the way down at some point
-            //{
-            //    Tile objectDestinationTileBelow;
-
-            //    if (pulling)
-            //        objectDestinationTileBelow = TrafficHandler.GetTileBelow(_region, _zone, _player.TileLocation, _player.Level);
-            //    else
-            //        objectDestinationTileBelow = TrafficHandler.GetTileBelow(direction, _region, _zone, _player.TileLocation, _player.Level, 2);
-
-            //    if (objectDestinationTileBelow == null)
-            //        return GetPushPull(pulling, true);
-
-            //    if (!objectDestinationTileBelow.CanMoveOnTop(direction))
-            //        return GetPushPull(pulling, true);
-            //}
-
-            return GetPushPull(pulling, false);
-        }
-
-        private static NpcAction GetPushPull(bool pulling, bool trying)
-        {
-            if (trying)
-            {
-                if (pulling)
-                    return NpcAction.TryPull;
-                else
-                    return NpcAction.TryPush;
-            }
-            else
-            {
-                if (pulling)
-                    return NpcAction.Pull;
-                else
-                    return NpcAction.Push;
-            }
-        }
-
-        private static NpcAction CheckJump(Directions direction)
-        {
-            _secondTile = TrafficHandler.GetTileInDirection(direction, _region, _zone, _player.TileLocation, _player.Level, 2);
-
-            if (_secondTile == null)
-                return NpcAction.None;
-
-            var canLand = _secondTile.CanMoveOnTile(direction);
-
-            if (canLand.HasValue)
-            {
-                if (canLand.Value)
-                    return NpcAction.Jump;
-                else
-                    return NpcAction.None;
+                _inFrontAction = ActionInFrontType.None;
+                return;
             }
 
-            _secondTileBelow = TrafficHandler.GetTileBelow(direction, _region, _zone, _player.TileLocation, _player.Level, 2);
-
-            if (_secondTileBelow == null)
-                return NpcAction.None;
-
-            if (!_secondTileBelow.CanMoveOnTop(direction))
-                return NpcAction.None;
-
-            return NpcAction.Jump;
+            _inFrontAction = destinationTile.GetActionInFront();
         }
-
-        private static bool CheckCycle()
-        {
-            return false;
-        }
-
+        
         public static Npc Player
         {
             get { return _player; }
